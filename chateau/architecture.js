@@ -1,5 +1,5 @@
 /**
- * CHÂTEAU GRAND 2027 — PALAST 2.0
+ * CHÂTEAU GRAND 2027 — PALAST 2.1
  * Monumental, courtyard-based French palace. Entire exterior is assembled with
  * instanced ashlar modules, real (non-decals) window holes, MaxGame PBR stone,
  * authentic donor portico geometry, and roof pavilions with copper domes.
@@ -22,10 +22,13 @@ export function buildChateau(THREE, scene, donor, mats, glass){
   const gilt=new THREE.MeshStandardMaterial({color:0xd4ad59,metalness:.72,roughness:.26,name:'Patiniertes_Gold'});
   const stoneLight=mats.trim,stoneMid=mats.facadeWall,stoneWindow=mats.windowStone,stoneColumn=mats.dressedStone;
   const glassDark=new THREE.MeshStandardMaterial({color:0x111b23,roughness:.57,metalness:.05,name:'Glas_Hintergrund'});
+  const wood=new THREE.MeshStandardMaterial({color:0x382016,roughness:.62,metalness:.02,name:'Eingangstüren_Nussbaumholz'});
+  const woodTrim=new THREE.MeshStandardMaterial({color:0x71462d,roughness:.58,metalness:.02,name:'Profilierte_Türfüllungen'});
+  const doorShadow=new THREE.MeshStandardMaterial({color:0x140f0c,roughness:.92,name:'Türfugen_und_Kassettenschatten'});
   const glow=new THREE.MeshStandardMaterial({color:0xf6c47e,emissive:0xff9a49,emissiveIntensity:.78,roughness:.58});
   const materialMap={wall:stoneMid,trim:stoneLight,win:stoneWindow,base:mats.shade,stone:stoneColumn,
     glass,behind:glassDark,interior:litInterior,sash:mats.paintedSash,roof:darkSlate,bronze,edge:bronzeEdge,gold:gilt,
-    tree:foliage,hedge,water,light:glow,paving:mats.porticoPaving};
+    tree:foliage,hedge,water,light:glow,paving:mats.porticoPaving,wood,woodtrim:woodTrim,doorShadow};
   const geometryMap={box:basis,orb:new THREE.SphereGeometry(1,10,7),cone:new THREE.ConeGeometry(1,1,10),
     cyl:new THREE.CylinderGeometry(1,1,1,14),thinCyl:new THREE.CylinderGeometry(1,1,1,8)};
   function push(kind,mat,x,y,z,sx,sy,sz){
@@ -66,6 +69,11 @@ export function buildChateau(THREE, scene, donor, mats, glass){
     {bottom:4.6,top:10.9,holeY:.90,holeH:4.76},
     {bottom:10.9,top:17.3,holeY:1.06,holeH:4.52},
     {bottom:17.3,top:23.5,holeY:1.13,holeH:4.20}];
+  // Only THREE doors sit in intercolumnia: two outside and one precisely central.
+  // The 12 original MaxGame columns are arranged on {-20.35,-12.21,-4.07,4.07,12.21,20.35} m.
+  // Therefore the opening centers MUST be {-16.28,0,16.28}; no column stands in a doorway.
+  const ENTRANCE_AXES=[-16.28,0,16.28];
+  const DOOR_WIDTH=3.05;
   // Wall strips around openings. No wall boxes behind window glass.
   function masonryLine(axis,fixed,from,to,face,bayXs,{trimDetail=true,entrance=false,corps=false}={}){
     const fixedWall=fixed;
@@ -76,27 +84,47 @@ export function buildChateau(THREE, scene, donor, mats, glass){
     }
     function window(coord,y,level,grandDoor){
       const height=grandDoor?5.35:levels[level].holeH;
-      const width=grandDoor?4.2:level===0?2.6:3.25;
+      const width=grandDoor?DOOR_WIDTH:level===0?2.6:3.25;
       const base=y+(grandDoor?.08:levels[level].holeY);
       const longSide=(axis==='X');
-      const place=(mat,long,vert,depth,offset,yy)=>{
-        if(longSide)cube(mat,coord,yy,fixedWall+exterior*offset,long,vert,depth);
-        else cube(mat,fixedWall+exterior*offset,yy,coord,depth,vert,long);
+      const placeAt=(mat,along,long,vert,depth,offset,yy)=>{
+        if(longSide)cube(mat,coord+along,yy,fixedWall+exterior*offset,long,vert,depth);
+        else cube(mat,fixedWall+exterior*offset,yy,coord+along,depth,vert,long);
       };
+      const place=(mat,long,vert,depth,offset,yy)=>placeAt(mat,0,long,vert,depth,offset,yy);
       // Deep window reveal; recessed dark glass and one thin transparent pane.
       place(!grandDoor && ((Math.abs(Math.round(coord*10))+level*13)%7<3)?'interior':'behind',width-.22,height-.15,.09,0,base+height/2);
       if(!grandDoor)place('glass',width-.32,height-.20,.05,.13,base+height/2);
       if(grandDoor){
-        place('base',width-.35,height-.15,.25,.15,base+height/2);
-        place('win',.085,height-.25,.21,.42,base+height/2);
-        for(const yy of [.2,.46,.72])place('trim',width-.45,.075,.26,.40,base+height*yy);
-        for(const dd of [-.27,.27]){
-          const gg=new THREE.SphereGeometry(.085,8,6);
+        // REAL double-leaf walnut door, recessed into the same physical wall opening.
+        // The old stone 'door panel' and grid have been replaced by carved wooden leaves.
+        place('doorShadow',width-.12,height-.12,.08,.04,base+height/2);
+        for(const sign of [-1,1]){
+          const offset=sign*width*.249;
+          placeAt('wood',offset,width*.49,height-.15,.15,.20,base+height/2);
+          // Cassette panels: a framed relief on each leaf, never applied over the opening sill.
+          for(const fy of [.18,.43,.67]){
+            const cy=base+height*fy;
+            placeAt('woodtrim',offset,width*.38,height*.184,.055,.31,cy);
+            placeAt('wood',offset,width*.326,height*.135,.063,.349,cy);
+          }
+          placeAt('woodtrim',offset,width*.48,.12,.12,.37,base+height*.83);
+          placeAt('woodtrim',offset,width*.48,.09,.13,.37,base+height*.88);
+          // Slim vertical perimeter stiles and central meeting joint.
+          for(const s of [-1,1])placeAt('woodtrim',offset+s*width*.225,.063,height-.23,.12,.35,base+height/2);
+        }
+        place('doorShadow',.045,height-.12,.047,.42,base+height/2);
+        // Two genuinely separate patinated-brass handles, one per leaf.
+        for(const dd of [-.15,.15]){
+          const gg=new THREE.SphereGeometry(.074,12,8);
           const oo=new THREE.Mesh(gg,gilt);
-          if(longSide)oo.position.set(coord+dd,base+2.4,fixedWall+exterior*.57);
-          else oo.position.set(fixedWall+exterior*.57,base+2.4,coord+dd);
+          if(longSide)oo.position.set(coord+dd,base+2.10,fixedWall+exterior*.51);
+          else oo.position.set(fixedWall+exterior*.51,base+2.10,coord+dd);
           palace.add(oo);
         }
+        // Recessed overdoor with a strongly modelled horizontal crown.
+        place('stone',width+.20,.24,.58,.41,base+height+.05);
+        place('trim',width+.48,.20,.80,.49,base+height+.27);
       }else{
         place('sash',.085,height-.21,.17,.30,base+height/2);
         for(const s of [-.30,.30]){
@@ -131,8 +159,10 @@ export function buildChateau(THREE, scene, donor, mats, glass){
       const l=level.bottom,r=level.top;
       let last=from;
       for(const pos of bays){
-        const door=entrance&&i===1&&Math.abs(pos)<13;
-        const ww=door?4.2:(i===0?2.6:3.25);
+        const door=entrance&&i===1&&ENTRANCE_AXES.some(x=>Math.abs(pos-x)<.01);
+        const underPortico=entrance&&i===0&&ENTRANCE_AXES.some(x=>Math.abs(pos-x)<.01);
+        const ww=door?DOOR_WIDTH:(i===0?2.6:3.25);
+        if(underPortico)continue; // no subterranean glazing behind the entrance podium
         const left=pos-ww/2,right=pos+ww/2;
         if(left>last)stoneAlong((last+left)/2,l,left-last,r-l);
         const bottom=door?l+.08:l+level.holeY;
@@ -163,8 +193,10 @@ export function buildChateau(THREE, scene, donor, mats, glass){
     return bays.length;
   }
   const grid=(start,end,step)=>{const a=[];for(let p=start;p<=end+.01;p+=step)a.push(+p.toFixed(3));return a;};
-  const frontAxes=grid(-103.5,103.5,6.9);
-  const mainRearAxes=frontAxes;
+  // No filler windows behind the actual column bases: the entry three-bay grouping
+  // is reserved for walnut doors and their aligned upper-floor windows.
+  const frontAxes=[...grid(-103.5,103.5,6.9).filter(x=>Math.abs(x)>25),...ENTRANCE_AXES].sort((a,b)=>a-b);
+  const mainRearAxes=grid(-103.5,103.5,6.9);
   masonryLine('X',21,-112,112,1,frontAxes,{entrance:true,corps:true});
   masonryLine('X',-21,-112,112,-1,mainRearAxes,{corps:true});
   // Both outermost short sides of the grand main façade.
@@ -192,15 +224,39 @@ export function buildChateau(THREE, scene, donor, mats, glass){
     cube('base',f.x,-.36,f.z,f.w+.6,.72,f.d+.6);
     for(const yy of [4.61,10.96,17.35,23.22])cube('base',f.x,yy-.06,f.z,f.w-.8,.16,f.d-.8);
   }
-  // 22 broad treads rise to the original MaxGame podium, now at piano-nobile level.
-  for(let i=0;i<22;i++){
-    const width=44+1.05*i,height=.205*(22-i);
-    cube('paving',0,height/2,38.1+i*.91,width,height,.94);
-    cube('trim',0,height+.035,38.1+i*.91,width+.04,.055,.95);
+  // V2.1: no more full-height stair boxes or black slab-like staircase cheeks.
+  // Twenty-six individual slim tread stones (0.15 m) over a recessed RAKED
+  // structural stringer: shallow in elevation and credible from both sides.
+  const STEP_COUNT=26, RISER=4.50/STEP_COUNT, TREAD=.80, STAIR_START=38.07;
+  for(let i=0;i<STEP_COUNT;i++){
+    const width=51.6+.225*i;
+    const top=(STEP_COUNT-i)*RISER;
+    const z=STAIR_START+i*TREAD;
+    cube('paving',0,top-.076,z,width,.152,.84);
+    cube('trim',0,top+.008,z+.37,width+.045,.028,.11);
+    cube('stone',0,top-RISER*.5,z+.41,width-.08,RISER,.115);
   }
-  for(const x of [-27.1,27.1]){
-    cube('base',x,2.27,29,1.6,4.54,13.2);
-    for(let i=0;i<6;i++)sphere('win',x,4.68,23.4+i*2.15,.28);
+  // Invisible from frontal view but visible obliquely: a tapered stone substructure,
+  // recessed from both edges. Its outer walls slope to the lawn, not straight down.
+  const stairWedge=new THREE.BufferGeometry();
+  const q=[
+    [-23.45,0,37.57],[23.45,0,37.57],
+    [-23.45,4.14,37.57],[23.45,4.14,37.57],
+    [-25.65,0,58.50],[25.65,0,58.50],
+    [-25.65,.045,58.50],[25.65,.045,58.50]
+  ];
+  const v=[]; const face=(a,b,c,d)=>{for(const j of [a,b,c,a,c,d])v.push(...q[j]);};
+  face(3,2,6,7);face(2,0,4,6);face(1,3,7,5);face(0,1,3,2);face(4,6,7,5);
+  stairWedge.setAttribute('position',new THREE.Float32BufferAttribute(v,3));stairWedge.computeVertexNormals();
+  const under=new THREE.Mesh(stairWedge,stoneMid);
+  under.name='Monumentaltreppe_schraege_unterstuetzung_ohne_Vollblock';
+  under.castShadow=under.receiveShadow=true;palace.add(under);
+  // A single uninterrupted narrow raked profile on each side of the stair.
+  for(const sign of [-1,1]){
+    const edge=new THREE.LineCurve3(new THREE.Vector3(sign*26.04,4.56,37.69),new THREE.Vector3(sign*28.83,.11,58.95));
+    const stringer=new THREE.Mesh(new THREE.TubeGeometry(edge,30,.11,6,false),stoneLight);
+    stringer.name=sign<0?'Geschwungene_linke_Treppenwange':'Geschwungene_rechte_Treppenwange';
+    stringer.castShadow=true;palace.add(stringer);
   }
   // Roof construction: two-pitch mansard with real hipped upper slopes,
   // a continuous eave, crest and properly fitted diagonal planes.
@@ -407,7 +463,7 @@ export function buildChateau(THREE, scene, donor, mats, glass){
   // TWELVE original fluted donor pillars, not repeated low-poly cylinder substitutes.
   donor.updateMatrixWorld(true);
   const portico=new THREE.Group();portico.name='ORIGINAL_MAXGAME_PORTIKUS_MONUMENTAL';
-  portico.scale.set(2.32,2.03,1.79);
+  portico.scale.set(2.75,2.03,1.79);
   portico.position.set(0,3.0,21-11.8*1.79+.48);
   palace.add(portico);
   const cloneDonor=(obj,mat,into=portico)=>{
@@ -416,11 +472,13 @@ export function buildChateau(THREE, scene, donor, mats, glass){
     part.material=mat;part.castShadow=part.receiveShadow=true;into.add(part);
     return part;
   };
-  for(const name of ['Giebel',...Array.from({length:10},(_,i)=>'Cube'+(431+i))]){
+  // The source Cube433–Cube438 are solid donor podium/stair blocks: OMIT THEM.
+  // Their extra thickness caused the visible 2 m+ layered slab at the entrance.
+  for(const name of ['Giebel','Cube431','Cube432','Cube439','Cube440']){
     const obj=donor.getObjectByName(name);
     if(!obj||!obj.isMesh)continue;
     const id=name==='Giebel'?-1:Number(name.slice(4));
-    cloneDonor(obj,id>=433&&id<=438?mats.porticoPaving:(id===431?mats.soffit:(id===-1?mats.dressedStone:mats.trim)));
+    cloneDonor(obj,id===431?mats.soffit:(id===-1?mats.dressedStone:mats.trim));
   }
   // Base four shafts derive from the donor. Six copies per row share the original
   // polygonal geometries, shifted along the length for dense 12-column colonnade.
@@ -442,18 +500,63 @@ export function buildChateau(THREE, scene, donor, mats, glass){
       const abacus=donor.getObjectByName('Cube'+caps[nearest]);
       if(!shaft||!foot||!abacus)throw Error('MaxGame donor pillars are missing.');
       const col=new THREE.Group();col.name='MaxGame_Echte_kannelierte_Saeule';
-      col.position.set(tx-originalXs[nearest],0,rowZ-baseZ);portico.add(col);
+      // Correct non-uniform donor scaling: shafts stay ROUND in world space.
+      // The facade is widened to 2.75x, while column diameter retains a 1.79x
+      // isotropic scale. This also creates >1 m clear jamb-to-pedestal spacing.
+      const circularScale=portico.scale.z/portico.scale.x;
+      col.scale.x=circularScale;
+      col.position.set(tx-originalXs[nearest]*circularScale,0,rowZ-baseZ);portico.add(col);
       addPorticoColumn(THREE,col,shaft,mats);
       cloneDonor(foot,mats.trim,col);cloneDonor(abacus,mats.trim,col);
     });
   }
   if(portico.children.length<17)throw Error('MaxGame donor portico incomplete.');
-  // One stepped ceremonial podium binds source portico, high stairs and facade.
-  cube('base',0,2.25,29,52.0,4.50,16.9);
-  cube('paving',0,4.56,29,52,.27,17.5);
-  cube('trim',0,4.75,29,52.5,.13,17.9);
+  // Recessed architectural podium. A 32 cm stone landing above an inset masonry
+  // foundation replaces the former flush 4.5 m dark box around the staircase.
+  cube('wall',0,2.18,28.45,48.1,4.36,14.4);
+  cube('paving',0,4.47,28.66,53.2,.30,18.0);
+  cube('trim',0,4.66,28.66,53.45,.12,18.14);
+  // Accessible threshold: landing top is y=4.72, walnut doors start at y=4.68.
+  // Six framed blind arches articulate the recessed foundation side faces.
+  for(const sign of [-1,1]){
+    const xx=sign*24.23;
+    for(const zz of [24.4,28.7,33.0]){
+      cube('base',xx+sign*.065,1.98,zz,.14,2.55,2.78);
+      cube('win',xx+sign*.18,1.98,zz,.085,2.12,2.30);
+      for(const dz of [-1.13,1.13])cube('trim',xx+sign*.28,2.07,zz+dz,.20,1.98,.19);
+      const arch=new THREE.Mesh(new THREE.TorusGeometry(1.13,.090,7,20,0,Math.PI),stoneLight);
+      arch.name='Bogenförmige_Podiumsblende';
+      arch.rotation.y=Math.PI/2;
+      arch.position.set(xx+sign*.30,3.06,zz);
+      arch.castShadow=false;palace.add(arch);
+    }
+    // Slim terrace balustrade on the podium's outer edges.
+    cube('trim',sign*26.48,5.30,28.6,.34,.17,13.4);
+    for(let z=22.8;z<=35.0;z+=1.45){
+      cylinder('stone',sign*26.48,4.96,z,.13,.69);
+      sphere('win',sign*26.48,5.12,z,.15);
+    }
+  }
+  // Four wall lanterns in the masonry bays, clear of all three doors.
+  for(const x of [-24.5,-8.3,8.3,24.5]){
+    cube('bronze',x,7.35,21.91,.34,1.21,.29);
+    cube('gold',x,7.92,22.03,.45,.11,.50);
+    cube('gold',x,6.78,22.03,.45,.10,.48);
+    cube('light',x,7.36,22.11,.23,.68,.21);
+    sphere('gold',x,8.04,22.01,.15);
+  }
+  // Stone cartouche set into the original MaxGame gable, plus modest cornice finials.
+  const crest=new THREE.Mesh(new THREE.TorusGeometry(.88,.12,8,26),gilt);
+  crest.name='Wappenring_im_Original_Giebel';crest.position.set(0,30.45,34.87);crest.castShadow=false;palace.add(crest);
+  sphere('stone',0,30.45,34.90,.46);
+  for(const sign of [-1,1]){
+    cube('stone',sign*23.0,27.85,34.7,1.06,.74,1.06);
+    sphere('win',sign*23.0,28.48,34.7,.58);
+    cone('gold',sign*23.0,29.05,34.7,.15,.43);
+  }
   flush();
   return {front:palace,originalPortico:portico,facadeWidth:224,
+    entranceAudit:{doors:[-16.28,0,16.28],doorWidth:DOOR_WIDTH,columns:[-20.35,-12.21,-4.07,4.07,12.21,20.35],shaftScaleUniform:1.79,stairRisers:26,stairTotalRise:4.50},
     palaceDimensions:{width:224,depth:217,height:64},
     buildings:['Corps de logis','Westfluegel','Ostfluegel','Rueckwaertiger Quertrakt'],
     instancedDrawcalls:batches.size,instancedElements:[...batches.values()].reduce((n,a)=>n+a.length,0)};

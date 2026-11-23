@@ -42,10 +42,10 @@ async function run(){
   const chateau=buildChateau(THREE,scene,donor,mats,glass);
   // Verify that we really used donor assets, not a recreated imitation.
   if(chateau.originalPortico.children.length<17)throw Error('Originalportikus aus MaxGame wurde unvollständig übernommen.');
-  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'2.0',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls};
-  document.getElementById('version').textContent='MAXGAME-PALAST · 2.0';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'2.1',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls};
+  document.getElementById('version').textContent='MAXGAME-PALAST · 2.1';
   start.disabled=false;start.textContent='Château erkunden';
-  status.textContent='Monumentale Schlossanlage, Innenhof, Kuppel und MaxGame-Portikus geladen.';
+  status.textContent='Château geladen · Eingang V2.1: freie Türen, neue Treppe und Steinpodium.';
   resize();view('angle');
   start.addEventListener('click',()=>{splash.hidden=true;renderer.shadowMap.needsUpdate=true;}, {once:true});
   requestAnimationFrame(frame);
@@ -75,11 +75,15 @@ function buildLandscape(mats){
 function view(which){
   mode='orbit';
   const views={
-    front:{theta:0,phi:.10,d:390},
-    angle:{theta:.44,phi:.46,d:356},
-    above:{theta:.35,phi:1.02,d:339}
+    front:{theta:0,phi:.10,d:390,target:[0,18,-65]},
+    angle:{theta:.44,phi:.46,d:356,target:[0,18,-65]},
+    above:{theta:.35,phi:1.02,d:339,target:[0,18,-65]},
+    entrance:{theta:0,phi:.065,d:84,target:[0,13,26]},
+    stairSide:{theta:1.04,phi:.16,d:77,target:[0,7,39]}
   };
-  Object.assign(orbit,views[which]||views.angle);orbit.target.set(0,18,-65);
+  const selected=views[which]||views.angle;
+  Object.assign(orbit,{theta:selected.theta,phi:selected.phi,d:selected.d});
+  orbit.target.set(...selected.target);
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('selected',b.dataset.view===which));
   document.getElementById('walk').classList.remove('selected');
   hint.textContent='Ansicht: ziehen zum Drehen · mit zwei Fingern zoomen';

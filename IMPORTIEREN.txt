@@ -1,12 +1,10 @@
-CHÂTEAU GRAND 2027 — MAXGAME-PALAST V2.0
+CHÂTEAU GRAND – MAXGAME-PALAST 2.1 · EINGANG & TREPPE
 
-1. ZIP ENTPACKEN.
-2. ALLE Dateien und Ordner DIREKT in das Stammverzeichnis von Chateau-Grand-2027 einfügen.
-3. index.html und die gleichnamigen Ordner/Dateien ersetzen.
-4. KEINEN zusätzlichen Ordner MAXGAME-PALAST-2.0 im Repository anlegen.
-5. Working Copy: Commit -> Push.
-6. Webseite mit ?v=palast20 öffnen.
-7. Kontrollanzeige rechts oben: "MAXGAME-PALAST · 2.0".
+ZIP ENTPACKEN → INHALT DIREKT IN Chateau-Grand-2027 KOPIEREN
+INDEX.HTML MUSS IM REPOSITORY-HAUPTVERZEICHNIS LIEGEN.
+KEINEN ZUSÄTZLICHEN V2.1-ORDNER HOCHLADEN.
+Alle gleichnamigen Dateien ersetzen → Commit → Push.
+Spieladresse nach dem Deployment mit ?v=palast21 aufrufen.
+Anzeige: MAXGAME-PALAST · 2.1
 
-Hinweis: Prüfe die Schauseite sowie die "Überblick"-Ansicht zuerst.
-Im Paket enthalten: originales MaxGame und alter Château-Spielstand als Archiv.
+Neue Kontrolle im Spiel: "Eingang" und "Treppe Seite".

@@ -1,0 +1,22 @@
+{
+  "version": "2.1",
+  "scope": "Portikus, drei Türen, Stufen, Landingsockel, Fassadenbeleuchtung und Eingangskamera",
+  "coordinateSystem": "world metres",
+  "doors": {
+    "x": [-16.28, 0.0, 16.28],
+    "openingWidth": 3.05,
+    "groundFloorBase": 4.68,
+    "minSideClearanceToColumnPedestal": 1.06
+  },
+  "portico": {
+    "source": "assets/white-house-structure.glb",
+    "columnRows": 2,
+    "columnsPerRow": 6,
+    "columnX": [-20.35, -12.21, -4.07, 4.07, 12.21, 20.35],
+    "pedestalWidthWorldMetres": 2.9714,
+    "columnScaleXZWorld": 1.79,
+    "excludedHeavyDonorPodium": ["Cube433", "Cube434", "Cube435", "Cube436", "Cube437", "Cube438"]
+  },
+  "stair": {"numberOfRisers": 26, "heightMetres": 4.5, "riserMetres": 0.1730769, "treadMetres": 0.8, "slimIndependentTreads": true},
+  "inspection": {"javascriptSyntax": "passed", "generatedGeometry": "passed", "donorPedestalDoorClearance": "passed", "safariRealDevice": "not tested"}
+}
