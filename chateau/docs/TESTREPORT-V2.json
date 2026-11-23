@@ -1,0 +1,26 @@
+{
+  "engine": "Three.js",
+  "version": "2.0",
+  "donorMeshGroups": 533,
+  "porticoParts": 23,
+  "drawCalls": 277,
+  "meshes": 277,
+  "instancedPrimitives": 18070,
+  "instanceDrawCallTypes": 22,
+  "approxTriangles": 565288,
+  "geoMissing": 0,
+  "geoNonFinite": 0,
+  "sceneBounds": [
+    -113.09,
+    -0.72,
+    -197.59,
+    113.09,
+    60.57,
+    149.5
+  ],
+  "dims": {
+    "width": 224,
+    "depth": 217,
+    "height": 64
+  }
+}

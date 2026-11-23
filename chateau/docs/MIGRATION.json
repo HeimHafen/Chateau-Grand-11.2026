@@ -1,13 +1,11 @@
 {
   "project": "CHATEAU GRAND 2027",
-  "version": "MaxGame-Neubasis 1.0",
-  "activeEntry": "index.html",
-  "originalMaxGameEntry": "maxgame-original.html",
-  "originalThreeModule": "vendor/three/build/three.module.js",
-  "donorGLB": "assets/white-house-structure.glb",
-  "donorPortico": ["Giebel", "Cube431-Cube440", "Cube419-Cube428", "Cone001", "Cone007", "Cone010", "Cone013"],
-  "newGeometry": "chateau/architecture.js",
-  "originalCastleArchived": "chateau/legacy/CHATEAU-GRAND-V5.10-ARCHIV.zip",
-  "scope": "MaxGame engine migration and main frontage with donor portico",
-  "notYetCompleted": ["Full courtyard architecture", "Dome", "Fully walkable 5-floor interiors", "Photorealism quality assurance on iPhone"]
+  "version": "MaxGame-Palast 2.0",
+  "entry": "index.html",
+  "geometry": "chateau/architecture.js",
+  "originalMaxGame": "maxgame-original.html",
+  "donorAsset": "assets/white-house-structure.glb",
+  "scaleMetres": {"frontWidth": 224, "depth": 217, "highDome": 61},
+  "features": ["4 Geschosse", "2 Seitenfluegel", "Innenhof", "6 Kuppeln", "12 originale kannelierte Portikus-Saeulen", "Mansarddaecher", "Fensteroeffnungen", "Parterregarten", "2 Brunnen"],
+  "limitations": ["nicht fotorealistisches Original der generierten Bildvorlage", "Innenraeume nicht fertig begehbar", "Safari-Grafiktest am Endgeraet noch offen"]
 }

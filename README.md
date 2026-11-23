@@ -1,51 +1,44 @@
-# Château Grand 2027 – MaxGame-Neubasis · Version 1.0
+# CHÂTEAU GRAND 2027 – MAXGAME-PALAST · V2.0
 
-**Spielbare neue Château-Basis, aufgebaut auf dem tatsächlich gelieferten MaxGame-Projekt.**
+**Komplette spielbare GitHub-Pages-Projektbasis, entstanden aus der funktionierenden MaxGame-Neubasis 1.0.** Der äußere Schlosskomplex wurde erheblich vergrößert und architektonisch ausgearbeitet, als nächster greifbarer Schritt zum monumentalen Zielentwurf.
 
-## Was jetzt beim Öffnen passiert
-
-`index.html` startet ab jetzt **CHÂTEAU GRAND** mit der originalen lokalen Three.js-Engine von MaxGame, dem Original-GLB des Herrenhauses, dem Original-Portikus mit seinen acht modellierten kannelierten Säulen und den vorhandenen MaxGame-Materialien. Das neue Schloss bekommt eine 94 Meter breite, dreigeschossige Frontfassade mit tatsächlichen Wandöffnungen, Fenstergliederung und drei zweiflügeligen Eingängen. Zur Orientierung sind vereinfachte rückwärtige Gebäudetrakte und eine Rasenlandschaft vorhanden.
-
-**Wichtig:** Wir haben *nicht* das gesamte bisherige Château auf Herrenhaus-Qualität gebracht. Dieser erste Schritt überträgt die belastbare Spieltechnik und das echte Referenzbauteil. Die Dachanschlüsse, Kuppel und Innenräume müssen in folgenden kontrollierten Einzelschritten bearbeitet werden. Die neue Vorschau ist kein Nachweis von Fotorealismus auf dem iPhone.
-
-## Installation mit Working Copy / GitHub Pages
+## Wichtig: Installation in GitHub / Working Copy
 
 1. ZIP **entpacken**.
-2. **Alle Dateien und Ordner direkt in das Hauptverzeichnis** des Repositorys `Chateau-Grand-2027` übertragen. **Keinen zusätzlichen Oberordner** anlegen.
-3. Bestehende gleichnamige Dateien ersetzen.
-4. In Working Copy **Commit** und anschließend **Push** ausführen.
-5. GitHub → **Settings → Pages** → Branch `main`, Ordner `/ (root)`.
-6. Deine bisherige GitHub-Pages-Adresse öffnen, zum Erzwingen einer frischen Seite `?v=maxgame1` anhängen. Oben rechts sollte `MAXGAME-NEUBASIS · 1.0` stehen.
+2. **Den Inhalt des ZIP direkt ins Hauptverzeichnis** deines bestehenden Repositorys `Chateau-Grand-2027` kopieren. `index.html` liegt im Root, **kein zusätzlicher Projektordner**.
+3. Alle bereits vorhandenen gleichnamigen Dateien ersetzen. `chateau/`, `assets/`, `wohnzimmer/` und `vendor/` müssen zusammen hochgeladen werden.
+4. **Commit → Push** in Working Copy.
+5. Die GitHub-Pages-Spieladresse mit `?v=palast20` öffnen. Oben rechts steht **MAXGAME-PALAST · 2.0**.
 
-`index.html` und die Unterordner `chateau/`, `wohnzimmer/`, `vendor/`, `assets/` dürfen nicht voneinander getrennt werden.
+## Was in V2.0 tatsächlich im 3D-Spiel gebaut wurde
 
-## Ein Bereich nach dem anderen
+- **Schauseite: 224 m breit** statt zuvor 94 m, Gesamtanlage ungefähr 224 × 217 m, höchster Kuppelabschluss ca. 61 m über dem Terrain.
+- Hauptbau mit vier gestaffelten Steingeschossen, langen Gesimsen, sichtbaren Sockeln und durchgängigem Steinmaterial.
+- **Zwei große Seitenflügel**, gegliederte Außenfassaden **und Innenhoffassaden**, rückwärtiger Quertrakt. Alle langen Wände besitzen regelmäßig ausgesparte Fensteröffnungen und gegliederte Steineinfassungen statt bloßer Materialbilder.
+- Monumentaler Front-Portikus: aus den **tatsächlich vorhandenen Herrenhaus-GLB-Bauteilen** übernommen und mit insgesamt zwölf originalen parametrischen MaxGame-Säulen erweitert; einschließlich Giebel, Kapitellen, Gesims und breiter Freitreppe.
+- **Zentrale große 3D-Kuppel**, vier Kuppelpavillons an den Ecken, ein weiterer rückwärtiger Kuppelpavillon: sechs sichtbare Kuppeln mit steinernen Tambouren, gebogenen Kupferrippen und Laternenabschlüssen.
+- Gewalmte Mansarddächer mit Gauben an den äußeren und inneren Dachseiten; Stone-Balustrade mit Geländerpfosten und Zierabschlüssen.
+- Parkachse, modellierte Zugangswege, begrünter Innenhof, symmetrische Parterres, Zypressen und zwei Brunnenbecken.
+- MaxGame-PBR-Texturen, Abendhimmel, Glas und dezente Emissionsbeleuchtung an ausgewählten Fenstern.
+- Außenansicht mit Orbit-/Pinch-Gesten, Schauseite, Perspektive, Luftübersicht und freiem Außenrundgang mit mobiler Touch-Steuerung.
+- Das alte Château V5.10 ist als Archiv erhalten. `maxgame-original.html` startet weiter das unveränderte Originalprojekt.
 
-**Aktueller Bereich: zentrale Schaufassade / Portikus**, mit dem aus MaxGame übernommenen Modell. Die Seitenflügel und Dachlandschaft sind als einfaches Volumenmodell nur zur Orientierung vorhanden, noch nicht auf Endniveau. Danach gehen wir genau einen neuen Bereich an.
+## Technischer Test (aus der aktiven `chateau/architecture.js`)
 
-## Herkunft / Inhalt
+- Original-GLB: 533 Spender-Bauteile erfolgreich eingelesen.
+- Neue Szene: 277 Render-Meshes, davon 22 Instancing-Batchtypen für **18.070** wiederholte Detail-Bauteile.
+- Ungefähr 565.288 tatsächlich instanziierte Dreiecke im Desktop-Testaufbau (Mobil kann geringfügig abweichen).
+- 23 Portikus-Baugruppen, darunter 12 aus MaxGame-Originalsäulen zusammengesetzte Säulengruppen.
+- Szenengrenzen ~226 × 347 × 61 m (der zusätzliche Raum ist für die Vorfahrt und die Gartenelemente).
+- Keine fehlende Mesh-Geometrie, keine nicht-endlichen Geometrie-Koordinaten im durchgeführten Node-Three.js-Test.
+- Code-Syntax und ZIP-Dateistruktur geprüft.
 
-- `vendor/three/`: lokale Three.js-Version und GLTFLoader **aus deiner MaxGame-ZIP**, inklusive mitgelieferter Lizenz
-- `assets/white-house-structure.glb`: Original-GLB aus MaxGame, **533 vorhandene Modellobjekte**, aus dem Portikus, Stufen, Giebel und Säulenunterbau übernommen werden
-- `wohnzimmer/portico-columns-v2.js`: originale parametrische Kanneluren- und Steinprofildetails der MaxGame-Säulen
-- `wohnzimmer/exterior-materials-portikus-kalkstein.js`: originale PBR-Materialbibliothek mit Kalkstein-, Relief- und Rauheitsdetails
-- `wohnzimmer/window-glass.js`, `wohnzimmer/sky-atmosphere.js`: originales Glas und Himmel
-- `assets/`: sämtliche MaxGame-Bilder und -Modelle; inklusive Gras, Kalkstein und Dachmaterialien
-- `chateau/architecture.js`: neue, noch nicht vollständig ausgebaute Château-Architektur auf der MaxGame-Basis
-- `chateau/main.js`: eigenständige Steuerung, Kamera, Licht und Renderer für das Château
-- `maxgame-original.html`: **MaxGame-Original** weiterhin separat spielbar (der Originalprojekt-Code bleibt erhalten)
-- `chateau/legacy/CHATEAU-GRAND-V5.10-ARCHIV.zip`: bisheriger Château-Spielstand vor dem MaxGame-Wechsel, nur Archiv
+**Ehrliche Einschränkung:** Dies ist ein erheblich weiterentwickelter, *spielbarer Code- und Geometriestand*, **keine fotorealistische 1:1-Reproduktion** des zuvor als Vision erzeugten Konzeptbilds. Ein grafischer Test im echten Safari auf deinem iPhone war hier nicht möglich, da der lokale Headless-Browser Webseitenaufrufe blockiert. Innenräume und echte Treppennavigation sind noch nicht fertig; „Erkunden“ ist derzeit ein Außenrundgang. Eine garantiert flüssige mobile Bildrate ist damit nicht nachgewiesen.
 
-Die originale `START.txt` beschreibt weiterhin das alte MaxGame und bleibt aus Gründen der Quellenintegrität erhalten. Für die neue Château-Installation gilt **dieses README**.
+## Projektstruktur
 
-## Technik und Prüfung
+`index.html` — startet das aktuelle Château; `chateau/architecture.js` — tatsächlich verwendete Architektur; `chateau/main.js` — Game-Engine, Steuerung, Licht und Kameras; `assets/` — Modelle und Materialbilder; `wohnzimmer/` — originale MaxGame-Material- und Portikusmodule; `vendor/three/` — lokale 3D-Engine; `maxgame-original.html` — Start des Originals; `chateau/legacy/` — altes Château als Sicherung; `chateau/docs/TESTREPORT-V2.json` — maschinenlesbarer Geometrietest.
 
-- GLB wurde mit einem unabhängigen Three.js-Import geladen: 533 Spenderobjekte
-- die Château-Baugeometrie wurde anschließend mit der lokal enthaltenen Three.js-Version erfolgreich aufgebaut: **877 Meshes**, **183.776 Dreiecke** im geprüften Modellaufbau
-- die originale Portikuskonstruktion erzeugte **19 Baugruppen**: originale Bauteile plus acht Säulengruppen
-- alle überprüften Modulimporte sind im Paket vorhanden; `node --check` erfolgreich
-- keine vollständige visuelle iPhone-Safari-Prüfung in dieser Umgebung; auf dem Gerät müssen Steuerung, Materialien und Licht kontrolliert werden
+Die ursprüngliche `START.txt` bezieht sich weiterhin auf MaxGame. Die neue Einrichtungsanleitung steht in `IMPORTIEREN.txt` beziehungsweise hier.
 
-## Lizenzhinweis
-
-Die Originaldateien und der Original-Hinweis `ATTRIBUTION-MODELLE-V22.md` bleiben erhalten; Three.js behält seine `vendor/three/LICENSE`. Vor einer kommerziellen Veröffentlichung müssen zusätzlich die Nutzungsrechte der übernommenen Modelle und Texturen geprüft werden.
+**Lizenz:** Vor einer kommerziellen Veröffentlichung bitte die Rechte am übernommenen MaxGame-GLB und sämtlichen Originaltexturen prüfen. Die Hinweise in `ATTRIBUTION-MODELLE-V22.md` und die Three.js-Lizenz bleiben erhalten.

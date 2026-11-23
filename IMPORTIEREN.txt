@@ -1,10 +1,12 @@
-CHATEAU GRAND 2027 — MAXGAME-NEUBASIS 1.0
+CHÂTEAU GRAND 2027 — MAXGAME-PALAST V2.0
 
 1. ZIP ENTPACKEN.
-2. Dateien index.html, maxgame-original.html und ALLE Ordner DIREKT in den Repository-Root von Chateau-Grand-2027 kopieren.
-3. Vorhandene Dateien ersetzen. KEINEN extra Ordner hochladen.
-4. Commit -> Push.
-5. Webseite mit ?v=maxgame1 neu laden.
-6. Oben rechts muss "MAXGAME-NEUBASIS · 1.0" erscheinen.
+2. ALLE Dateien und Ordner DIREKT in das Stammverzeichnis von Chateau-Grand-2027 einfügen.
+3. index.html und die gleichnamigen Ordner/Dateien ersetzen.
+4. KEINEN zusätzlichen Ordner MAXGAME-PALAST-2.0 im Repository anlegen.
+5. Working Copy: Commit -> Push.
+6. Webseite mit ?v=palast20 öffnen.
+7. Kontrollanzeige rechts oben: "MAXGAME-PALAST · 2.0".
 
-Die bisherige V5.10 ist unter chateau/legacy/ als ZIP archiviert.
+Hinweis: Prüfe die Schauseite sowie die "Überblick"-Ansicht zuerst.
+Im Paket enthalten: originales MaxGame und alter Château-Spielstand als Archiv.
