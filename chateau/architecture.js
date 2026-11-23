@@ -1,5 +1,5 @@
 /**
- * CHÂTEAU GRAND 2027 — PALAST 2.1
+ * CHÂTEAU GRAND 2027 — PALAST 2.2 / ROISSY-EG+1.OG
  * Monumental, courtyard-based French palace. Entire exterior is assembled with
  * instanced ashlar modules, real (non-decals) window holes, MaxGame PBR stone,
  * authentic donor portico geometry, and roof pavilions with copper domes.
@@ -38,6 +38,18 @@ export function buildChateau(THREE, scene, donor, mats, glass){
     batches.get(key).push([x,y,z,sx,sy,sz]);
   }
   const cube=(mat,x,y,z,w,h,d)=>push('box',mat,x,y,z,w,h,d);
+  // Separate architectural layer for each historical plan, so visibility is testable.
+  const floorLayers={eg:new THREE.Group(),og:new THREE.Group()};
+  floorLayers.eg.name='ROISSY_REZ_DE_CHAUSSEE';
+  floorLayers.og.name='ROISSY_PREMIER_ETAGE';
+  palace.add(floorLayers.eg,floorLayers.og);
+  const planBatches=new Map(), rooms={eg:[],og:[]},collisionWalls={eg:[],og:[]};
+  function planCube(f,mat,x,y,z,w,h,d){
+    if (![x,y,z,w,h,d].every(Number.isFinite)||w<=0||h<=0||d<=0) throw Error('Ungültige Innenwand-Geometrie');
+    const key=f+':'+mat;
+    if(!planBatches.has(key))planBatches.set(key,[]);
+    planBatches.get(key).push([x,y,z,w,h,d]);
+  }
   const sphere=(mat,x,y,z,r)=>push('orb',mat,x,y,z,r,r,r);
   const cylinder=(mat,x,y,z,r,h)=>push('cyl',mat,x,y,z,r,h,r);
   const cone=(mat,x,y,z,r,h)=>push('cone',mat,x,y,z,r,h,r);
@@ -56,6 +68,18 @@ export function buildChateau(THREE, scene, donor, mats, glass){
         dummy.rotation.set(0,0,0);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);
       });
       mesh.instanceMatrix.needsUpdate=true;palace.add(mesh);
+    }
+    // Batch the room plan separately from the exterior for cutaway views.
+    for(const [key,records] of planBatches){
+      const [floor,mat]=key.split(':');
+      const mesh=new THREE.InstancedMesh(basis,materialMap[mat],records.length);
+      mesh.name='Historischer_Grundriss_'+key;
+      mesh.castShadow=mat!=='glass';mesh.receiveShadow=true;mesh.frustumCulled=false;
+      records.forEach(([x,y,z,w,h,d],i)=>{
+        dummy.position.set(x,y,z);dummy.rotation.set(0,0,0);dummy.scale.set(w,h,d);
+        dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);
+      });
+      mesh.instanceMatrix.needsUpdate=true;floorLayers[floor].add(mesh);
     }
   }
   const ROOF_EAVE=23.5,ROOF_SHOULDER=30.8,ROOF_RIDGE=35.8;
@@ -92,9 +116,10 @@ export function buildChateau(THREE, scene, donor, mats, glass){
         else cube(mat,fixedWall+exterior*offset,yy,coord+along,depth,vert,long);
       };
       const place=(mat,long,vert,depth,offset,yy)=>placeAt(mat,0,long,vert,depth,offset,yy);
-      // Deep window reveal; recessed dark glass and one thin transparent pane.
-      place(!grandDoor && ((Math.abs(Math.round(coord*10))+level*13)%7<3)?'interior':'behind',width-.22,height-.15,.09,0,base+height/2);
-      if(!grandDoor)place('glass',width-.32,height-.20,.05,.13,base+height/2);
+      // Two-sided true transparency: NO opaque 'behind' or emissive facade card.
+      // The masonryLine loop already cuts real openings through each wall segment.
+      // A lightly tinted thin PBR pane and timber muntins form the window.
+      if(!grandDoor)place('glass',width-.32,height-.20,.042,.13,base+height/2);
       if(grandDoor){
         // REAL double-leaf walnut door, recessed into the same physical wall opening.
         // The old stone 'door panel' and grid have been replaced by carved wooden leaves.
@@ -222,7 +247,21 @@ export function buildChateau(THREE, scene, donor, mats, glass){
   // Monumental stairs, shared plinth, complete ground-floor decks and slabs.
   for(const f of footprints){
     cube('base',f.x,-.36,f.z,f.w+.6,.72,f.d+.6);
-    for(const yy of [4.61,10.96,17.35,23.22])cube('base',f.x,yy-.06,f.z,f.w-.8,.16,f.d-.8);
+    for(const yy of [4.61,10.96,17.35,23.22]){
+      // Le Rouge's Premier Etage explicitly marks the central upper space
+      // as 'Salon du Rez-de-Chaussee': preserve the double-height salon void.
+      if(f===main&&yy===10.96){
+        // Western range: real cut-out for the Grand Escalier (not a blocked stair).
+        cube('base',-79.025,yy-.06,0,65.45,.16,41.2);
+        cube('base',-32.125,yy-.06,0,8.75,.16,41.2);
+        cube('base',-41.4,yy-.06,-12.4,9.80,.16,16.4);
+        cube('base',-41.4,yy-.06,17.90,9.80,.16,5.4);
+        cube('base',70.25,yy-.06,0,83.0,.16,41.2);
+        // GALLERY around the central salon: real double-height open volume.
+        cube('base',0,yy-.06,8.10,55.5,.16,24.9);
+        cube('base',0,yy-.06,-20.02,55.5,.16,1.15);
+      }else cube('base',f.x,yy-.06,f.z,f.w-.8,.16,f.d-.8);
+    }
   }
   // V2.1: no more full-height stair boxes or black slab-like staircase cheeks.
   // Twenty-six individual slim tread stones (0.15 m) over a recessed RAKED
@@ -258,6 +297,174 @@ export function buildChateau(THREE, scene, donor, mats, glass){
     stringer.name=sign<0?'Geschwungene_linke_Treppenwange':'Geschwungene_rechte_Treppenwange';
     stringer.castShadow=true;palace.add(stringer);
   }
+  // Le Rouge (1776): Roissy EG / 1. OG, mapped to the 224 x 42 m main palace.
+  // Historic engraving x proportions are respected; dimensions are scaled for the
+  // monumental fantasy palace. This is NOT a millimetre-accurate historic CAD plan.
+  function buildRoissyFloor(f){
+    const isEG=f==='eg', base=isEG?4.72:11.05,top=isEG?10.78:17.15;
+    const H=top-base, t=.48;
+    const roomDefs=isEG ? [
+      ['Cabinet',-111,-89,-20.3,-4.2],
+      ['Chambre à coucher',-88.6,-54.8,-20.3,-4.2],
+      ['Antichambre',-54.4,-28.2,-20.3,-4.2],
+      ['Grand Salon',-27.8,27.8,-20.3,-4.2],
+      ['Antichambre',28.2,51.8,-20.3,-4.2],
+      ['Chambre de parade',52.2,84.6,-20.3,-4.2],
+      ['Grand Cabinet',85,111,-20.3,-4.2],
+      ['Logement concierge',-111,-91.5,-3.7,19.9],
+      ['Lingerie',-91.1,-55,-3.7,8.1],
+      ['Passage de service',-91.1,-55,8.5,20.1],
+      ['Grand escalier',-54.6,-28.2,-3.7,20.1],
+      ['Vestibule',-27.8,27.8,-3.7,20.1],
+      ['Salle à manger',28.2,57.8,-3.7,20.1],
+      ['Antichambre',58.2,84.6,-3.7,20.1],
+      ['Cabinet de musique',85,111,-3.7,20.1],
+    ] : [
+      ['Cabinet privé',-111,-89,-20.3,-4.2],
+      ['Chambre à coucher',-88.6,-54.8,-20.3,-4.2],
+      ['Antichambre',-54.4,-28.2,-20.3,-4.2],
+      ['Vide sur le salon du rez-de-chaussée',-27.8,27.8,-20.3,-4.2],
+      ['Antichambre commune',28.2,51.8,-20.3,-4.2],
+      ['Chambre à coucher',52.2,84.6,-20.3,-4.2],
+      ['Cabinet et garde-robe',85,111,-20.3,-4.2],
+      ['Cabinet privé',-111,-91.5,-3.7,8.1],
+      ['Chambre à coucher',-111,-91.5,8.5,20.1],
+      ['Chambre à coucher',-91.1,-55,-3.7,20.1],
+      ['Grand escalier',-54.6,-28.2,-3.7,20.1],
+      ['Vestibule et galerie',-27.8,27.8,-3.7,20.1],
+      ['Garde-robe',28.2,57.8,-3.7,8.1],
+      ['Chambre à coucher',28.2,57.8,8.5,20.1],
+      ['Passage de service',58.2,84.6,-3.7,20.1],
+      ['Cabinet de toilette',85,111,-3.7,8.1],
+      ['Chambre à coucher',85,111,8.5,20.1],
+    ];
+    roomDefs.forEach(([name,x0,x1,z0,z1])=>rooms[f].push({name,x:(x0+x1)/2,z:(z0+z1)/2,w:x1-x0,d:z1-z0,level:isEG?0:1}));
+    // Stone or timber doorways are real gaps; each split section gets a framed lintel.
+    function wallX(x0,x1,z,doorXs=[]){
+      const W=3.25,dh=3.45;let last=x0;
+      const doors=doorXs.filter(x=>x>x0+W/2+.3&&x<x1-W/2-.3).sort((a,b)=>a-b);
+      function block(a,b){if(b-a>.035){planCube(f,'wall',(a+b)/2,base+H/2,z,b-a,H,t);collisionWalls[f].push({x0:a,x1:b,z0:z-t/2,z1:z+t/2});}}
+      for(const x of doors){block(last,x-W/2);planCube(f,'wall',x,base+dh+(H-dh)/2,z,W,H-dh,t);last=x+W/2;
+        for(const xx of [x-W/2,x+W/2])planCube(f,'win',xx,base+dh/2,z,.19,dh+.15,.69);
+        planCube(f,'trim',x,base+dh+.11,z,W+.38,.21,.75);
+        // Thin inlaid threshold gives a visual door line, without blocking walking.
+        planCube(f,'paving',x,base+.02,z,W,.035,.65);
+      }
+      block(last,x1);
+    }
+    function wallZ(x,z0,z1,doorZs=[]){
+      const W=3.3,dh=3.45;let last=z0;
+      const doors=doorZs.filter(z=>z>z0+W/2+.25&&z<z1-W/2-.25).sort((a,b)=>a-b);
+      function block(a,b){if(b-a>.035){planCube(f,'wall',x,base+H/2,(a+b)/2,t,H,b-a);collisionWalls[f].push({x0:x-t/2,x1:x+t/2,z0:a,z1:b});}}
+      for(const z of doors){block(last,z-W/2);planCube(f,'wall',x,base+dh+(H-dh)/2,z,t,H-dh,W);last=z+W/2;
+        for(const zz of [z-W/2,z+W/2])planCube(f,'win',x,base+dh/2,zz,.70,dh+.15,.20);
+        planCube(f,'trim',x,base+dh+.11,z,.78,.21,W+.38);
+        planCube(f,'paving',x,base+.02,z,.64,.035,W);
+      }
+      block(last,z1);
+    }
+    // The 1776 engraving puts large reception rooms on the rear/garden side;
+    // front row is vestibule/stair and services. Do not fill every connection.
+    if(isEG){
+      wallX(-111.4,111.4,-3.90,[-97,-72,-42,0,40,71,98]);
+    }else{
+      // In the upper plan this is a balustraded gallery above the salon, not
+      // a thick solid wall separating vestibule from the void.
+      wallX(-111.4,-28.1,-3.90,[-97,-72,-42]);
+      wallX(28.1,111.4,-3.90,[40,71,98]);
+    }
+    // Rear enfilade room dividers, with doors through the x partitions.
+    for(const x of [-89,-54.6,-28,28,52,85]){
+      // The first floor double-height Salon is open, but its SIDE walls remain.
+      wallZ(x,-20.5,-4.10,[-12.0]);
+    }
+    // Front suite: different room boundaries between floors, per historical plate.
+    const frontDividers=isEG?[-91.3,-54.8,-28,28,58,85]:[-91.3,-55,-28,28,58,85];
+    for(const x of frontDividers)wallZ(x,-3.70,20.55,[8.6]);
+    // Subdivided service quarters and first-floor dressing rooms, visible in plan.
+    if(isEG){
+      wallX(-91.1,-54.8,8.3,[-73]);
+      wallX(-111.2,-91.5,8.3,[-101]);
+      wallX(57.9,84.7,8.3,[70]);
+    }else{
+      wallX(-111.2,-91.5,8.3,[-101]);
+      wallX(28.1,57.9,8.3,[43]);
+      wallX(84.8,111.2,8.3,[97]);
+      wallX(-55,-28.2,8.3,[-42]);
+    }
+    // Continuous outer walking surface is already provided by main palace slabs.
+    // Room borders get visible noble-stone skirting on both sides.
+    for(const z of [-3.9]){
+      for(const x of [-91.5,-72,-42,0,40,71,98]){
+        planCube(f,'trim',x,base+.16,z,1.10,.26,.80);
+      }
+    }
+    // The Grand Escalier occupies its historically identifiable western bay.
+    // Start as an actual walkable 3D staircase; a future step will refine balusters.
+    const sx=-41.4,sz=4.0;
+    if(isEG){
+      for(let i=0;i<23;i++){
+        const stepY=base+i*.278, z=sz+8.5-i*.72;
+        planCube(f,'paving',sx,stepY+.13,z,7.4,.26,.80);
+        planCube(f,'trim',sx,stepY+.275,z+.34,7.45,.034,.12);
+      }
+      for(const xx of [sx-4.05,sx+4.05]){
+        planCube(f,'win',xx,base+2.28,sz+1.0,.25,4.58,16.4);
+      }
+    }else{
+      // Upper landing is open toward the real stair void below.
+      for(const xx of [sx-4.76,sx+4.76]){
+        planCube(f,'trim',xx,base+1.11,5.1,.20,.18,18.2);
+        for(let z=-3.1;z<13.6;z+=1.30)planCube(f,'stone',xx,base+.55,z,.16,1.08,.16);
+      }
+      planCube(f,'paving',sx,base+.02,17.6,9.8,.15,5.0);
+    }
+    // First-floor mezzanine guard rail around the salon's 48x16 m open volume.
+    if(!isEG){
+      const railY=base+1.10;
+      for(const x of [-24.0,24.0]){
+        planCube(f,'trim',x,railY,-12.5,.25,.20,14.4);
+        for(let z=-19;z<-5;z+=1.55)planCube(f,'stone',x,base+.56,z,.17,1.05,.17);
+      }
+      planCube(f,'trim',0,railY,-4.9,48.2,.20,.25);
+      for(let x=-23;x<23;x+=1.8)planCube(f,'stone',x,base+.56,-4.9,.17,1.05,.17);
+    }
+    // Warm historic marble floors; separate texture accents identify major rooms.
+    const tint=isEG?'paving':'trim';
+    for(const room of rooms[f]){
+      if(room.name.startsWith('Vide'))continue;
+      const inset=1.1;
+      // very thin floor inset; top slab itself remains solid below it
+      planCube(f,tint,room.x,base+.007,room.z,Math.max(.6,room.w-inset),.028,Math.max(.6,room.d-inset));
+      const w=Math.max(.5,room.w-1.6),d=Math.max(.5,room.d-1.6);
+      // Inlaid perimeter border, not a solid panel blocking movement.
+      for(const xx of [room.x-w/2,room.x+w/2])planCube(f,'win',xx,base+.035,room.z,.075,.035,d);
+      for(const zz of [room.z-d/2,room.z+d/2])planCube(f,'win',room.x,base+.035,zz,w,.035,.075);
+    }
+    // Named room labels only shown in floor-plan views, not blocking the walk camera.
+    for(const room of rooms[f]){
+      if(room.w<10||room.d<7||room.name.startsWith('Vide'))continue;
+      const c=document.createElement('canvas');c.width=512;c.height=128;
+      const c2=c.getContext('2d');c2.clearRect(0,0,512,128);
+      c2.fillStyle='rgba(32,45,50,.80)';c2.fillRect(5,8,502,108);
+      c2.strokeStyle='rgba(231,214,179,.75)';c2.strokeRect(6,9,500,106);
+      c2.fillStyle='#fff0d9';c2.font='bold 36px Georgia, serif';c2.textAlign='center';c2.textBaseline='middle';
+      let label=room.name.length>24?room.name.slice(0,23)+'…':room.name;
+      c2.fillText(label,256,65,460);
+      const tx=new THREE.CanvasTexture(c);tx.colorSpace=THREE.SRGBColorSpace;
+      const material=new THREE.MeshBasicMaterial({map:tx,transparent:true,side:THREE.DoubleSide,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2});
+      const labelMesh=new THREE.Mesh(new THREE.PlaneGeometry(Math.min(24,Math.max(8,room.w*.75)),2.3),material);
+      labelMesh.name='Historischer_Raumname_'+room.name;
+      labelMesh.rotation.x=-Math.PI/2;
+      labelMesh.position.set(room.x,base+.085,room.z);
+      labelMesh.renderOrder=10;
+      labelMesh.userData.floorPlanLabel=true;
+      floorLayers[f].add(labelMesh);
+    }
+  }
+  buildRoissyFloor('eg');
+  buildRoissyFloor('og');
+
   // Roof construction: two-pitch mansard with real hipped upper slopes,
   // a continuous eave, crest and properly fitted diagonal planes.
   function roof(x,z,w,d,base=ROOF_EAVE,mid=ROOF_SHOULDER,top=ROOF_RIDGE,inset=5.7){
@@ -300,8 +507,10 @@ export function buildChateau(THREE, scene, donor, mats, glass){
   function dormerX(x,z,front=true,s=1){
     const sign=front?1:-1;
     const y=27.30,zz=z+sign*.15;
-    cube('win',x,y,zz,3.15*s,3.9*s,2.30*s);
-    cube('behind',x,y,zz+sign*1.23*s,2.35*s,2.85*s,.12*s);
+    // Hollow limestone dormer: no opaque block behind the front glass.
+    for(const dx of [-1.39,1.39])cube('win',x+dx*s,y,zz,.37*s,3.9*s,2.30*s);
+    for(const dy of [-1.77,1.77])cube('win',x,y+dy*s,zz,2.50*s,.37*s,2.30*s);
+    // Removed opaque dormer backing: true window transparency.
     cube('glass',x,y,zz+sign*1.31*s,2.22*s,2.78*s,.06*s);
     cube('sash',x,y,zz+sign*1.38*s,.09*s,2.7*s,.13*s);
     cube('sash',x,y+.15*s,zz+sign*1.38*s,2.25*s,.10*s,.13*s);
@@ -312,8 +521,10 @@ export function buildChateau(THREE, scene, donor, mats, glass){
   }
   function dormerZ(x,z,side=1,s=1){
     const y=27.55;
-    cube('win',x,y,z,2.25*s,3.8*s,3.1*s);
-    cube('behind',x+side*1.21*s,y,z,.11*s,2.85*s,2.25*s);
+    // Hollow side-facing dormer, framed round an actual glazed opening.
+    for(const dz of [-1.36,1.36])cube('win',x,y,z+dz*s,2.25*s,3.8*s,.38*s);
+    for(const dy of [-1.72,1.72])cube('win',x,y+dy*s,z,2.25*s,.36*s,2.42*s);
+    // Removed opaque dormer backing: true window transparency.
     cube('glass',x+side*1.30*s,y,z,.07*s,2.78*s,2.16*s);
     for(const dz of [-1.3,1.3])cube('trim',x+side*1.34*s,y,z+dz*s,.40*s,3.45*s,.30*s);
     cube('trim',x+side*1.35*s,y-2*s,z,1.80*s,.26*s,3.55*s);
@@ -332,9 +543,35 @@ export function buildChateau(THREE, scene, donor, mats, glass){
   // 16 curved standing ribs, lantern and gilded finial.
   function grandDome(x,z,r,drumBase,drumH,pavilion=false){
     const rim=drumBase+drumH;
-    const drums=new THREE.Mesh(new THREE.CylinderGeometry(r,r*.94,drumH,48,1,true),stoneColumn);
-    drums.name='Geschlossener_steinerner_Kuppeltambour';drums.position.set(x,drumBase+drumH/2,z);
+    // Real punched openings in the curved stone drum. Old solid cylinder
+    // plus black window spheres made the glazing opaque from both sides.
+    const drumPts=[],glassPts=[];
+    const circum=128, rings=[0,.30,.73,1];
+    const angularGap=(a,b)=>Math.abs(((a-b+Math.PI*3)%(Math.PI*2))-Math.PI);
+    function point(a,t,offset=0){const rr=r*(.94+.06*t)+offset;return [x+Math.cos(a)*rr,drumBase+drumH*t,z+Math.sin(a)*rr];}
+    const addTri=(target,p,q,r0)=>target.push(...p,...q,...r0);
+    const addQuad=(target,a,b,c,d)=>{addTri(target,a,b,c);addTri(target,a,c,d);};
+    const centerAngles=Array.from({length:8},(_,i)=>i*Math.PI/4+Math.PI/16);
+    for(let i=0;i<circum;i++){
+      const a=i*2*Math.PI/circum,b=(i+1)*2*Math.PI/circum,mid=(a+b)/2;
+      const isHole=centerAngles.some(h=>angularGap(mid,h)<.113);
+      for(let j=0;j<rings.length-1;j++){
+        if(j===1&&isHole){
+          // Transparent, slightly offset curved window pane; no stone behind it.
+          addQuad(glassPts,point(a,rings[j],.055),point(b,rings[j],.055),point(b,rings[j+1],.055),point(a,rings[j+1],.055));
+          continue;
+        }
+        addQuad(drumPts,point(a,rings[j]),point(b,rings[j]),point(b,rings[j+1]),point(a,rings[j+1]));
+      }
+    }
+    const drumGeo=new THREE.BufferGeometry();drumGeo.setAttribute('position',new THREE.Float32BufferAttribute(drumPts,3));drumGeo.computeVertexNormals();
+    const drumMat=stoneColumn.clone();drumMat.side=THREE.DoubleSide;
+    const drums=new THREE.Mesh(drumGeo,drumMat);
+    drums.name='Kuppeltambour_mit_echten_Fensteroeffnungen';
     drums.castShadow=drums.receiveShadow=true;palace.add(drums);
+    const curveGlassGeo=new THREE.BufferGeometry();curveGlassGeo.setAttribute('position',new THREE.Float32BufferAttribute(glassPts,3));curveGlassGeo.computeVertexNormals();
+    const domeGlass=new THREE.Mesh(curveGlassGeo,glass);
+    domeGlass.name='Beidseitig_transparente_Kuppelfenster';domeGlass.castShadow=false;palace.add(domeGlass);
     const cap=new THREE.Mesh(new THREE.SphereGeometry(r,48,24,0,2*Math.PI,0,Math.PI/2),bronze);
     cap.name='Originale_3D_Kuppelschale';cap.position.set(x,rim,z);
     cap.castShadow=cap.receiveShadow=true;palace.add(cap);
@@ -352,12 +589,8 @@ export function buildChateau(THREE, scene, donor, mats, glass){
       }));
       const rib=new THREE.Mesh(new THREE.TubeGeometry(arch,20,pavilion?.085:.11,4,false),bronzeEdge);
       rib.name='Geschwungene_Kuppelrippe';palace.add(rib);
-      if(i%2===0){
-        // Arched, glass-like drum opening framed by limestone pilasters.
-        const p=x+Math.cos(a)*(r+.35),q=z+Math.sin(a)*(r+.35);
-        const win=new THREE.Mesh(new THREE.SphereGeometry(.78,8,8),glassDark);
-        win.scale.set(.7,1.33,.21);win.position.set(p,drumBase+drumH*.56,q);palace.add(win);
-      }
+      // Kuppel-Glasflächen liegen zwischen den Rippen und haben reale
+      // Öffnungen; keine schwarzen Dekorkugeln vor geschlossenem Stein.
     }
     const top=rim+r;
     cylinder('trim',x,top+.40,z,1.95,.85);
@@ -559,5 +792,6 @@ export function buildChateau(THREE, scene, donor, mats, glass){
     entranceAudit:{doors:[-16.28,0,16.28],doorWidth:DOOR_WIDTH,columns:[-20.35,-12.21,-4.07,4.07,12.21,20.35],shaftScaleUniform:1.79,stairRisers:26,stairTotalRise:4.50},
     palaceDimensions:{width:224,depth:217,height:64},
     buildings:['Corps de logis','Westfluegel','Ostfluegel','Rueckwaertiger Quertrakt'],
-    instancedDrawcalls:batches.size,instancedElements:[...batches.values()].reduce((n,a)=>n+a.length,0)};
+    historicalFloors:rooms,historicalLayers:floorLayers,interiorCollision:collisionWalls,
+    instancedDrawcalls:batches.size+planBatches.size,instancedElements:[...batches.values(),...planBatches.values()].reduce((n,a)=>n+a.length,0)};
 }

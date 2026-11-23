@@ -1,10 +1,8 @@
-CHÂTEAU GRAND – MAXGAME-PALAST 2.1 · EINGANG & TREPPE
+CHÂTEAU GRAND · MAXGAME PALAST 2.2 · ROISSY EG / 1. OG
 
-ZIP ENTPACKEN → INHALT DIREKT IN Chateau-Grand-2027 KOPIEREN
-INDEX.HTML MUSS IM REPOSITORY-HAUPTVERZEICHNIS LIEGEN.
-KEINEN ZUSÄTZLICHEN V2.1-ORDNER HOCHLADEN.
-Alle gleichnamigen Dateien ersetzen → Commit → Push.
-Spieladresse nach dem Deployment mit ?v=palast21 aufrufen.
-Anzeige: MAXGAME-PALAST · 2.1
-
-Neue Kontrolle im Spiel: "Eingang" und "Treppe Seite".
+1. ZIP ENTPACKEN.
+2. ALLE DATEIEN DIREKT IN DAS HAUPTVERZEICHNIS VON Chateau-Grand-2027 KOPIEREN.
+3. Gleichnamige Dateien ersetzen, KEINEN weiteren Unterordner hochladen.
+4. Commit → Push.
+5. Browser-URL mit ?v=palast22 öffnen. Anzeige: MAXGAME-PALAST · 2.2
+6. EG oder 1. OG im rechten Menü auswählen und dann das Geschoss betreten.

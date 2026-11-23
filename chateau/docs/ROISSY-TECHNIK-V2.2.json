@@ -1,0 +1,12 @@
+{
+  "version": "2.2",
+  "historical_source": "Plan du Rez-de-Chaussée et Plan du Premier Étage du Château de Roissy, Le Rouge, 1776",
+  "scope": "Corps de logis: Erdgeschoss und erstes Obergeschoss",
+  "historical_plan_adaptation": "Proportionen skaliert auf 224 m Front; kleinere Räume vereinfacht",
+  "floors": {"eg": {"source_level": "Rez-de-Chaussée", "floor_y": 4.72, "rooms": 15}, "og": {"source_level": "Premier Étage", "floor_y": 11.05, "rooms": 17}},
+  "salon_2_storeys": true,
+  "stair_floor_opening": true,
+  "window_material": "transparent two-sided Three.js MeshPhysicalMaterial",
+  "nontransparent_backpanels": 0,
+  "validation": "Node model build with imported MaxGame donor GLB and real Three.js passed; mobile Safari not tested"
+}

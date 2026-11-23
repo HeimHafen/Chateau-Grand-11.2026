@@ -16,6 +16,7 @@ let player={x:0,y:1.68,z:125,yaw:0,pitch:0};
 let walkTouch=null,lookTouch=null,forward=0,strafe=0,lookPointer=null;
 let last=0;
 let atmospheric;
+let floorChoice=null, activeWalkingFloor=null, historicalChateau=null, clippedMode=false;
 
 async function run(){
   renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',alpha:false});
@@ -40,12 +41,19 @@ async function run(){
   const loader=new GLTFLoader();
   const {scene:donor}=await loader.loadAsync('./assets/white-house-structure.glb');
   const chateau=buildChateau(THREE,scene,donor,mats,glass);
+  historicalChateau=chateau;
+  for(const floor of ['eg','og'])chateau.historicalLayers[floor].traverse(obj=>{
+    if(obj.userData.floorPlanLabel)obj.visible=false;
+  });
+  // Low-absorption glass allows viewing out of rooms in both directions.
+  glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.18;glass.depthWrite=false;
+  glass.needsUpdate=true;
   // Verify that we really used donor assets, not a recreated imitation.
   if(chateau.originalPortico.children.length<17)throw Error('Originalportikus aus MaxGame wurde unvollständig übernommen.');
-  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'2.1',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls};
-  document.getElementById('version').textContent='MAXGAME-PALAST · 2.1';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'2.2',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls};
+  document.getElementById('version').textContent='MAXGAME-PALAST · 2.2';
   start.disabled=false;start.textContent='Château erkunden';
-  status.textContent='Château geladen · Eingang V2.1: freie Türen, neue Treppe und Steinpodium.';
+  status.textContent='Château geladen · Historische Roissy-Grundrisse EG + 1. OG; echte durchsichtige Fenster.';
   resize();view('angle');
   start.addEventListener('click',()=>{splash.hidden=true;renderer.shadowMap.needsUpdate=true;}, {once:true});
   requestAnimationFrame(frame);
@@ -72,23 +80,58 @@ function buildLandscape(mats){
     }
   }
 }
+function setCutaway(floor){
+  // Clipping takes away the upper shell for a real top-down view of constructed rooms.
+  clippedMode=!!floor;
+  renderer.clippingPlanes=floor?[new THREE.Plane(new THREE.Vector3(0,-1,0),floor==='eg'?10.77:17.18)]:[];
+  renderer.shadowMap.enabled=!floor;
+  if(historicalChateau){
+    for(const key of ['eg','og'])historicalChateau.historicalLayers[key].traverse(obj=>{
+      if(obj.userData.floorPlanLabel)obj.visible=key===floor;
+    });
+  }
+  const info=document.getElementById('floorInfo');
+  if(floor){
+    const rs=historicalChateau?.historicalFloors[floor]||[];
+    info.hidden=false;
+    info.textContent=(floor==='eg'?'ERDGESCHOSS':'1. OBERGESCHOSS')+' · Château de Roissy, 1776 · '+rs.length+' historische Raumzonen';
+  } else info.hidden=true;
+  document.getElementById('walk').textContent=floor?(floor==='eg'?'EG betreten':'1. OG betreten'):'Erkunden';
+  renderer.shadowMap.needsUpdate=true;
+}
 function view(which){
-  mode='orbit';
+  mode='orbit';activeWalkingFloor=null;
+  floorChoice=which==='eg'||which==='og'?which:null;
   const views={
     front:{theta:0,phi:.10,d:390,target:[0,18,-65]},
     angle:{theta:.44,phi:.46,d:356,target:[0,18,-65]},
     above:{theta:.35,phi:1.02,d:339,target:[0,18,-65]},
     entrance:{theta:0,phi:.065,d:84,target:[0,13,26]},
-    stairSide:{theta:1.04,phi:.16,d:77,target:[0,7,39]}
+    stairSide:{theta:1.04,phi:.16,d:77,target:[0,7,39]},
+    eg:{theta:.24,phi:1.32,d:167,target:[0,6.7,0]},
+    og:{theta:.24,phi:1.32,d:167,target:[0,13.3,0]}
   };
   const selected=views[which]||views.angle;
   Object.assign(orbit,{theta:selected.theta,phi:selected.phi,d:selected.d});
   orbit.target.set(...selected.target);
+  setCutaway(floorChoice);
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('selected',b.dataset.view===which));
   document.getElementById('walk').classList.remove('selected');
-  hint.textContent='Ansicht: ziehen zum Drehen · mit zwei Fingern zoomen';
+  hint.textContent=floorChoice?'Historischer Grundriss: drehen / zoomen · „'+(floorChoice==='eg'?'EG':'1. OG')+' betreten“ für Rundgang':'Ansicht: ziehen zum Drehen · mit zwei Fingern zoomen';
 }
-function setWalk(){mode='walk';player.x=0;player.y=1.68;player.z=145;player.yaw=0;player.pitch=.025;document.getElementById('walk').classList.add('selected');document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('selected'));hint.textContent='Links ziehen: laufen · rechts wischen: umsehen · Zurücksetzen: Außenansicht';}
+function setWalk(){
+  mode='walk';activeWalkingFloor=floorChoice;
+  setCutaway(null); // Ceiling/floors visible during walk inside rooms.
+  if(activeWalkingFloor){
+    player.x=0;player.y=(activeWalkingFloor==='eg'?4.72:11.05)+1.72;
+    player.z=13.0;player.yaw=0;player.pitch=.025;
+  }else{
+    player.x=0;player.y=1.68;player.z=145;player.yaw=0;player.pitch=.025;
+  }
+  document.getElementById('walk').classList.add('selected');
+  document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('selected'));
+  hint.textContent=activeWalkingFloor?'Links ziehen: durch Räume gehen · rechts umsehen · Fenster von innen und außen durchsichtig':'Links ziehen: laufen · rechts wischen: umsehen · Zurücksetzen: Außenansicht';
+}
 for(const b of document.querySelectorAll('[data-view]'))b.addEventListener('click',()=>view(b.dataset.view));
 document.getElementById('walk').addEventListener('click',setWalk);
 document.getElementById('reset').addEventListener('click',()=>view('angle'));
@@ -130,10 +173,27 @@ function frame(ms){
     let st=strafe+(keys.has('d')?1:0)-(keys.has('a')?1:0);
     let mag=Math.max(1,Math.hypot(f,st));f/=mag;st/=mag;
     const speed=dt*6.1;
-    player.x+=(-Math.sin(player.yaw)*f+Math.cos(player.yaw)*st)*speed;
-    player.z+=(-Math.cos(player.yaw)*f-Math.sin(player.yaw)*st)*speed;
-    // First iteration lets the player inspect the full exterior; approach into inner spaces is later work.
-    player.x=THREE.MathUtils.clamp(player.x,-320,320);player.z=THREE.MathUtils.clamp(player.z,22.2,325);
+    const dx=(-Math.sin(player.yaw)*f+Math.cos(player.yaw)*st)*speed;
+    const dz=(-Math.cos(player.yaw)*f-Math.sin(player.yaw)*st)*speed;
+    const wallHit=(x,z)=>{
+      if(!activeWalkingFloor||!historicalChateau)return false;
+      const rad=.34;
+      const walls=historicalChateau.interiorCollision[activeWalkingFloor];
+      for(const wall of walls){
+        if(x+rad>wall.x0&&x-rad<wall.x1&&z+rad>wall.z0&&z-rad<wall.z1)return true;
+      }
+      // Guard actual first-floor open voids: the player cannot walk over air.
+      if(activeWalkingFloor==='og'){
+        if(x>-24.4&&x<24.4&&z>-19.5&&z<-4.3)return true;
+        if(x>-46.7&&x<-36.1&&z>-4.3&&z<15.2)return true;
+      }
+      // Keep interior-mode navigation in the historically planned corps de logis.
+      return x<-111.6||x>111.6||z<-20.6||z>20.6;
+    };
+    if(!wallHit(player.x+dx,player.z))player.x+=dx;
+    if(!wallHit(player.x,player.z+dz))player.z+=dz;
+    player.x=THREE.MathUtils.clamp(player.x,-320,320);
+    player.z=THREE.MathUtils.clamp(player.z,-197,325);
     camera.position.set(player.x,player.y,player.z);
     camera.rotation.set(player.pitch,player.yaw,0,'YXZ');
   }
