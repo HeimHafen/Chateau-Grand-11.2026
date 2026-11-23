@@ -1,0 +1,21 @@
+{
+  "archiveEntries": 442,
+  "portico": {
+    "donorObjects": 533,
+    "children": 19
+  },
+  "modelBuild": {
+    "meshes": 877,
+    "triangles": 183776
+  },
+  "checks": [
+    "local imports",
+    "GLB donor geometry",
+    "Node JS syntax",
+    "zip integrity"
+  ],
+  "limitations": [
+    "No real iPhone rendering test",
+    "External wall and dome not finalized"
+  ]
+}

@@ -1,6 +1,10 @@
-CHÂTEAU GRAND V5.8 — FRONTFASSADE
+CHATEAU GRAND 2027 — MAXGAME-NEUBASIS 1.0
 
-ZIP ENTPACKEN; DATEIEN DIREKT IN DEN GITHUB-REPOSITORY-ROOT KOPIEREN.
-index.html und src/ ersetzen. KEINEN extra V5.8-Ordner hochladen.
-Commit → Push. Danach GitHub-Pages-Adresse mit ?v=58 aufrufen.
-Anzeige: GRAND CHÂTEAU · V5.8
+1. ZIP ENTPACKEN.
+2. Dateien index.html, maxgame-original.html und ALLE Ordner DIREKT in den Repository-Root von Chateau-Grand-2027 kopieren.
+3. Vorhandene Dateien ersetzen. KEINEN extra Ordner hochladen.
+4. Commit -> Push.
+5. Webseite mit ?v=maxgame1 neu laden.
+6. Oben rechts muss "MAXGAME-NEUBASIS · 1.0" erscheinen.
+
+Die bisherige V5.10 ist unter chateau/legacy/ als ZIP archiviert.

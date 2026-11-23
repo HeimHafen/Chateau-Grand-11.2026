@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Max-Town</title>
+<style>
+* { box-sizing: border-box }
+html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none }
+body { background: #211f1b; color: #fff2d8; font: 15px system-ui, sans-serif }
+[hidden] { display: none !important }
+canvas { position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; -webkit-touch-callout: none; user-select: none }
+header, aside { position: fixed; top: max(16px, env(safe-area-inset-top)) }
+header { left: max(16px, env(safe-area-inset-left)); max-width: calc(100% - 155px); pointer-events: none; text-shadow: 0 1px 6px #110e0a, 0 2px 12px #110e0a }
+header strong { display: block; font: clamp(19px, 5.4vw, 26px) Georgia, serif }
+header small { display: block; margin-top: 6px; letter-spacing: .04em }
+aside { right: max(16px, env(safe-area-inset-right)); display: flex; align-items: start; gap: 6px }
+button { min-height: 44px; min-width: 44px; font: inherit; color: inherit; background: #231e18ee; border: 1px solid #a58b65; border-radius: 8px; padding: 9px 13px; cursor: pointer; touch-action: manipulation }
+button:focus-visible { outline: 2px solid #ffe1aa; outline-offset: 3px }
+nav { position: absolute; top: 54px; right: 0; width: min(250px, calc(100vw - 32px)); max-height: min(65vh, calc(100vh - 92px)); max-height: min(65dvh, calc(100dvh - 92px)); overflow: auto; background: #201c17f8; border: 1px solid #8c7453; border-radius: 9px; padding: 7px }
+nav button { display: block; width: 100%; margin: 3px 0; text-align: left; border-color: #594732 }
+.intro { position: fixed; inset: 0; display: grid; align-items: end; overflow: auto; padding: max(16px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(22px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); background: linear-gradient(0deg, #17130ff8, #17130fe0 24%, #17130f30 58%, transparent 75%) }
+article { width: min(100%, 470px); min-width: 0; text-shadow: 0 1px 5px #16110d }
+h1 { font: normal clamp(36px, 9vw, 64px)/1.04 Georgia, serif; margin: 0 0 12px }
+p { max-width: 36ch; line-height: 1.48; margin: 0 0 14px }
+.gestures { color: #e0cba9 }
+.intro button { background: #dab47a; color: #24190e; font-weight: 700; padding-inline: 18px }
+#error:empty { display: none }
+#error { margin: 10px 0 0 }
+@media (min-width: 840px) and (min-height: 500px) {
+ .intro { align-items: center; padding-inline: 6vw; background: linear-gradient(90deg, #17130ff2, #17130fc4 29%, transparent 73%) }
+}
+@media (max-height: 420px) { h1 { font-size: 32px; margin-bottom: 8px } p { margin-bottom: 8px } }
+canvas { display: block }
+</style>
+</head>
+<body>
+<canvas aria-label="Dreidimensionaler Rundgang"></canvas>
+<header hidden><strong>Max-Town</strong><small id="place">Vorplatz</small></header>
+<aside hidden>
+<button id="map" aria-expanded="false" aria-controls="places">Orte</button>
+<button id="help" aria-label="Steuerung anzeigen">?</button>
+<nav id="places" hidden aria-label="Orte in Max-Town"></nav>
+</aside>
+<section class="intro">
+<article>
+<h1>Max-Town</h1>
+<p id="description">Zwischen zwei Kalksteinhäusern führt der Weg durch den Portikus in den Garten.</p>
+<p class="gestures"><strong>Links ziehen</strong> zum Laufen.<br><strong>Rechts wischen</strong> zum Umsehen.</p>
+<button id="start" disabled>Rundgang starten</button>
+<p id="error" role="alert"></p>
+<p class="gestures">Version Rechtes Haus · Foyer und Galerie</p>
+</article>
+</section>
+<script type="module" src="wohnzimmer/max-town-galerietreppen.js"></script>
+</body>
+</html>
