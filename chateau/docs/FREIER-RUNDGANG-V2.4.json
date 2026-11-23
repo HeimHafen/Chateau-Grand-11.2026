@@ -1,0 +1,14 @@
+{
+  "version":"2.4",
+  "title":"Natürlicher Zugang und zusammenhängender Rundgang",
+  "source":"Bestehendes MaxGame-Three.js-Château V2.3",
+  "automatischeEingangstueren":3,
+  "beweglicheEichenfluegel":6,
+  "aussentreppeStufen":26,
+  "treppeInnengeschoss":{"geschosse":["EG","1. OG"],"laeufe":2,"stufenProLauf":12,"mitZwischenpodest":true},
+  "durchgaengeZwischenBaufluegeln":{"hauptbauZuSeitenfluegeln":2,"seitenfluegelZuRuecktrakt":2},
+  "historischeRaumzonen":{"EG":18,"1OG":21},
+  "funktionen":["Automatische Eichentuer-Oeffnung", "Beidseitig transparente Glasfenster", "Bewegung ueber echten Treppenverlauf", "Wandkollision mit begehbaren Tuerluecken", "Dynamische Raum- und Geschossanzeige", "Frei navigierbare Haupt- und Seitenfluegel im Erdgeschoss"],
+  "verifikationen":["Konstruktion und Laden des MaxGame-Donormodells", "Drei Tuercontroller und sechs Fluegel", "Rundgang Park-Treppe-Tuer-Vestibuel-EG-1OG und zurueck", "Weg durch Westfluegel bis in den Ruecktrakt", "Eingangsportal gegen seitliche Wandkollision pruefen"],
+  "einschraenkungen":["iPhone Safari nicht direkt getestet", "Seitenfluegel und Ruecktrakt noch ohne vollstaendig ausgestattete Innenraeume", "Oberhalb des 1. OG noch keine echten Geschosstreppen", "Altbau-Salon wird als offene Raumzone statt komplett ausgestalteter Saal dargestellt"]
+}

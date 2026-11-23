@@ -1,11 +1,12 @@
 /**
- * CHÂTEAU GRAND 2027 — PALAST 2.3 / ROISSY-PLANABGLEICH
+ * CHÂTEAU GRAND 2027 — PALAST 2.4 / DURCHGAENGIGER RUNDGANG
  * Monumental, courtyard-based French palace. Entire exterior is assembled with
  * instanced ashlar modules, real (non-decals) window holes, MaxGame PBR stone,
  * authentic donor portico geometry, and roof pavilions with copper domes.
  * Source units: metres. No generated 2D picture is substituted for geometry.
  */
 import {addPorticoColumn} from '../wohnzimmer/portico-columns-v2.js';
+import {addPortalDoors} from '../wohnzimmer/portal-doors-v2.js';
 
 export function buildChateau(THREE, scene, donor, mats, glass){
   const palace=new THREE.Group();palace.name='CHATEAU_GRAND_2027_PALAST';scene.add(palace);
@@ -44,6 +45,9 @@ export function buildChateau(THREE, scene, donor, mats, glass){
   floorLayers.og.name='ROISSY_PREMIER_ETAGE';
   palace.add(floorLayers.eg,floorLayers.og);
   const planBatches=new Map(), rooms={eg:[],og:[]},collisionWalls={eg:[],og:[]};
+  // Actual MaxGame automatic hinge-controlled doors. Door geometry lives outside
+  // the GPU-instanced facade so it can rotate while the player walks through it.
+  const entranceDoors=[];
   function planCube(f,mat,x,y,z,w,h,d){
     if (![x,y,z,w,h,d].every(Number.isFinite)||w<=0||h<=0||d<=0) throw Error('Ungültige Innenwand-Geometrie');
     const key=f+':'+mat;
@@ -99,17 +103,17 @@ export function buildChateau(THREE, scene, donor, mats, glass){
   const ENTRANCE_AXES=[-16.28,0,16.28];
   const DOOR_WIDTH=3.05;
   // Wall strips around openings. No wall boxes behind window glass.
-  function masonryLine(axis,fixed,from,to,face,bayXs,{trimDetail=true,entrance=false,corps=false}={}){
+  function masonryLine(axis,fixed,from,to,face,bayXs,{trimDetail=true,entrance=false,corps=false,passageXs=[]}={}){
     const fixedWall=fixed;
     const exterior=face; // +1 is outward toward positive X/Z.
     function stoneAlong(coord,bottom,w,h,depth=.72,mat='wall',offset=0){
       if(axis==='X')cube(mat,coord,bottom+h/2,fixedWall+offset*exterior,w,h,depth);
       else cube(mat,fixedWall+offset*exterior,bottom+h/2,coord,depth,h,w);
     }
-    function window(coord,y,level,grandDoor){
-      const height=grandDoor?5.35:levels[level].holeH;
-      const width=grandDoor?DOOR_WIDTH:level===0?2.6:3.25;
-      const base=y+(grandDoor?.08:levels[level].holeY);
+    function window(coord,y,level,grandDoor,passage=false){
+      const height=(grandDoor||passage)?5.35:levels[level].holeH;
+      const width=passage?4.35:(grandDoor?DOOR_WIDTH:(level===0?2.6:3.25));
+      const base=y+((grandDoor||passage)?.08:levels[level].holeY);
       const longSide=(axis==='X');
       const placeAt=(mat,along,long,vert,depth,offset,yy)=>{
         if(longSide)cube(mat,coord+along,yy,fixedWall+exterior*offset,long,vert,depth);
@@ -119,41 +123,24 @@ export function buildChateau(THREE, scene, donor, mats, glass){
       // Two-sided true transparency: NO opaque 'behind' or emissive facade card.
       // The masonryLine loop already cuts real openings through each wall segment.
       // A lightly tinted thin PBR pane and timber muntins form the window.
-      if(!grandDoor)place('glass',width-.32,height-.20,.042,.13,base+height/2);
+      if(!grandDoor&&!passage)place('glass',width-.32,height-.20,.042,.13,base+height/2);
       if(grandDoor){
-        // REAL double-leaf walnut door, recessed into the same physical wall opening.
-        // The old stone 'door panel' and grid have been replaced by carved wooden leaves.
-        place('doorShadow',width-.12,height-.12,.08,.04,base+height/2);
-        for(const sign of [-1,1]){
-          const offset=sign*width*.249;
-          placeAt('wood',offset,width*.49,height-.15,.15,.20,base+height/2);
-          // Cassette panels: a framed relief on each leaf, never applied over the opening sill.
-          for(const fy of [.18,.43,.67]){
-            const cy=base+height*fy;
-            placeAt('woodtrim',offset,width*.38,height*.184,.055,.31,cy);
-            placeAt('wood',offset,width*.326,height*.135,.063,.349,cy);
-          }
-          placeAt('woodtrim',offset,width*.48,.12,.12,.37,base+height*.83);
-          placeAt('woodtrim',offset,width*.48,.09,.13,.37,base+height*.88);
-          // Slim vertical perimeter stiles and central meeting joint.
-          for(const s of [-1,1])placeAt('woodtrim',offset+s*width*.225,.063,height-.23,.12,.35,base+height/2);
-        }
-        place('doorShadow',.045,height-.12,.047,.42,base+height/2);
-        // Two genuinely separate patinated-brass handles, one per leaf.
-        for(const dd of [-.15,.15]){
-          const gg=new THREE.SphereGeometry(.074,12,8);
-          const oo=new THREE.Mesh(gg,gilt);
-          if(longSide)oo.position.set(coord+dd,base+2.10,fixedWall+exterior*.51);
-          else oo.position.set(fixedWall+exterior*.51,base+2.10,coord+dd);
-          palace.add(oo);
-        }
-        // Recessed overdoor with a strongly modelled horizontal crown.
+        // The historical fixed door panels used to block all three entrances.
+        // Reuse the working MaxGame oak door system instead: genuine hinged
+        // walnut leaves, mouldings and brass handles open when approached.
+        if(!longSide)throw Error('Palast-Eingang muss auf der Vorderfassade liegen.');
+        const door=addPortalDoors(THREE,palace,mats,glass,coord,fixedWall,exterior,
+          width,height,wood,base,{inset:-.18,activationDistance:7.8});
+        entranceDoors.push({x:coord,z:fixedWall,base,door});
         place('stone',width+.20,.24,.58,.41,base+height+.05);
         place('trim',width+.48,.20,.80,.49,base+height+.27);
+      }else if(passage){
+        // Generous walk-through connecting the main historical plan with both
+        // wings and the transverse rear range. Absolutely no dark panel/glass.
+        place('stone',width+.26,.22,.68,.42,base+height+.06);
       }else{
         place('sash',.085,height-.21,.17,.30,base+height/2);
         for(const s of [-.30,.30]){
-          // slim mullion half-way to the reveals
           if(axis==='X')cube('sash',coord+s*width*.5,base+height/2,fixedWall+exterior*.31,.055,height-.21,.12);
           else cube('sash',fixedWall+exterior*.31,base+height/2,coord+s*width*.5,.12,height-.21,.055);
         }
@@ -185,16 +172,17 @@ export function buildChateau(THREE, scene, donor, mats, glass){
       let last=from;
       for(const pos of bays){
         const door=entrance&&i===1&&ENTRANCE_AXES.some(x=>Math.abs(pos-x)<.01);
+        const passage=i===1&&passageXs.some(x=>Math.abs(pos-x)<.01);
         const underPortico=entrance&&i===0&&ENTRANCE_AXES.some(x=>Math.abs(pos-x)<.01);
-        const ww=door?DOOR_WIDTH:(i===0?2.6:3.25);
+        const ww=passage?4.35:(door?DOOR_WIDTH:(i===0?2.6:3.25));
         if(underPortico)continue; // no subterranean glazing behind the entrance podium
         const left=pos-ww/2,right=pos+ww/2;
         if(left>last)stoneAlong((last+left)/2,l,left-last,r-l);
-        const bottom=door?l+.08:l+level.holeY;
-        const high=door?5.35:level.holeH;
+        const bottom=(door||passage)?l+.08:l+level.holeY;
+        const high=(door||passage)?5.35:level.holeH;
         if(bottom>l+.01)stoneAlong(pos,l,ww,bottom-l);
         if(bottom+high<r-.01)stoneAlong(pos,bottom+high,ww,r-(bottom+high));
-        window(pos,l,i,door);
+        window(pos,l,i,door,passage);
         last=right;
       }
       if(last<to)stoneAlong((to+last)/2,l,to-last,r-l);
@@ -223,7 +211,7 @@ export function buildChateau(THREE, scene, donor, mats, glass){
   const frontAxes=[...grid(-103.5,103.5,6.9).filter(x=>Math.abs(x)>25),...ENTRANCE_AXES].sort((a,b)=>a-b);
   const mainRearAxes=grid(-103.5,103.5,6.9);
   masonryLine('X',21,-112,112,1,frontAxes,{entrance:true,corps:true});
-  masonryLine('X',-21,-112,112,-1,mainRearAxes,{corps:true});
+  masonryLine('X',-21,-112,112,-1,mainRearAxes,{corps:true,passageXs:[-89.7,89.7]});
   // Both outermost short sides of the grand main façade.
   const crossAxes=grid(-16.5,16.5,6.6);
   masonryLine('Z',112,-21,21,1,crossAxes);
@@ -239,7 +227,7 @@ export function buildChateau(THREE, scene, donor, mats, glass){
   }
   const rearZ0=rear.z-rear.d/2,rearZ1=rear.z+rear.d/2;
   const rearAxes=grid(-98,98,7);
-  masonryLine('X',rearZ1,-rear.w/2,rear.w/2,1,rearAxes);
+  masonryLine('X',rearZ1,-rear.w/2,rear.w/2,1,rearAxes,{passageXs:[-91,91]});
   masonryLine('X',rearZ0,-rear.w/2,rear.w/2,-1,rearAxes);
   const rearSideAxes=grid(-191,-163,6.6);
   masonryLine('Z',rear.w/2,rearZ0,rearZ1,1,rearSideAxes);
@@ -257,6 +245,9 @@ export function buildChateau(THREE, scene, donor, mats, glass){
         cube('base',-83.25,yy-.06,0,56.6,.16,41.2);
         cube('base',-41.5,yy-.06,-12.3,26.5,.16,16.0);
         cube('base',-41.5,yy-.06,18.15,26.5,.16,4.8);
+        // The 1.OG stair landing needs a continuous east-side gallery to
+        // the real doorway at x=-28, z=8.6. Without this it ended in midair.
+        cube('base',-30.40,yy-.06,10.15,3.82,.16,18.9);
         cube('base',70.25,yy-.06,0,83.0,.16,41.2);
         // GALLERY around the central salon: real double-height open volume.
         cube('base',0,yy-.06,8.10,55.5,.16,24.9);
@@ -397,11 +388,13 @@ export function buildChateau(THREE, scene, donor, mats, glass){
     }
     // Front suite: different room boundaries between floors, per historical plate.
     const frontDividers=isEG?[-91.3,-54.8,-28,28,58,85]:[-91.3,-55,-28,28,58,85];
-    for(const x of frontDividers)wallZ(x,-3.70,20.55,[8.6]);
+    // A second aligned doorway in the huge front range creates an actual
+    // connected east-west passage without removing historical room partitions.
+    for(const x of frontDividers)wallZ(x,-3.70,20.55,[8.6,12.5]);
     // Subdivided service quarters and first-floor dressing rooms, visible in plan.
     if(isEG){
-      wallX(-111.2,-91.5,2.9,[-101]);
-      wallX(-111.2,-91.5,9.7,[-101]);
+      wallX(-111.2,-91.5,2.9,[-101,-97]);
+      wallX(-111.2,-91.5,9.7,[-101,-97]);
       wallX(-91.1,-54.8,8.3,[-73]);
       wallX(58.0,84.7,2.5,[71]);
       wallX(84.8,111.2,8.4,[98]);
@@ -446,7 +439,8 @@ export function buildChateau(THREE, scene, donor, mats, glass){
     }else{
       // A full-size landing at first-floor elevation; the stair void below
       // is retained by the separately split structural floor plate.
-      planCube(f,'paving',-41.25,base+.04,17.4,21.9,.15,5.1);
+      planCube(f,'paving',-41.25,base+.04,16.35,21.9,.15,7.20);
+      planCube(f,'paving',-30.40,base+.04,10.15,3.82,.15,18.9);
       for(const xx of [-52.2,-30.3]){
         planCube(f,'trim',xx,base+1.08,5.0,.20,.18,20.4);
         for(let z=-3.0;z<14.9;z+=1.34)
@@ -826,6 +820,6 @@ export function buildChateau(THREE, scene, donor, mats, glass){
     entranceAudit:{doors:[-16.28,0,16.28],doorWidth:DOOR_WIDTH,columns:[-20.35,-12.21,-4.07,4.07,12.21,20.35],shaftScaleUniform:1.79,stairRisers:26,stairTotalRise:4.50},
     palaceDimensions:{width:224,depth:217,height:64},
     buildings:['Corps de logis','Westfluegel','Ostfluegel','Rueckwaertiger Quertrakt'],
-    historicalFloors:rooms,historicalLayers:floorLayers,interiorCollision:collisionWalls,
+    historicalFloors:rooms,historicalLayers:floorLayers,interiorCollision:collisionWalls,entranceDoors,
     instancedDrawcalls:batches.size+planBatches.size,instancedElements:[...batches.values(),...planBatches.values()].reduce((n,a)=>n+a.length,0)};
 }

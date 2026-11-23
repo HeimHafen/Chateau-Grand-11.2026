@@ -3,7 +3,8 @@ import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from '../wohnzimmer/sky-atmosphere.js';
-import {buildChateau} from './architecture.js';
+import {buildChateau} from './architecture.js?v=palast24';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=palast24';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -12,11 +13,12 @@ const status=document.getElementById('status');
 const hint=document.getElementById('controlHint');
 const mobile=matchMedia('(pointer:coarse)').matches;
 let renderer,scene,camera,orbit={theta:.43,phi:.52,d:355,target:new THREE.Vector3(0,17,-72)},mode='orbit';
-let player={x:0,y:1.68,z:125,yaw:0,pitch:0};
+let player={x:0,y:EYE_Y,footY:0,z:72,yaw:0,pitch:0};
 let walkTouch=null,lookTouch=null,forward=0,strafe=0,lookPointer=null;
 let last=0;
 let atmospheric;
 let floorChoice=null, activeWalkingFloor=null, historicalChateau=null, clippedMode=false;
+let lastLocation='';
 
 async function run(){
   renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',alpha:false});
@@ -50,12 +52,12 @@ async function run(){
   glass.needsUpdate=true;
   // Verify that we really used donor assets, not a recreated imitation.
   if(chateau.originalPortico.children.length<17)throw Error('Originalportikus aus MaxGame wurde unvollständig übernommen.');
-  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'2.3',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls};
-  document.getElementById('version').textContent='MAXGAME-PALAST · 2.3';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'2.4',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length};
+  document.getElementById('version').textContent='MAXGAME-PALAST · 2.4';
   start.disabled=false;start.textContent='Château erkunden';
-  status.textContent='Château geladen · Roissy-Grundrisse nach hochauflösender Vorlage nachgearbeitet · durchsichtige Fenster.';
+  status.textContent='Schloss bereit · Begehbare Eingangstreppe, automatisch öffnende Eichentüren und durchgehender Rundgang bis ins 1. OG.';
   resize();view('angle');
-  start.addEventListener('click',()=>{splash.hidden=true;renderer.shadowMap.needsUpdate=true;}, {once:true});
+  start.addEventListener('click',()=>{splash.hidden=true;renderer.shadowMap.needsUpdate=true;setWalk();}, {once:true});
   requestAnimationFrame(frame);
 }
 function buildLandscape(mats){
@@ -101,6 +103,7 @@ function setCutaway(floor){
 }
 function view(which){
   mode='orbit';activeWalkingFloor=null;
+  document.body.classList.remove('walking');
   floorChoice=which==='eg'||which==='og'?which:null;
   const views={
     front:{theta:0,phi:.10,d:390,target:[0,18,-65]},
@@ -117,20 +120,38 @@ function view(which){
   setCutaway(floorChoice);
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('selected',b.dataset.view===which));
   document.getElementById('walk').classList.remove('selected');
-  hint.textContent=floorChoice?'Historischer Grundriss: drehen / zoomen · „'+(floorChoice==='eg'?'EG':'1. OG')+' betreten“ für Rundgang':'Ansicht: ziehen zum Drehen · mit zwei Fingern zoomen';
+  hint.textContent=floorChoice?'Historischer Grundriss: drehen / zoomen · „'+(floorChoice==='eg'?'EG':'1. OG')+' betreten“ als Schnellstart':'Ansicht: ziehen zum Drehen · mit zwei Fingern zoomen';
+  document.getElementById('locationStatus').hidden=true;
 }
 function setWalk(){
   mode='walk';activeWalkingFloor=floorChoice;
-  setCutaway(null); // Ceiling/floors visible during walk inside rooms.
+  document.body.classList.add('walking');
+  setCutaway(null); // Floor plates/ceilings restored for physical exploration.
   if(activeWalkingFloor){
-    player.x=0;player.y=(activeWalkingFloor==='eg'?4.72:11.05)+1.72;
-    player.z=13.0;player.yaw=0;player.pitch=.025;
+    // Optional shortcut for testing the two plans; normal exploration never
+    // teleports: approach stairs and walk through the automatic entrance doors.
+    player.x=0;player.footY=(activeWalkingFloor==='eg'?EG_Y:OG_Y);
+    player.z=13.0;
   }else{
-    player.x=0;player.y=1.68;player.z=145;player.yaw=0;player.pitch=.025;
+    player.x=0;player.footY=0;player.z=72;
   }
+  player.y=player.footY+EYE_Y;
+  player.yaw=0;player.pitch=.025;
+  forward=strafe=0;
+  document.getElementById('walk').textContent='Rundgang neu';
   document.getElementById('walk').classList.add('selected');
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('selected'));
-  hint.textContent=activeWalkingFloor?'Links ziehen: durch Räume gehen · rechts umsehen · Fenster von innen und außen durchsichtig':'Links ziehen: laufen · rechts wischen: umsehen · Zurücksetzen: Außenansicht';
+  hint.textContent=activeWalkingFloor
+    ? 'Links ziehen: gehen · rechts umsehen · zur Treppe laufen für Geschosswechsel'
+    : 'Links ziehen: zur Treppe gehen · Eichentüren öffnen automatisch · rechts umsehen';
+  showWalkLocation();
+}
+function showWalkLocation(){
+  const ui=document.getElementById('locationStatus');
+  if(mode!=='walk'){ui.hidden=true;return;}
+  const label=describePlace(player.x,player.z,player.footY,historicalChateau);
+  if(label!==lastLocation){lastLocation=label;ui.textContent=label;}
+  ui.hidden=false;
 }
 for(const b of document.querySelectorAll('[data-view]'))b.addEventListener('click',()=>view(b.dataset.view));
 document.getElementById('walk').addEventListener('click',setWalk);
@@ -141,7 +162,7 @@ canvas.addEventListener('pointerdown',e=>{
   const p={x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY};
   activePointers.set(e.pointerId,p);
   if(mode==='walk'&&e.pointerType==='touch'){
-    if(e.clientX<innerWidth*.5&&!walkTouch)walkTouch=e.pointerId;
+    if(e.clientX<innerWidth*.5&&!walkTouch){walkTouch=e.pointerId;document.getElementById('walkStick').hidden=false;}
     else if(!lookTouch)lookTouch=e.pointerId;
   }
 });
@@ -152,11 +173,11 @@ canvas.addEventListener('pointermove',e=>{
     if(activePointers.size===1){orbit.theta-=dx*.0065;orbit.phi=THREE.MathUtils.clamp(orbit.phi+dy*.0055,-.09,1.34);}
     else if(activePointers.size===2){const pair=[...activePointers.values()];const dist=Math.hypot(pair[0].x-pair[1].x,pair[0].y-pair[1].y);if(window.__pinchDist){orbit.d=THREE.MathUtils.clamp(orbit.d*window.__pinchDist/Math.max(1,dist),30,650);}window.__pinchDist=dist;}
   }else{
-    if(e.pointerId===walkTouch){const vx=e.clientX-p.startX,vy=e.clientY-p.startY;strafe=THREE.MathUtils.clamp(vx/55,-1,1);forward=THREE.MathUtils.clamp(-vy/55,-1,1);}
+    if(e.pointerId===walkTouch){const vx=e.clientX-p.startX,vy=e.clientY-p.startY;strafe=THREE.MathUtils.clamp(vx/55,-1,1);forward=THREE.MathUtils.clamp(-vy/55,-1,1);document.getElementById('stickKnob').style.transform=`translate(${strafe*26}px, ${-forward*26}px)`;}
     else if(e.pointerId===lookTouch||e.pointerType==='mouse'){player.yaw-=dx*.005;player.pitch=THREE.MathUtils.clamp(player.pitch-dy*.004,-1.25,1.25);}
   }
 });
-function release(e){activePointers.delete(e.pointerId);window.__pinchDist=0;if(e.pointerId===walkTouch){walkTouch=null;forward=strafe=0;}if(e.pointerId===lookTouch)lookTouch=null;}
+function release(e){activePointers.delete(e.pointerId);window.__pinchDist=0;if(e.pointerId===walkTouch){walkTouch=null;forward=strafe=0;document.getElementById('walkStick').hidden=true;document.getElementById('stickKnob').style.transform='translate(0,0)';}if(e.pointerId===lookTouch)lookTouch=null;}
 for(const t of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(t,release);
 canvas.addEventListener('wheel',e=>{if(mode==='orbit'){orbit.d=THREE.MathUtils.clamp(orbit.d*Math.exp(e.deltaY*.001),30,650);e.preventDefault();}},{passive:false});
 const keys=new Set();addEventListener('keydown',e=>{keys.add(e.key.toLowerCase());if([' ','arrowup','arrowdown'].includes(e.key.toLowerCase()))e.preventDefault();});addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
@@ -175,25 +196,20 @@ function frame(ms){
     const speed=dt*6.1;
     const dx=(-Math.sin(player.yaw)*f+Math.cos(player.yaw)*st)*speed;
     const dz=(-Math.cos(player.yaw)*f-Math.sin(player.yaw)*st)*speed;
-    const wallHit=(x,z)=>{
-      if(!activeWalkingFloor||!historicalChateau)return false;
-      const rad=.34;
-      const walls=historicalChateau.interiorCollision[activeWalkingFloor];
-      for(const wall of walls){
-        if(x+rad>wall.x0&&x-rad<wall.x1&&z+rad>wall.z0&&z-rad<wall.z1)return true;
-      }
-      // Guard actual first-floor open voids: the player cannot walk over air.
-      if(activeWalkingFloor==='og'){
-        if(x>-24.4&&x<24.4&&z>-19.5&&z<-4.3)return true;
-        if(x>-54.0&&x<-29.0&&z>-4.3&&z<15.6)return true;
-      }
-      // Keep interior-mode navigation in the historically planned corps de logis.
-      return x<-111.6||x>111.6||z<-20.6||z>20.6;
-    };
-    if(!wallHit(player.x+dx,player.z))player.x+=dx;
-    if(!wallHit(player.x,player.z+dz))player.z+=dz;
-    player.x=THREE.MathUtils.clamp(player.x,-320,320);
-    player.z=THREE.MathUtils.clamp(player.z,-197,325);
+    // Real staircase heights (26 outside steps + two U-shaped interior flights),
+    // real masonry collision and genuine oak doors. Never teleport on a threshold.
+    const doors=historicalChateau?.entranceDoors||[];
+    for(const d of doors)d.door.update(dt,player.x,player.z,player.footY);
+    let candidate=candidateStep(player,player.x+dx,player.z,historicalChateau,doors);
+    if(candidate){player.x=candidate.x;player.footY=candidate.footY;}
+    candidate=candidateStep(player,player.x,player.z+dz,historicalChateau,doors);
+    if(candidate){player.z=candidate.z;player.footY=candidate.footY;}
+    // Keep the eye-height human-sized; damp out the discrete stair risers.
+    player.y=THREE.MathUtils.damp(player.y,player.footY+EYE_Y,11,dt);
+    player.x=THREE.MathUtils.clamp(player.x,-319,319);
+    player.z=THREE.MathUtils.clamp(player.z,-250,325);
+    activeWalkingFloor=player.footY>=9.7?'og':player.footY>=4.5?'eg':null;
+    showWalkLocation();
     camera.position.set(player.x,player.y,player.z);
     camera.rotation.set(player.pitch,player.yaw,0,'YXZ');
   }

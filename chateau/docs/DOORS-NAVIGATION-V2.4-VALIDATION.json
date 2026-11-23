@@ -1,0 +1,15 @@
+{
+  "version": "2.4",
+  "portico": 17,
+  "instances": 17949,
+  "drawcalls": 33,
+  "roomsEG": 18,
+  "roomsOG": 21,
+  "layersEG": 19,
+  "layersOG": 22,
+  "entranceDoors": 3,
+  "glassInstances": 988,
+  "opaqueBehind": 0,
+  "doorLeafCount": 6,
+  "invalidMeshes": 0
+}
