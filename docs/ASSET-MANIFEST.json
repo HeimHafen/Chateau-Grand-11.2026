@@ -1,0 +1,69 @@
+{
+  "project": "Chateau Grand V5.7",
+  "source": "Überarbeitete und geprüfte Außenhülle von V5.6",
+  "model": "models/Chateau-Grand-V5.7-Geometrie.glb",
+  "geometry_runtime": "src/architecture.js",
+  "materials": [
+    {
+      "name": "assets/materials/column-stone-albedo.jpg",
+      "bytes": 158713
+    },
+    {
+      "name": "assets/materials/column-stone-normal.jpg",
+      "bytes": 337046
+    },
+    {
+      "name": "assets/materials/column-stone-roughness.jpg",
+      "bytes": 57696
+    },
+    {
+      "name": "assets/materials/facade-limestone-albedo.jpg",
+      "bytes": 193481
+    },
+    {
+      "name": "assets/materials/facade-limestone-normal.jpg",
+      "bytes": 501046
+    },
+    {
+      "name": "assets/materials/facade-limestone-roughness.jpg",
+      "bytes": 57780
+    },
+    {
+      "name": "assets/materials/grass-albedo.jpg",
+      "bytes": 658903
+    },
+    {
+      "name": "assets/materials/roof-zinc-albedo.jpg",
+      "bytes": 17548
+    },
+    {
+      "name": "assets/materials/roof-zinc-normal.jpg",
+      "bytes": 24738
+    },
+    {
+      "name": "assets/materials/roof-zinc-roughness.jpg",
+      "bytes": 24589
+    },
+    {
+      "name": "assets/materials/sky-reflection.jpg",
+      "bytes": 54512
+    },
+    {
+      "name": "assets/materials/trim-limestone-albedo.jpg",
+      "bytes": 149288
+    },
+    {
+      "name": "assets/materials/trim-limestone-normal.jpg",
+      "bytes": 346230
+    },
+    {
+      "name": "assets/materials/trim-limestone-roughness.jpg",
+      "bytes": 57499
+    }
+  ],
+  "notes": {
+    "grass": "grasbild aus Nutzerprojekt; Rechte noch zu überprüfen",
+    "glb": "farbiger, neu erzeugter Kontroll-Export der mobilen Gesamtszene",
+    "browser": "WebGL2 vorausgesetzt; iPhone-Hardwareprüfung dieser Version offen"
+  }
+}

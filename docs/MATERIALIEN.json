@@ -1,0 +1,80 @@
+[
+  {
+    "uniform": "uStonePattern",
+    "path": "assets/materials/facade-limestone-albedo.jpg",
+    "bytes": 193481,
+    "dimensions": "1024×1024"
+  },
+  {
+    "uniform": "uRoofPattern",
+    "path": "assets/materials/roof-zinc-albedo.jpg",
+    "bytes": 17548,
+    "dimensions": "512×512"
+  },
+  {
+    "uniform": "uFacadeNormal",
+    "path": "assets/materials/facade-limestone-normal.jpg",
+    "bytes": 501046,
+    "dimensions": "1024×1024"
+  },
+  {
+    "uniform": "uFacadeRoughness",
+    "path": "assets/materials/facade-limestone-roughness.jpg",
+    "bytes": 57780,
+    "dimensions": "1024×1024"
+  },
+  {
+    "uniform": "uRoofNormal",
+    "path": "assets/materials/roof-zinc-normal.jpg",
+    "bytes": 24738,
+    "dimensions": "512×512"
+  },
+  {
+    "uniform": "uRoofRoughness",
+    "path": "assets/materials/roof-zinc-roughness.jpg",
+    "bytes": 24589,
+    "dimensions": "512×512"
+  },
+  {
+    "uniform": "uSkyReflection",
+    "path": "assets/materials/sky-reflection.jpg",
+    "bytes": 54512,
+    "dimensions": "1536×768"
+  },
+  {
+    "uniform": "uColumnPattern",
+    "path": "assets/materials/column-stone-albedo.jpg",
+    "bytes": 158713,
+    "dimensions": "1024×1024"
+  },
+  {
+    "uniform": "uColumnNormal",
+    "path": "assets/materials/column-stone-normal.jpg",
+    "bytes": 337046,
+    "dimensions": "1024×1024"
+  },
+  {
+    "uniform": "uColumnRoughness",
+    "path": "assets/materials/column-stone-roughness.jpg",
+    "bytes": 57696,
+    "dimensions": "1024×1024"
+  },
+  {
+    "uniform": "uTrimPattern",
+    "path": "assets/materials/trim-limestone-albedo.jpg",
+    "bytes": 149288,
+    "dimensions": "1024×1024"
+  },
+  {
+    "uniform": "uTrimNormal",
+    "path": "assets/materials/trim-limestone-normal.jpg",
+    "bytes": 346230,
+    "dimensions": "1024×1024"
+  },
+  {
+    "uniform": "uTrimRoughness",
+    "path": "assets/materials/trim-limestone-roughness.jpg",
+    "bytes": 57499,
+    "dimensions": "1024×1024"
+  }
+]

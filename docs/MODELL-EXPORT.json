@@ -1,0 +1,7 @@
+{
+  "version": "5.7",
+  "file": "models/Chateau-Grand-V5.7-Geometrie.glb",
+  "triangles": 176486,
+  "format": "GLB",
+  "note": "Vertexfarbiger Rohgeometrie-Export; die PBR-Texturen und der Echtzeit-Shader liegen im Spielprojekt."
+}
