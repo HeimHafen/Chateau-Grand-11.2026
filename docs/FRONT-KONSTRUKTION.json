@@ -1,0 +1,49 @@
+{
+  "version": "5.8",
+  "scope": "Nur Frontfassade; übrige Gebäudeflügel und Dachgeometrie aus V5.7 beibehalten",
+  "front": "x=-55 bis +55 m, z=13.05 m",
+  "regular_window_x": [
+    -49,
+    -41,
+    -33,
+    -25,
+    -17,
+    17,
+    25,
+    33,
+    41,
+    49
+  ],
+  "entrances_x": [
+    -7.2,
+    0,
+    7.2
+  ],
+  "upper_window_x": [
+    -7,
+    0,
+    7
+  ],
+  "high_window_x": [
+    -5.2,
+    5.2
+  ],
+  "column_x": [
+    -10,
+    -6,
+    -2,
+    2,
+    6,
+    10
+  ],
+  "column_z": 18.45,
+  "stair_treads": 6,
+  "technical_check": {
+    "geometry_generated": true,
+    "glb_exported": true,
+    "triangles_mobile": 138575,
+    "room_zone_markers": 270,
+    "on_device_test": "not performed"
+  },
+  "limits": "Kontrollbilder nutzen Vertexfarben, nicht dieselbe Beleuchtung wie Safari. Keine Zusage von Fotorealismus oder einer Prozentpunktbewertung."
+}

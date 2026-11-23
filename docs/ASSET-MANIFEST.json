@@ -1,7 +1,7 @@
 {
-  "project": "Chateau Grand V5.7",
-  "source": "Überarbeitete und geprüfte Außenhülle von V5.6",
-  "model": "models/Chateau-Grand-V5.7-Geometrie.glb",
+  "project": "Chateau Grand V5.8",
+  "source": "Auf Basis V5.7; nur die Frontfassade konstruktiv überarbeitet",
+  "model": "models/Chateau-Grand-V5.8-Frontfassade.glb",
   "geometry_runtime": "src/architecture.js",
   "materials": [
     {
@@ -63,7 +63,7 @@
   ],
   "notes": {
     "grass": "grasbild aus Nutzerprojekt; Rechte noch zu überprüfen",
-    "glb": "farbiger, neu erzeugter Kontroll-Export der mobilen Gesamtszene",
-    "browser": "WebGL2 vorausgesetzt; iPhone-Hardwareprüfung dieser Version offen"
+    "glb": "Aktueller vollständiger Vertexfarben-Mobil-Export inkl. neuer Frontgeometrie; kein alter 5.7-Stand",
+    "browser": "WebGL2 vorausgesetzt; dieser 5.8-Stand muss noch auf echtem iPhone geprüft werden"
   }
 }

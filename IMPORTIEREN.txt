@@ -1,4 +1,6 @@
-CHATEAU V5.7 — ZIP ENTPACKEN, NICHT ALS EINEN ORDNER HOCHLADEN.
-Kopiere index.html, src/, assets/, models/, docs/ und README.md direkt in das GitHub-Hauptverzeichnis.
-Alte index.html und src/ ersetzen. Commit -> Push.
-Spieladresse mit ?v=57 neu laden. Oben rechts muss V5.7 stehen.
+CHÂTEAU GRAND V5.8 — FRONTFASSADE
+
+ZIP ENTPACKEN; DATEIEN DIREKT IN DEN GITHUB-REPOSITORY-ROOT KOPIEREN.
+index.html und src/ ersetzen. KEINEN extra V5.8-Ordner hochladen.
+Commit → Push. Danach GitHub-Pages-Adresse mit ?v=58 aufrufen.
+Anzeige: GRAND CHÂTEAU · V5.8

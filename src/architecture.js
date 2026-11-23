@@ -1,9 +1,9 @@
-/* CHÂTEAU GRAND — parametrische Gebäudegeometrie, V5.7 Architekturrevision.
+/* CHÂTEAU GRAND — parametrische Gebäudegeometrie, V5.8 Frontfassade: einheitliche Achsen und Portikus.
    Der Grundriss ist experimentell. Zonen sind keine fertig ausgebauten Zimmer.
 */
 window.createChateauGeometry=function createChateauGeometry(context){
 const {MOBILE,box,cylinder,sphere,quad,tri,roof,GLASS,TRIM,GOLD,STWHITE,SLATE,FLOORLIGHT}=context;
-// CHÂTEAU GRAND · V5.7 Architekturrevision
+// CHÂTEAU GRAND · V5.8 Frontfassade: einheitliche Achsen und Portikus
 // Fresh architectural restart: new exterior shell, cleaner proportions, single-file mobile build.
 const OPT=(new URLSearchParams(location.search).get('quality')||'').toLowerCase();
 const DETAIL=OPT==='ultra'&&!MOBILE?3:OPT==='high'||(!MOBILE&&OPT!=='mobile')?2:1;
@@ -182,63 +182,143 @@ function dome(cx,cy,cz,rad=8.8){
  sphere(cx,cy+rad*1.18,cz,.34,GOLD,4,7,12);
 }
 
-function addFrontFacade(){
- const z=13.05;
- const xs=[-49,-41,-33,-25,-17,17,25,33,41,49];
- for(let l=1;l<=3;l++){let y=FLOOR_Y[l]+.95; for(let x of xs) deepWindowFront(x,y,z,2.25,3.25,l>1);}
- // Dormers, not fictitious fourth-storey wall-windows, light the attic.
- // portico
- const portZ=16.3; floorPlate(0,FLOOR_Y[1]-0.02,16.9,27.5,8.8,[.83,.81,.76],5);
- for(let k=0;k<5;k++) box(0,FLOOR_Y[1]-.08-k*.14,21.45+k*.46,24.5,.16,.47,[.83,.81,.76],5);
- for(let x of [-9.0,-5.5,-2.0,2.0,5.5,9.0]) ribbedColumn(x,portZ,FLOOR_Y[1],FLOOR_Y[3]+4.60,.65);
- box(0,FLOOR_Y[3]+4.54,portZ,22.1,.45,3.10,ST2);
- box(0,FLOOR_Y[3]+4.85,portZ+.03,22.8,.26,3.46,ST1);
- for(let x of [-9,-5.5,-2,2,5.5,9]){box(x,FLOOR_Y[3]+4.16,portZ,1.8,.44,1.40,ST1);}
-
- fancyDoor(-7.2,FLOOR_Y[1]+.20,13.08,3.25,4.9); fancyDoor(0,FLOOR_Y[1]+.20,13.08,3.85,5.0); fancyDoor(7.2,FLOOR_Y[1]+.20,13.08,3.25,4.9);
- // central open entrance framed only
- box(0,FLOOR_Y[1]+4.85,13.10,6.9,.28,.65,ST2); box(-3.45,FLOOR_Y[1]+2.43,13.11,.30,4.9,.60,ST2); box(3.45,FLOOR_Y[1]+2.43,13.11,.30,4.9,.60,ST2);
- balconyRail(-9.4,9.4,FLOOR_Y[2]+3.55,14.15);
- for(let x of [-7.0,0,7.0]) deepWindowFront(x,FLOOR_Y[2]+1.05,13.05,2.6,3.2,true);
- for(let x of [-5.2,5.2]) deepWindowFront(x,FLOOR_Y[3]+1.02,13.05,2.2,3.0,true);
- pediment(0,FLOOR_Y[3]+4.5,16.95,25.0,6.3,.85);
- trimBand(0,FLOOR_Y[3]+4.15,16.5,28.8,1.2,.26,ST2);
-}
-
-function addFrontRefinement(){
- const z=13.05;
- const y0=FLOOR_Y[1], y1=16.9;
- // Giant-order emphasis for the central corps de logis and pavilion ends.
- for(let x of [-53.1,-46.1,-38.7,-30.9,-21.4,-12.8,12.8,21.4,30.9,38.7,46.1,53.1]) pilasterGiantFront(x,y0,y1,z,.66,.62);
- for(let x of [-10.7,10.7]) pilasterGiantFront(x,y0,y1+2.0,z,.88,.84);
- // Stronger rusticated plinth / sill articulation across the ceremonial front.
- trimBand(0,1.95,13.18,109.9,.52,.14,ST1);
- trimBand(0,4.62,13.18,109.9,.48,.13,ST1);
- // Portico terrace, side cheek walls and balcony slab.
- balconySlabFront(-10.2,10.2,FLOOR_Y[2]+3.30,13.65,1.65);
- box(-12.3,FLOOR_Y[1]+1.22,18.62,.50,2.25,4.85,ST2); box(12.3,FLOOR_Y[1]+1.22,18.62,.50,2.25,4.85,ST2);
- box(-12.3,FLOOR_Y[1]+2.22,18.40,.74,.28,4.30,ST1); box(12.3,FLOOR_Y[1]+2.22,18.40,.74,.28,4.30,ST1);
- // Window crowns on the main elevation for a more mansion-like, built appearance.
- const lower=[-49,-41,-33,-25,-17,17,25,33,41,49];
- for(let i=0;i<lower.length;i++){
-   const x=lower[i];
-   if(i%2===0) windowPedimentTriFront(x,FLOOR_Y[2]+4.52,z,2.88,1.08,.52);
-   else windowPedimentFlatFront(x,FLOOR_Y[2]+4.58,z,2.70,.48);
+// V5.8 -- EIN einziger konsistenter Fassadenplan. Die Fenster werden nur hier erzeugt.
+const FRONT={z:13.05, outer:[-49,-41,-33,-25,-17,17,25,33,41,49],
+            doors:[-7.2,0,7.2], upper:[-7,0,7], high:[-5.2,5.2],
+            colX:[-10,-6,-2,2,6,10], colZ:18.45};
+function frontCutWindow(x,level,central=false){
+ const z=FRONT.z, base=FLOOR_Y[level]+.70, h=3.45, w=central?2.8:2.45;
+ const outerZ=z+.30;
+ // Layered stone reveals; their thickness remains inside the REAL opening in the curtain wall.
+ box(x,base+h/2,z+.035,w-.21,h-.08,.075,[.13,.19,.22],2);
+ box(x,base+h/2,z+.105,w-.32,h-.19,.025,[.22,.30,.34],2);
+ for(const side of [-1,1]){
+   box(x+side*(w/2-.04),base+h/2,z+.23,.19,h+.26,.48,ST2,9);
+   box(x+side*(w/2+.13),base+h/2,z+.36,.105,h+.28,.18,ST1,9);
  }
- for(let x of [-49,-41,-33,-25,-17,17,25,33,41,49]) windowPedimentFlatFront(x,FLOOR_Y[3]+4.46,z,2.36,.42);
- // Central windows and balcony door surrounds.
- for(let x of [-7,0,7]) windowPedimentTriFront(x,FLOOR_Y[2]+4.68,z,3.06,1.16,.56);
- for(let x of [-5.2,5.2]) windowPedimentFlatFront(x,FLOOR_Y[3]+4.54,z,2.62,.46);
- // Balustrade directly in front of the attic windows above the portico pediment base.
- balconyRail(-8.3,8.3,FLOOR_Y[3]+4.42,15.55);
- // Additional front quoin markers at the pavilion breaks so wall transitions read cleaner.
- for(let x of [-45.8,-26.0,26.0,45.8]){
-   for(let k=0;k<20;k++){
-     const yy=.86+k*.78; if(yy>16.65)break;
-     box(x,yy,13.08,.82,.54,.58,k%2?ST2:ST1);
+ // Sash / divided glazing; exact recurring bay-axis, no second offset window.
+ for(const n of [-1,0,1]) box(x+n*(w-.32)/4,base+h/2,z+.16,.063,h-.12,.13,ST2,8);
+ for(const t of [.32,.67]) box(x,base+h*t,z+.18,w-.24,.085,.13,ST2,8);
+ box(x,base-.11,z+.33,w+.55,.19,.71,ST2,9);
+ box(x,base+h+.14,z+.32,w+.61,.28,.67,ST2,9);
+ box(x,base+h+.31,z+.28,w+.77,.115,.58,ST1,9);
+ // Corbel & voussoir crown placed BELOW the next storey's cornice.
+ if(level===1){
+   box(x,base+h+.47,z+.36,w+.64,.13,.56,ST1,9);
+   for(const side of [-1,1])box(x+side*(w/2+.14),base+h+.26,z+.30,.20,.37,.38,ST1,9);
+ }else if(level===2){
+   const y=base+h+.36, zw=z+.64;
+   tri([x-(w+.40)/2,y,zw],[x+(w+.40)/2,y,zw],[x,y+.40,zw],ST2,9);
+   box(x,y-.04,z+.36,w+.60,.13,.74,ST2,9);
+ }else{
+   box(x,base+h+.37,z+.34,w+.53,.16,.55,ST1,9);
+ }
+}
+function frontDoubleDoor(x){
+ const z=FRONT.z, y=FLOOR_Y[1]+.08, h=4.50, w=3.55;
+ // The EG opening has NO 70-cm sill; the doors stand on the terrace.
+ box(x,y+h/2,z+.03,w-.10,h-.08,.10,[.14,.09,.064],3);
+ for(const side of [-1,1]){
+   const dx=x+side*(w-.16)/4;
+   box(dx,y+h/2,z+.16,(w-.28)/2-.07,h-.20,.10,[.32,.195,.115],3);
+   for(let k=0;k<3;k++){
+     let yy=y+.75+k*1.17;
+     box(dx,yy,z+.245,(w-.38)/2-.32,.047,.06,[.46,.30,.19],3);
+     for(const sx of [-1,1])box(dx+sx*(w-.67)/4,yy,z+.247,.055,.69,.055,[.43,.27,.15],3);
    }
+   sphere(x+side*.17,y+2.20,z+.31,.085,GILD,4,6,10);
  }
+ box(x,y+h/2,z+.15,.10,h-.25,.18,ST0,9);
+ for(const side of [-1,1]){
+    box(x+side*w/2,y+h/2,z+.29,.29,h+.18,.57,ST2,9);
+    box(x+side*(w/2+.20),y+h/2,z+.38,.11,h+.22,.35,ST1,9);
+ }
+ box(x,y+h+.17,z+.36,w+.66,.31,.83,ST2,9);
+ box(x,y+h+.43,z+.34,w+.88,.12,.72,ST1,9);
 }
+function classicalPorticoColumn(x,z){
+ const base=.82, top=20.53, r=.88, n=DETAIL===1?18:30;
+ // height / shaft diameter ~= 10.6 ; old very thin 19m poles replaced.
+ box(x,base+.10,z,2.12,.20,2.12,ST2,9);
+ cylinder(x,base+.34,z,1.08,1.08,.32,ST2,9,n);
+ cylinder(x,base+.58,z,.98,.88,.19,ST1,8,n);
+ cylinder(x,(base+top)/2,z,.85,.75,top-base-1.45,ST1,8,n);
+ // flutes terminate below echinus, never pass through the abacus.
+ if(DETAIL>1){
+    for(let i=0;i<16;i++){
+      let a=i*2*Math.PI/16;
+      cylinder(x+Math.cos(a)*.82,(base+top)/2,z+Math.sin(a)*.82,.042,.039,top-base-2.05,ST2,8,6);
+    }
+ }
+ cylinder(x,top-.52,z,.77,.94,.25,ST1,9,n);
+ cylinder(x,top-.27,z,.96,1.12,.28,ST2,9,n);
+ box(x,top-.09,z,2.27,.32,2.22,ST2,9);
+ box(x,top+.105,z,2.46,.13,2.40,ST1,9);
+}
+function porticoGable(){
+ const front=20.20,back=16.00, base=21.40, apex=25.47,half=13.16;
+ // Solid, finite-depth tympanum; raked cornices meet precisely at the apex.
+ tri([-half,base,front],[half,base,front],[0,apex,front],ST2,9);
+ tri([half,base,back],[-half,base,back],[0,apex,back],ST2,9);
+ quad([-half,base,back],[half,base,back],[half,base,front],[-half,base,front],ST1,9);
+ quad([-half,base,front],[0,apex,front],[0,apex,back],[-half,base,back],ST2,9);
+ quad([half,base,front],[half,base,back],[0,apex,back],[0,apex,front],ST2,9);
+ mbeam([-half,base+.06,front+.09],[0,apex+.075,front+.09],.12,ST1,9);
+ mbeam([0,apex+.075,front+.09],[half,base+.06,front+.09],.12,ST1,9);
+ // Simple relief cartouche in the tympanum, behind rather than cutting through the cornice.
+ sphere(0,base+1.58,front+.12,.54,ST1,9,8,14);
+ sphere(0,base+1.58,front+.20,.30,ST0,9,8,12);
+}
+function addFrontFacade(){
+ const z=FRONT.z;
+ // All 10 side windows have identical axes on EG, 1. OG and 2. OG.
+ for(let level=1;level<=3;level++)for(const x of FRONT.outer)frontCutWindow(x,level);
+ // Middle three entrances align with the three windows above them.
+ for(const x of FRONT.doors)frontDoubleDoor(x);
+ for(const x of FRONT.upper)frontCutWindow(x,2,true);
+ for(const x of FRONT.high)frontCutWindow(x,3,true);
+ // Real projecting stone piers at the corps de logis boundaries: never behind window glass.
+ for(const x of [-12.55,12.55]){
+    box(x,10.85,13.64,1.03,20.22,1.26,ST1,9);
+    for(const yy of [5.56,10.82,16.13,20.75])box(x,yy,13.85,1.26,.27,1.35,ST2,9);
+ }
+ // Distributed wall buttresses land only in the bay SPANDRELS, not in the apertures.
+ const pierX=[-53,-45,-37,-29,-21,-13,13,21,29,37,45,53];
+ for(const x of pierX){
+    if(Math.abs(x)===13)continue;
+    box(x,9.13,z+.21,.48,16.55,.42,ST2,9);
+    box(x,16.32,z+.29,.65,.28,.54,ST1,9);
+ }
+ // One consistent cornice profile across every front bay.
+ for(const yy of [5.55,10.80,16.13]){
+   box(0,yy,z+.37,110.24,.27,.91,ST2,9);
+   box(0,yy+.20,z+.39,110.12,.105,.74,ST1,9);
+   box(0,yy-.23,z+.25,110.22,.085,.58,ST0,9);
+ }
+ // Entrance terrace sits flush with the EG floor. Six rising treads connect to grass.
+ box(0,.60,16.95,26.80,.22,8.12,ST2,5);
+ box(0,.72,16.95,26.50,.06,8.05,ST1,5);
+ for(let i=0;i<6;i++){
+   const height=.12*(i+1), cz=24.65-i*.70;
+   box(0,height*.5,cz,25.10,height,.71,ST2,5);
+   box(0,height+.012,cz,25.12,.024,.72,ST1,5);
+ }
+ for(const x of [-13.40,13.40]){
+    box(x,.75,18.50,.35,1.50,3.9,ST2,9);
+    box(x,1.54,18.50,.50,.17,4.00,ST1,9);
+ }
+ for(const x of FRONT.colX)classicalPorticoColumn(x,FRONT.colZ);
+ // The full entablature sits ON the capitals, not inside their shafts.
+ box(0,20.77,17.53,26.68,.30,5.62,ST2,9);
+ box(0,21.02,17.53,27.08,.20,5.70,ST1,9);
+ box(0,21.20,17.53,27.36,.20,5.82,ST2,9);
+ for(const x of FRONT.colX)box(x,20.95,20.05,2.15,.28,.38,ST1,9);
+ porticoGable();
+}
+
+// Intentionally no secondary frontRefinement pass. Every architectural element
+// of the front is assembled once from the same 110 m bay plan.
+function addFrontRefinement(){}
 
 function addRearFacade(){
  const z=-13.05;
@@ -397,7 +477,7 @@ function addMassingAndFloors(){
 }
 
 function addShellAndCollision(){
- const mainWindowX=[-49,-41,-33,-25,-17,17,25,33,41,49];
+ const mainWindowX=FRONT.outer;
  const mainWindowZ=[-8,-2,4,10],wingWindowZ=[-55,-48,-41,-34,-27,-20];
  for(let l=0;l<5;l++){
    const y=FLOOR_Y[l],h=FLOOR_H[l];
@@ -420,8 +500,8 @@ function addShellAndCollision(){
      // Split front at portico: never overlap openings or duplicate window centres.
      wallWithOpeningsX(-55,-12.5,13.05,y,h,mainWindowX.filter(x=>x< -13),2.45,.70,3.45);
      wallWithOpeningsX(12.5,55,13.05,y,h,mainWindowX.filter(x=>x>13),2.45,.70,3.45);
-     const centers=l===1?[-7.2,0,7.2]:l===2?[-7,0,7]:[-5.2,5.2];
-     wallWithOpeningsX(-12.5,12.5,13.05,y,h,centers,l===1?3.48:2.80,.70,3.55);
+     const centers=l===1?FRONT.doors:l===2?FRONT.upper:FRONT.high;
+     wallWithOpeningsX(-12.5,12.5,13.05,y,h,centers,l===1?3.62:2.80,l===1?0:.70,l===1?4.60:3.45);
      wallWithOpeningsX(-55,55,-13.05,y,h,mainWindowX,2.2,.70,3.36);
      for(let x of [-55,55])wallWithOpeningsZ(x,-13.05,13.05,y,h,mainWindowZ,2.10,.72,3.10);
      for(let x of [-45.8,-26,26,45.8])wallWithOpeningsZ(x,-61.8,-13.0,y,h,wingWindowZ,2.10,.72,3.10);
@@ -509,17 +589,6 @@ function addCornerStonework(){
       box(cornerX,y+.23,frontZ,.92,.075,.94,ST0);
     }
   }
-  // Limestone keystones and frieze panels across the ceremonial elevation.
-  for(let x of [-47,-39,-31,-23,-17,-9,9,17,23,31,39,47]){
-    for(let l=1;l<=3;l++){
-      const y=FLOOR_Y[l]+4.25;
-      box(x,y,13.53,.52,.30,.30,ST2);
-      if(DETAIL>1)flower(x,y+.35,13.55,.16);
-    }
-  }
-  for(let x of [-50,-42,-34,-26,26,34,42,50]){
-    box(x,15.98,13.45,1.22,.25,.42,ST2);
-  }
   // Roofline finials / parapet stone pads at spaced intervals.
   for(let x=-52;x<=52;x+=5.2){
     box(x,17.03,13.15,.54,.28,.60,ST2);
@@ -529,10 +598,10 @@ function addCornerStonework(){
 
 function addDetailsAndZones(){
  // cornice bands
- for(let y of [5.45,10.70,15.95]){ trimBand(0,y,13.15,110.4,.62,.23,ST2); trimBand(0,y,-13.15,110.4,.62,.23,ST2); }
+ for(let y of [5.45,10.70,15.95]){ trimBand(0,y,-13.15,110.4,.62,.23,ST2); }
  for(let y of [5.45,10.70,15.95]){ trimBand(36,y,-61.1,19.9,.62,.23,ST2); trimBand(-36,y,-61.1,19.9,.62,.23,ST2); trimBand(0,y,-61.95,52.2,.62,.23,ST2); trimBand(0,y,-77.65,91.8,.62,.23,ST2); }
  // lower pedestal / watertable bands so the walls feel grounded and continuous.
- pedestalBandFront(-55,55,.92,13.05,.72); pedestalBandBack(-55,55,.92,-13.05,.72);
+ pedestalBandBack(-55,55,.92,-13.05,.72);
  pedestalBandFront(26.0,45.8,.92,-61.8,.72); pedestalBandFront(-45.8,-26.0,.92,-61.8,.72);
  pedestalBandBack(26.0,45.8,.92,-13.0,.72); pedestalBandBack(-45.8,-26.0,.92,-13.0,.72);
  pedestalBandFront(-26.0,26.0,.92,-61.8,.72); pedestalBandBack(-45.8,45.8,.92,-77.8,.72);
@@ -545,7 +614,7 @@ function addDetailsAndZones(){
  addFrontFacade(); addRearFacade(); addSideFacades(); addWingInnerFacades(); addCornerStonework(); addFrontRefinement();
  // façade articulation for the long exterior walls so the shell reads as built masonry, not flat plates.
  const y0=FLOOR_Y[1], y1=16.9;
- for(let x of [-52,-44,-36,-28,-20,-12,-4,4,12,20,28,36,44,52]) facadePilasterFront(x,y0,y1,13.05,.52,.52);
+ // Front bay spandrels are created exclusively in addFrontFacade().
  for(let x of [-52,-44,-36,-28,-20,-12,-4,4,12,20,28,36,44,52]) facadePilasterBack(x,y0,y1,-13.05,.52,.52);
  for(let z of [-10,-4,2,8]){ sidePilaster(55.05,y0,y1,z,-1,.50,.52); sidePilaster(-55.05,y0,y1,z,1,.50,.52); }
  for(let z of [-54,-46,-38,-30,-22,-14]){ sidePilaster(45.8,y0,y1,z,-1,.50,.52); sidePilaster(26.0,y0,y1,z,1,.50,.52); sidePilaster(-45.8,y0,y1,z,1,.50,.52); sidePilaster(-26.0,y0,y1,z,-1,.50,.52); }

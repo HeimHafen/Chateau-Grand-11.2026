@@ -1,7 +1,7 @@
 {
-  "version": "5.7",
-  "file": "models/Chateau-Grand-V5.7-Geometrie.glb",
-  "triangles": 176486,
+  "version": "5.8",
+  "file": "models/Chateau-Grand-V5.8-Frontfassade.glb",
+  "triangles": 138575,
   "format": "GLB",
-  "note": "Vertexfarbiger Rohgeometrie-Export; die PBR-Texturen und der Echtzeit-Shader liegen im Spielprojekt."
+  "note": "Neu aus der V5.8-Spielgeometrie exportiert. Vertexfarben; Echtzeit-PBR-Materialien nur in der WebGL-Spielversion."
 }

@@ -1,0 +1,14 @@
+{
+  "triangles": 138575,
+  "vertexCount": 415725,
+  "roomZones": 270,
+  "levels": [
+    54,
+    54,
+    54,
+    54,
+    54
+  ],
+  "detail": 1,
+  "collisionWalls": 732
+}

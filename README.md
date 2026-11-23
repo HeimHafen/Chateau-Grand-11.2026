@@ -1,40 +1,35 @@
-# CHÂTEAU GRAND V5.7 — ARCHITEKTURREVISION
+# CHÂTEAU GRAND V5.8 — FRONTFASSADE
 
-Spielbares Château-Projekt für GitHub Pages / Safari auf iPhone. Schwerpunkt dieser Version: Außenhülle, nicht Innenausbau.
+Spielbares Château-Projekt für GitHub Pages / iPhone Safari auf Basis der V5.7. **In diesem Schritt wurde nur die Frontarchitektur überarbeitet.** Die übrigen Bereiche warten auf spätere, einzelne Konstruktionsschritte.
 
-## Einrichtung — wichtig!
+## Installieren
 
-Dieses ZIP hat **KEINEN übergeordneten Projektordner**. Entpacke es zuerst und kopiere **direkt** `index.html`, `README.md`, `src/`, `assets/`, `models/`, `docs/` sowie `IMPORTIEREN.txt` in das **Hauptverzeichnis** deines bestehenden GitHub-Repositories `Chateau-Grand-2027`.
+Das ZIP enthält **keinen zusätzlichen Oberordner**. Archiv entpacken; `index.html`, `src/`, `assets/`, `models/`, `docs/` und die Textdateien **direkt** im Stammverzeichnis deines bestehenden GitHub-Repositories `Chateau-Grand-2027` ablegen. Vorhandene gleichnamige Dateien ersetzen. In Working Copy Commit → Push. Unter GitHub Settings → Pages den Branch `main`, Ordner `/ (root)` nutzen.
 
-Die vorhandene `index.html`, den bisherigen `src`-Ordner und die restlichen gleichnamigen Dateien ersetzen. Falls noch ein alter Ordner `CHATEAU-GRAND-V5.6-...` oder `CHATEAU-GRAND-V5.5-...` im Hauptverzeichnis liegt: Nicht dort hineinkopieren. Solche alten Zusatzordner sind für das Spiel nicht erforderlich.
+Nach dem Deploy die vorhandene GitHub-Pages-Adresse mit `?v=58` laden. In der oberen rechten Ecke muss **GRAND CHÂTEAU · V5.8** stehen. Nicht in einen zusätzlichen Unterordner kopieren.
 
-In Working Copy: Commit → Push. Für GitHub Pages: Settings → Pages → Deploy from branch → `main` → `/ (root)`.
+## Ausschließlich die Front wurde neu konstruiert
 
-Öffne danach die bekannte GitHub-Pages-Spieladresse mit `?v=57` im Browser. Oben rechts muss **GRAND CHÂTEAU · V5.7** stehen. Falls V5.6 angezeigt wird, enthält das Root-`index.html` noch eine alte Version oder Pages wurde noch nicht aktualisiert.
+- Einheitlicher, spiegelgleicher 110-m-Fassadenplan mit zehn äußeren Fensterachsen in allen drei Vollgeschossen.
+- Die Wandöffnungen und die sichtbaren Fensterrahmen verwenden exakt dieselben Achsen und Breiten; keine unabhängigen Dekorationsfenster mehr.
+- Drei mittige, zweiflügelige Eingangstüren sitzen auf der Terrasse in **schwellenfreien Wandöffnungen**, statt in geschlossenen 70-cm-Brüstungen.
+- Sechs klassisch proportionierte Säulen mit Basen, Kapitellen und abgestimmtem Gebälk.
+- Dreiecksgiebel mit definierter Tiefe und verbundenen Giebelkanten; die zuvor doppelt montierten Fassadenverzierungen auf der Front wurden entfernt.
+- Kontinuierliches Hauptgesims über den Frontachsen, Steinlaibungen, Sohlbänke, Fensterunterteilungen sowie ein sechsfach abgestuftes Zugangsprofil.
 
-## Geometrie-Änderungen gegenüber V5.6
+Die Seitentrakte, die restliche Dachlandschaft, die Kuppel, Hofseite und Räume wurden absichtlich nicht neu konstruiert. Die hohen Qualitätsziele für das Gesamtgebäude sind noch nicht erreicht.
 
-- Aus den 70-cm-Lücken zwischen den Etagen wurden durchgehende Außenwände.
-- Die künstlichen Dachgeschoss-Außenwände, die durch die Dachflächen schnitten, wurden durch innenliegende Dachgeschoss-Kniestöcke ersetzt.
-- Den kompletten vierseitigen Dachlandschaften wurden echte geneigte obere Hippedächer statt einer weitgehend ebenen Dachplatte gegeben.
-- Seitenflügel-Gauben schauen nun zur richtigen Seite, statt quer durch die Dachhaut zu ragen.
-- Fehlerhaft um 90° vertauschte seitliche Gesimsbalken wurden korrigiert. Sie verursachten die störenden weißen Stäbe an den Flügeln.
-- Die rückwärtige Verbindung wurde auf ganze Flügelbreite erweitert, sodass ein durchgehender vierseitiger Innenhof entsteht.
-- Frontfensteröffnungen wurden nach unterschiedlichen Achsrasterbereichen aufgeteilt, damit Öffnungen sich nicht mehr überschneiden.
-- Portikus mit sechs stärkeren Säulen, erneuerter Kuppel-/Eckpavillonzone und drei Eingangstüren.
-- Symmetrischer Kiesweg, Grünbeete und Wege im Innenhof; 720 × 720 m Rasenlandschaft bleibt erhalten.
+## Dateien
 
-## Aufbau
+- `index.html` — Einstieg der Browser-Spielversion
+- `src/architecture.js` — **aktive Geometrie** einschließlich der überarbeiteten Front
+- `src/app.js` — Renderer/Kamera/Steuerung der bisherigen Version
+- `src/style.css` — unverändertes Interface
+- `assets/materials/` — alle 14 zuvor enthaltenen Bildmaterialien
+- `models/Chateau-Grand-V5.8-Frontfassade.glb` — unabhängiger, **neu erzeugter Export der gesamten mobilen Geometrie**, nicht nur der Front
+- `docs/FRONT-KONSTRUKTION.json` — verbindliche Fenster- und Säulenachsen
+- `docs/TECHNIK-V5.8.json` — Geometrietest
 
-`index.html` startet das Spiel. Die gerenderte Geometrie wird in `src/architecture.js` erzeugt; `src/app.js` enthält WebGL2, Kameras und Bedienung. `src/style.css` enthält das UI. 14 Materialdateien unter `assets/materials/` müssen mit hochgeladen werden. `models/Chateau-Grand-V5.7-Geometrie.glb` ist ein eigenständiger, farbiger Export der mobilen Geometrie zur Kontrolle/Weiterbearbeitung; die Laufzeit-App verwendet die JS-Geometrie und separaten Materialtexturen.
+**Validierung:** Geometrie wurde aus dem tatsächlichen Architektur-JavaScript erzeugt, auf endliche Koordinaten geprüft und als GLB wieder eingelesen. 138.575 Dreiecke in der mobilen Standardeinstellung; 270 Raum-Zoneneinträge (keine fertig eingerichteten Zimmer). Die beigefügten separaten Kontrollansichten sind keine Safari-Spiel-Screenshots. WebGL auf dem echten iPhone noch zu überprüfen.
 
-## Prüfung und Grenzen
-
-- JavaScript-Syntax der beiden JS-Dateien geprüft.
-- Mobile Geometrie erzeugt und als 176.486 Dreiecke mit 270 Zoneneinträgen gezählt; das sind **keine 270 ausgestatteten Räume**.
-- Eigenständigen GLB-Export wieder eingelesen und die Dreieckszahl kontrolliert.
-- Vier externe Kontrollrenderings aus derselben Modellgeometrie erstellt; das sind keine direkten iPhone-Screenshots.
-
-**Wichtig:** V5.7 ist eine deutlich verbesserte Architekturgrundlage, aber **noch kein garantiert zu 85 % fotorealistisches / vollständig fehlerfreies Schloss**. Auf dem iPhone ist diese Neufassung noch nicht live geprüft worden. Freier Innenrundgang bleibt vorläufig und einige Dach-/Fassadendetails sind vereinfacht.
-
-Die Materialtexturen stammen aus einer zuvor bereitgestellten Projektdatei. Lizenzen vor kommerzieller Nutzung unabhängig prüfen.
+**Lizenzhinweis:** Die Bildmaterialien stammen aus der früher bereitgestellten Projektdatei. Vor kommerzieller Veröffentlichung die Nutzungsrechte überprüfen.
