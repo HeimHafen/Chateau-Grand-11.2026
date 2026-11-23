@@ -50,10 +50,10 @@ async function run(){
   glass.needsUpdate=true;
   // Verify that we really used donor assets, not a recreated imitation.
   if(chateau.originalPortico.children.length<17)throw Error('Originalportikus aus MaxGame wurde unvollständig übernommen.');
-  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'2.2',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls};
-  document.getElementById('version').textContent='MAXGAME-PALAST · 2.2';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'2.3',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls};
+  document.getElementById('version').textContent='MAXGAME-PALAST · 2.3';
   start.disabled=false;start.textContent='Château erkunden';
-  status.textContent='Château geladen · Historische Roissy-Grundrisse EG + 1. OG; echte durchsichtige Fenster.';
+  status.textContent='Château geladen · Roissy-Grundrisse nach hochauflösender Vorlage nachgearbeitet · durchsichtige Fenster.';
   resize();view('angle');
   start.addEventListener('click',()=>{splash.hidden=true;renderer.shadowMap.needsUpdate=true;}, {once:true});
   requestAnimationFrame(frame);
@@ -185,7 +185,7 @@ function frame(ms){
       // Guard actual first-floor open voids: the player cannot walk over air.
       if(activeWalkingFloor==='og'){
         if(x>-24.4&&x<24.4&&z>-19.5&&z<-4.3)return true;
-        if(x>-46.7&&x<-36.1&&z>-4.3&&z<15.2)return true;
+        if(x>-54.0&&x<-29.0&&z>-4.3&&z<15.6)return true;
       }
       // Keep interior-mode navigation in the historically planned corps de logis.
       return x<-111.6||x>111.6||z<-20.6||z>20.6;

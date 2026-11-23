@@ -1,5 +1,5 @@
 /**
- * CHÂTEAU GRAND 2027 — PALAST 2.2 / ROISSY-EG+1.OG
+ * CHÂTEAU GRAND 2027 — PALAST 2.3 / ROISSY-PLANABGLEICH
  * Monumental, courtyard-based French palace. Entire exterior is assembled with
  * instanced ashlar modules, real (non-decals) window holes, MaxGame PBR stone,
  * authentic donor portico geometry, and roof pavilions with copper domes.
@@ -252,10 +252,11 @@ export function buildChateau(THREE, scene, donor, mats, glass){
       // as 'Salon du Rez-de-Chaussee': preserve the double-height salon void.
       if(f===main&&yy===10.96){
         // Western range: real cut-out for the Grand Escalier (not a blocked stair).
-        cube('base',-79.025,yy-.06,0,65.45,.16,41.2);
-        cube('base',-32.125,yy-.06,0,8.75,.16,41.2);
-        cube('base',-41.4,yy-.06,-12.4,9.80,.16,16.4);
-        cube('base',-41.4,yy-.06,17.90,9.80,.16,5.4);
+        // Full-width west stair bay: slab is absent between flights; the
+        // full-width landing survives at the front and at the rear.
+        cube('base',-83.25,yy-.06,0,56.6,.16,41.2);
+        cube('base',-41.5,yy-.06,-12.3,26.5,.16,16.0);
+        cube('base',-41.5,yy-.06,18.15,26.5,.16,4.8);
         cube('base',70.25,yy-.06,0,83.0,.16,41.2);
         // GALLERY around the central salon: real double-height open volume.
         cube('base',0,yy-.06,8.10,55.5,.16,24.9);
@@ -297,46 +298,61 @@ export function buildChateau(THREE, scene, donor, mats, glass){
     stringer.name=sign<0?'Geschwungene_linke_Treppenwange':'Geschwungene_rechte_Treppenwange';
     stringer.castShadow=true;palace.add(stringer);
   }
-  // Le Rouge (1776): Roissy EG / 1. OG, mapped to the 224 x 42 m main palace.
-  // Historic engraving x proportions are respected; dimensions are scaled for the
-  // monumental fantasy palace. This is NOT a millimetre-accurate historic CAD plan.
+  // Roissy floor plans: revised against the user-supplied high-resolution engraving.
+  // Input: chateau/docs/CHATEAU-DE-ROISSY-REFERENZ-HOCHAUFLOESEND.jpg
+  // Historical drawing's seven primary rear room-bays and the asymmetrical
+  // front-side service suites now guide the partitions, independently on both levels.
+  // The 224 × 42 m fantasy shell and central portico differ from the historic palace.
+  // Geometry here is an adaptation, not a traced 1:1 archival reconstruction.
   function buildRoissyFloor(f){
     const isEG=f==='eg', base=isEG?4.72:11.05,top=isEG?10.78:17.15;
     const H=top-base, t=.48;
     const roomDefs=isEG ? [
-      ['Cabinet',-111,-89,-20.3,-4.2],
-      ['Chambre à coucher',-88.6,-54.8,-20.3,-4.2],
+      // REZ-DE-CHAUSSEE — garden side, left-to-right as on the engraving.
+      ['Cabinet',-111.0,-89.4,-20.3,-4.2],
+      ['Chambre à coucher',-89.0,-54.8,-20.3,-4.2],
       ['Antichambre',-54.4,-28.2,-20.3,-4.2],
-      ['Grand Salon',-27.8,27.8,-20.3,-4.2],
+      ['Salon',-27.8,27.8,-20.3,-4.2],
       ['Antichambre',28.2,51.8,-20.3,-4.2],
       ['Chambre de parade',52.2,84.6,-20.3,-4.2],
-      ['Grand Cabinet',85,111,-20.3,-4.2],
-      ['Logement concierge',-111,-91.5,-3.7,19.9],
-      ['Lingerie',-91.1,-55,-3.7,8.1],
-      ['Passage de service',-91.1,-55,8.5,20.1],
+      // Grand Cabinet d'Assemblée occupies both rear and part of the front bay.
+      ['Grand Cabinet d’Assemblée',85.0,111.0,-20.3,8.2],
+      // REZ-DE-CHAUSSEE — arrival/working side, more finely resolved from plate.
+      ['Garde-robe',-111.0,-91.6,-3.7,2.7],
+      ['Logement du concierge',-111.0,-91.6,3.1,9.5],
+      ['Conciergerie',-111.0,-91.6,9.9,20.1],
+      ['Lingerie',-91.1,-55.0,-3.7,8.1],
+      ['Passage',-91.1,-55.0,8.5,20.1],
       ['Grand escalier',-54.6,-28.2,-3.7,20.1],
       ['Vestibule',-27.8,27.8,-3.7,20.1],
       ['Salle à manger',28.2,57.8,-3.7,20.1],
-      ['Antichambre',58.2,84.6,-3.7,20.1],
-      ['Cabinet de musique',85,111,-3.7,20.1],
+      ['Escalier secondaire',58.2,84.6,-3.7,2.3],
+      ['Antichambre',58.2,84.6,2.7,20.1],
+      ['Cabinet de musique',85.0,111.0,8.6,20.1],
     ] : [
-      ['Cabinet privé',-111,-89,-20.3,-4.2],
-      ['Chambre à coucher',-88.6,-54.8,-20.3,-4.2],
+      // PREMIER ETAGE — the Salon du Rez-de-Chaussee is represented as a VOID.
+      ['Chambre à coucher (aile ouest)',-111.0,-89.4,-20.3,-7.2],
+      ['Chambre à coucher',-89.0,-54.8,-20.3,-4.2],
       ['Antichambre',-54.4,-28.2,-20.3,-4.2],
-      ['Vide sur le salon du rez-de-chaussée',-27.8,27.8,-20.3,-4.2],
-      ['Antichambre commune',28.2,51.8,-20.3,-4.2],
-      ['Chambre à coucher',52.2,84.6,-20.3,-4.2],
-      ['Cabinet et garde-robe',85,111,-20.3,-4.2],
-      ['Cabinet privé',-111,-91.5,-3.7,8.1],
-      ['Chambre à coucher',-111,-91.5,8.5,20.1],
-      ['Chambre à coucher',-91.1,-55,-3.7,20.1],
+      ['Vide sur le Salon du Rez-de-Chaussée',-27.8,27.8,-20.3,-4.2],
+      ['Antichambre commune',28.2,57.8,-20.3,-4.2],
+      ['Chambre à coucher',58.2,84.6,-20.3,-4.2],
+      ['Cabinet (aile est)',85.0,111.0,-20.3,-12.8],
+      ['Garde-robe (aile est)',85.0,111.0,-12.4,-4.2],
+      // PREMIER ETAGE — below the rear row on the plan.
+      ['Antichambre (aile ouest)',-111.0,-91.6,-6.8,-1.4],
+      ['Cabinet (aile ouest)',-111.0,-91.6,-1.0,5.0],
+      ['Chambre à coucher (aile ouest)',-111.0,-91.6,5.4,20.1],
+      ['Chambre à coucher (escalier ouest)',-91.1,-55.0,-3.7,20.1],
       ['Grand escalier',-54.6,-28.2,-3.7,20.1],
-      ['Vestibule et galerie',-27.8,27.8,-3.7,20.1],
-      ['Garde-robe',28.2,57.8,-3.7,8.1],
-      ['Chambre à coucher',28.2,57.8,8.5,20.1],
-      ['Passage de service',58.2,84.6,-3.7,20.1],
-      ['Cabinet de toilette',85,111,-3.7,8.1],
-      ['Chambre à coucher',85,111,8.5,20.1],
+      ['Vestibule / galerie',-27.8,27.8,-3.7,20.1],
+      ['Garde-robe',28.2,57.8,-3.7,4.0],
+      ['Chambre à coucher',28.2,57.8,4.4,20.1],
+      ['Passage',58.2,84.6,-3.7,3.4],
+      ['Garde-robe',58.2,84.6,3.8,9.1],
+      ['Cabinet',58.2,84.6,9.5,20.1],
+      ['Chambre à coucher (aile est)',85.0,111.0,-3.7,8.4],
+      ['Cabinet (aile est, sud)',85.0,111.0,8.8,20.1],
     ];
     roomDefs.forEach(([name,x0,x1,z0,z1])=>rooms[f].push({name,x:(x0+x1)/2,z:(z0+z1)/2,w:x1-x0,d:z1-z0,level:isEG?0:1}));
     // Stone or timber doorways are real gaps; each split section gets a framed lintel.
@@ -366,7 +382,8 @@ export function buildChateau(THREE, scene, donor, mats, glass){
     // The 1776 engraving puts large reception rooms on the rear/garden side;
     // front row is vestibule/stair and services. Do not fill every connection.
     if(isEG){
-      wallX(-111.4,111.4,-3.90,[-97,-72,-42,0,40,71,98]);
+      // The large eastern assembly cabinet spans the rear/front cross-line.
+      wallX(-111.4,84.8,-3.90,[-97,-72,-42,0,40,71]);
     }else{
       // In the upper plan this is a balustraded gallery above the salon, not
       // a thick solid wall separating vestibule from the void.
@@ -383,14 +400,20 @@ export function buildChateau(THREE, scene, donor, mats, glass){
     for(const x of frontDividers)wallZ(x,-3.70,20.55,[8.6]);
     // Subdivided service quarters and first-floor dressing rooms, visible in plan.
     if(isEG){
+      wallX(-111.2,-91.5,2.9,[-101]);
+      wallX(-111.2,-91.5,9.7,[-101]);
       wallX(-91.1,-54.8,8.3,[-73]);
-      wallX(-111.2,-91.5,8.3,[-101]);
-      wallX(57.9,84.7,8.3,[70]);
+      wallX(58.0,84.7,2.5,[71]);
+      wallX(84.8,111.2,8.4,[98]);
     }else{
-      wallX(-111.2,-91.5,8.3,[-101]);
-      wallX(28.1,57.9,8.3,[43]);
-      wallX(84.8,111.2,8.3,[97]);
-      wallX(-55,-28.2,8.3,[-42]);
+      wallX(-111.2,-91.5,-7.0,[-101]);
+      wallX(-111.2,-91.5,-1.2,[-101]);
+      wallX(-111.2,-91.5,5.2,[-101]);
+      wallX(28.1,57.9,4.2,[43]);
+      wallX(58.1,84.7,3.6,[70]);
+      wallX(58.1,84.7,9.3,[70]);
+      wallX(84.8,111.2,-12.6,[98]);
+      wallX(84.8,111.2,8.6,[98]);
     }
     // Continuous outer walking surface is already provided by main palace slabs.
     // Room borders get visible noble-stone skirting on both sides.
@@ -401,23 +424,34 @@ export function buildChateau(THREE, scene, donor, mats, glass){
     }
     // The Grand Escalier occupies its historically identifiable western bay.
     // Start as an actual walkable 3D staircase; a future step will refine balusters.
-    const sx=-41.4,sz=4.0;
+    const stairW=6.8, sx1=-47.3, sx2=-35.2, stepsEach=12;
+    const rise=(11.05-4.72)/(2*stepsEach);
     if(isEG){
-      for(let i=0;i<23;i++){
-        const stepY=base+i*.278, z=sz+8.5-i*.72;
-        planCube(f,'paving',sx,stepY+.13,z,7.4,.26,.80);
-        planCube(f,'trim',sx,stepY+.275,z+.34,7.45,.034,.12);
+      // Real U-return staircase, following the horseshoe form on the scan.
+      for(let i=0;i<stepsEach;i++){
+        const ya=base+(i+1)*rise;
+        const za=14.1-i*1.20;
+        planCube(f,'paving',sx1,ya-.13,za,stairW,.24,1.23);
+        planCube(f,'trim',sx1,ya+.018,za+.53,stairW+.03,.036,.12);
+        const yb=base+(stepsEach+i+1)*rise;
+        const zb=.2+i*1.20;
+        planCube(f,'paving',sx2,yb-.13,zb,stairW,.24,1.23);
+        planCube(f,'trim',sx2,yb+.018,zb+.53,stairW+.03,.036,.12);
       }
-      for(const xx of [sx-4.05,sx+4.05]){
-        planCube(f,'win',xx,base+2.28,sz+1.0,.25,4.58,16.4);
+      // Half-height turnaround landing joins the two flights.
+      planCube(f,'paving',-41.25,base+stepsEach*rise-.12,-1.05,20.7,.24,2.3);
+      for(const xx of [sx1-stairW/2-.22,sx2+stairW/2+.22]){
+        planCube(f,'win',xx,base+3.2,6.7,.21,6.0,15.4);
       }
     }else{
-      // Upper landing is open toward the real stair void below.
-      for(const xx of [sx-4.76,sx+4.76]){
-        planCube(f,'trim',xx,base+1.11,5.1,.20,.18,18.2);
-        for(let z=-3.1;z<13.6;z+=1.30)planCube(f,'stone',xx,base+.55,z,.16,1.08,.16);
+      // A full-size landing at first-floor elevation; the stair void below
+      // is retained by the separately split structural floor plate.
+      planCube(f,'paving',-41.25,base+.04,17.4,21.9,.15,5.1);
+      for(const xx of [-52.2,-30.3]){
+        planCube(f,'trim',xx,base+1.08,5.0,.20,.18,20.4);
+        for(let z=-3.0;z<14.9;z+=1.34)
+          planCube(f,'stone',xx,base+.54,z,.17,1.08,.17);
       }
-      planCube(f,'paving',sx,base+.02,17.6,9.8,.15,5.0);
     }
     // First-floor mezzanine guard rail around the salon's 48x16 m open volume.
     if(!isEG){

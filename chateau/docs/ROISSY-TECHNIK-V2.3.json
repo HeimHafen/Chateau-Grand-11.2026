@@ -1,0 +1,22 @@
+{
+  "version": "2.3",
+  "basis": "Nutzerbild IMG_3327.jpeg, 1100 x 853 Pixel",
+  "models": {
+    "egRoomZones": 18,
+    "ogRoomZones": 21,
+    "grandStair": "U-return, 12+12 risers + middle landing",
+    "salonUpperFloor": "open atrium"
+  },
+  "integrityChecks": {
+    "validMeshes": true,
+    "glassInstances": 992,
+    "opaqueWindowBacking": 0,
+    "originalDonorPortico": 17
+  },
+  "limitations": [
+    "Geschossgeometrie auf 224 x 42 m Hauptbau adaptiert, keine 1:1 Messkonstruktion",
+    "Weitere kleine Servicekammern/Treppenhäuser nicht vollständig erfasst",
+    "Keine stufenweise Spielerhoehen-Kollision fuer Treppen",
+    "Kein iPhone Safari Test"
+  ]
+}
