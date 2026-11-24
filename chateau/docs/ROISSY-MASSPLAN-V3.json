@@ -1,0 +1,332 @@
+{
+  "id": "CHATEAU_ROISSY_PLAN_V3",
+  "status": "Historische Proportionen aus Planmaßstab abgeleitet; keine zentimetergenaue Bestandsvermessung",
+  "source": "Le Rouge, Plan du Rez-de-Chaussée / Premier Etage du Château de Roissy (1776)",
+  "sourceToiseApproxM": 1.94904,
+  "dimensions": {
+    "width": 54.0,
+    "depth": 23.0,
+    "groundFloor": 1.08,
+    "firstFloor": 6.78,
+    "cornice": 12.26,
+    "ridge": 16.65
+  },
+  "rooms": {
+    "eg": [
+      {
+        "name": "Cabinet",
+        "x": -24.155,
+        "z": -6.708,
+        "w": 5.207,
+        "d": 8.817,
+        "level": 0
+      },
+      {
+        "name": "Chambre à coucher",
+        "x": -17.333,
+        "z": -6.708,
+        "w": 8.245,
+        "d": 8.817,
+        "level": 0
+      },
+      {
+        "name": "Antichambre",
+        "x": -9.956,
+        "z": -6.708,
+        "w": 6.316,
+        "d": 8.817,
+        "level": 0
+      },
+      {
+        "name": "Salon",
+        "x": 0.0,
+        "z": -6.708,
+        "w": 13.404,
+        "d": 8.817,
+        "level": 0
+      },
+      {
+        "name": "Antichambre",
+        "x": 9.643,
+        "z": -6.708,
+        "w": 5.689,
+        "d": 8.817,
+        "level": 0
+      },
+      {
+        "name": "Chambre de parade",
+        "x": 16.489,
+        "z": -6.708,
+        "w": 7.811,
+        "d": 8.817,
+        "level": 0
+      },
+      {
+        "name": "Grand Cabinet d’Assemblée",
+        "x": 23.625,
+        "z": -3.313,
+        "w": 6.268,
+        "d": 15.607,
+        "level": 0
+      },
+      {
+        "name": "Garde-robe",
+        "x": -24.421,
+        "z": -0.274,
+        "w": 4.677,
+        "d": 3.505,
+        "level": 0
+      },
+      {
+        "name": "Logement du concierge",
+        "x": -24.421,
+        "z": 3.45,
+        "w": 4.677,
+        "d": 3.505,
+        "level": 0
+      },
+      {
+        "name": "Conciergerie",
+        "x": -24.421,
+        "z": 8.214,
+        "w": 4.677,
+        "d": 5.586,
+        "level": 0
+      },
+      {
+        "name": "Lingerie",
+        "x": -17.61,
+        "z": 1.205,
+        "w": 8.703,
+        "d": 6.462,
+        "level": 0
+      },
+      {
+        "name": "Passage",
+        "x": -17.61,
+        "z": 7.831,
+        "w": 8.703,
+        "d": 6.352,
+        "level": 0
+      },
+      {
+        "name": "Grand escalier",
+        "x": -9.98,
+        "z": 4.49,
+        "w": 6.364,
+        "d": 13.033,
+        "level": 0
+      },
+      {
+        "name": "Vestibule",
+        "x": 0.0,
+        "z": 4.49,
+        "w": 13.404,
+        "d": 13.033,
+        "level": 0
+      },
+      {
+        "name": "Salle à manger",
+        "x": 10.366,
+        "z": 4.49,
+        "w": 7.136,
+        "d": 13.033,
+        "level": 0
+      },
+      {
+        "name": "Escalier secondaire",
+        "x": 17.213,
+        "z": -0.383,
+        "w": 6.364,
+        "d": 3.286,
+        "level": 0
+      },
+      {
+        "name": "Antichambre",
+        "x": 17.213,
+        "z": 6.243,
+        "w": 6.364,
+        "d": 9.529,
+        "level": 0
+      },
+      {
+        "name": "Cabinet de musique",
+        "x": 23.625,
+        "z": 7.858,
+        "w": 6.268,
+        "d": 6.298,
+        "level": 0
+      }
+    ],
+    "og": [
+      {
+        "name": "Chambre à coucher (aile ouest)",
+        "x": -24.155,
+        "z": -7.53,
+        "w": 5.207,
+        "d": 7.174,
+        "level": 1
+      },
+      {
+        "name": "Chambre à coucher",
+        "x": -17.333,
+        "z": -6.708,
+        "w": 8.245,
+        "d": 8.817,
+        "level": 1
+      },
+      {
+        "name": "Antichambre",
+        "x": -9.956,
+        "z": -6.708,
+        "w": 6.316,
+        "d": 8.817,
+        "level": 1
+      },
+      {
+        "name": "Vide sur le Salon du Rez-de-Chaussée",
+        "x": 0.0,
+        "z": -6.708,
+        "w": 13.404,
+        "d": 8.817,
+        "level": 1
+      },
+      {
+        "name": "Antichambre commune",
+        "x": 10.366,
+        "z": -6.708,
+        "w": 7.136,
+        "d": 8.817,
+        "level": 1
+      },
+      {
+        "name": "Chambre à coucher",
+        "x": 17.213,
+        "z": -6.708,
+        "w": 6.364,
+        "d": 8.817,
+        "level": 1
+      },
+      {
+        "name": "Cabinet (aile est)",
+        "x": 23.625,
+        "z": -9.063,
+        "w": 6.268,
+        "d": 4.107,
+        "level": 1
+      },
+      {
+        "name": "Garde-robe (aile est)",
+        "x": 23.625,
+        "z": -4.545,
+        "w": 6.268,
+        "d": 4.49,
+        "level": 1
+      },
+      {
+        "name": "Antichambre (aile ouest)",
+        "x": -24.421,
+        "z": -2.245,
+        "w": 4.677,
+        "d": 2.957,
+        "level": 1
+      },
+      {
+        "name": "Cabinet (aile ouest)",
+        "x": -24.421,
+        "z": 1.095,
+        "w": 4.677,
+        "d": 3.286,
+        "level": 1
+      },
+      {
+        "name": "Chambre à coucher (aile ouest)",
+        "x": -24.421,
+        "z": 6.982,
+        "w": 4.677,
+        "d": 8.05,
+        "level": 1
+      },
+      {
+        "name": "Chambre à coucher (escalier ouest)",
+        "x": -17.61,
+        "z": 4.49,
+        "w": 8.703,
+        "d": 13.033,
+        "level": 1
+      },
+      {
+        "name": "Grand escalier",
+        "x": -9.98,
+        "z": 4.49,
+        "w": 6.364,
+        "d": 13.033,
+        "level": 1
+      },
+      {
+        "name": "Vestibule / galerie",
+        "x": 0.0,
+        "z": 4.49,
+        "w": 13.404,
+        "d": 13.033,
+        "level": 1
+      },
+      {
+        "name": "Garde-robe",
+        "x": 10.366,
+        "z": 0.082,
+        "w": 7.136,
+        "d": 4.217,
+        "level": 1
+      },
+      {
+        "name": "Chambre à coucher",
+        "x": 10.366,
+        "z": 6.708,
+        "w": 7.136,
+        "d": 8.598,
+        "level": 1
+      },
+      {
+        "name": "Passage",
+        "x": 17.213,
+        "z": -0.082,
+        "w": 6.364,
+        "d": 3.888,
+        "level": 1
+      },
+      {
+        "name": "Garde-robe",
+        "x": 17.213,
+        "z": 3.532,
+        "w": 6.364,
+        "d": 2.902,
+        "level": 1
+      },
+      {
+        "name": "Cabinet",
+        "x": 17.213,
+        "z": 8.105,
+        "w": 6.364,
+        "d": 5.805,
+        "level": 1
+      },
+      {
+        "name": "Chambre à coucher (aile est)",
+        "x": 23.625,
+        "z": 1.287,
+        "w": 6.268,
+        "d": 6.626,
+        "level": 1
+      },
+      {
+        "name": "Cabinet (aile est, sud)",
+        "x": 23.625,
+        "z": 7.913,
+        "w": 6.268,
+        "d": 6.188,
+        "level": 1
+      }
+    ]
+  }
+}

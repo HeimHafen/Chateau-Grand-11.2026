@@ -1,111 +1,65 @@
-/**
- * CHÂTEAU GRAND V2.4 — physical walk/navigation in metres.
- * Independent of Three.js so stair/ramp and portal transitions can be tested.
- */
-export const EG_Y=4.72;
-export const OG_Y=11.05;
-export const EYE_Y=1.68;
-export const FRONT_PORTALS=[-16.28,0,16.28];
-export const MAIN_WING_PORTALS=[-89.7,89.7];
-export const WING_REAR_PORTALS=[-91,91];
-export const WALK_RADIUS=.34;
+/** Château Grand V3.1 – walkable ground floor and Premier Étage, shared plan metres. */
+import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS} from './roissy-config.js';
+export const EG_Y=EG,OG_Y=OG,EYE_Y=1.69;
+export const WALK_RADIUS=.30;
+const H=(OG-EG)*.5;
 const between=(x,a,b)=>x>=a&&x<=b;
-const insideMain=(x,z)=>between(x,-111.7,111.7)&&between(z,-20.70,20.70);
-const insideWing=(x,z)=>between(Math.abs(x),70.5,105.5)&&between(z,-158.4,-20.55);
-const insideRear=(x,z)=>between(x,-105.5,105.5)&&between(z,-196.5,-157.5);
-export function isInsidePalace(x,z){return insideMain(x,z)||insideWing(x,z)||insideRear(x,z);}
-export function onMonumentalStair(x,z){
-  const half=25.6+Math.max(0,z-38)*.135;
-  return between(z,37.65,59.35)&&Math.abs(x)<half;
+const inside=(x,z)=>between(x,-HALF_W+.35,HALF_W-.35)&&between(z,-HALF_D+.34,HALF_D-.34);
+const onSteps=(x,z)=>Math.abs(x)<6.25&&between(z,17.3,20.31);
+const terrace=(x,z)=>Math.abs(x)<7.35&&between(z,HALF_D-.75,17.43);
+const first=(x,z)=>between(x,-12.75,-10.02)&&between(z,-1.20,8.78);
+const second=(x,z)=>between(x,-9.86,-7.18)&&between(z,-1.20,8.88);
+const landing=(x,z)=>between(x,-12.86,-7.16)&&between(z,-2.42,-1.15);
+export function isInsidePalace(x,z){return inside(x,z);}
+export function onMonumentalStair(x,z){return onSteps(x,z);}
+export function onTerrace(x,z){return terrace(x,z);}
+function stairHeight(x,z,prior){
+  if(landing(x,z)&&prior>=EG+H-.65&&prior<=EG+H+.70)return EG+H;
+  if(first(x,z)&&prior<EG+H+.55)return EG+Math.min(1,Math.max(0,(8.78-z)/9.98))*H;
+  if(second(x,z)&&prior>EG+H-.45)return EG+H+Math.min(1,Math.max(0,(z+1.20)/10.08))*H;
+  return null;
 }
-export function onTerrace(x,z){return between(z,20.60,37.70)&&Math.abs(x)<26.36;}
-export function lowerFlight(x,z){return between(x,-50.8,-43.8)&&between(z,.05,14.75);}
-export function upperFlight(x,z){return between(x,-38.65,-31.75)&&between(z,-.10,14.85);}
-export function middleLanding(x,z){return between(x,-51.0,-31.4)&&between(z,-2.35,1.20);}
-const staircaseRise=(OG_Y-EG_Y)/24;
-const halfway=EG_Y+12*staircaseRise;
-
-/** Surface reached without jumping / teleporting. previousFoot disambiguates
- * the crossing 1.OG staircase above the ground-floor walking surface. */
-export function surfaceHeight(x,z,previousFoot=0){
-  if(onMonumentalStair(x,z)){
-    // Rise matches the 26 real stone treads along the +Z-to--Z approach.
-    return Math.min(4.50,Math.max(0,(59.28-z)*(4.50/20.8)));
-  }
-  if(onTerrace(x,z))return EG_Y;
-  if(!isInsidePalace(x,z))return 0;
-  // Historical west staircase is U-shaped: EG -> landing -> 1.OG.
-  if(insideMain(x,z)){
-    if(middleLanding(x,z)&&Math.abs(previousFoot-halfway)<.72)return halfway;
-    if(lowerFlight(x,z)){
-      const h=EG_Y+Math.min(12,Math.max(0,(14.70-z)/1.20))*staircaseRise;
-      if(previousFoot<halfway+.25&&Math.abs(previousFoot-h)<.50)return h;
-    }
-    if(upperFlight(x,z)){
-      const h=halfway+Math.min(12,Math.max(0,(z+.10)/1.20))*staircaseRise;
-      if(previousFoot>halfway-.35&&Math.abs(previousFoot-h)<.50)return h;
-    }
-  }
-  return previousFoot>=8.85?OG_Y:EG_Y;
+export function surfaceHeight(x,z,prev=0){
+  if(onSteps(x,z))return Math.max(0,Math.min(EG,(20.31-z)/(20.31-17.30)*EG));
+  if(terrace(x,z))return EG;
+  if(!inside(x,z))return 0;
+  const on=stairHeight(x,z,prev);
+  if(on!==null)return on;
+  return prev>=(EG+OG)*.5+.12?OG:EG;
 }
-function nearPortal(x,centers,width=3.05){
-  return centers.some(cx=>Math.abs(x-cx)<=width/2-WALK_RADIUS*.93);
-}
-const at=(v,w,tol)=>Math.abs(v-w)<=tol;
-const closeToWall=(x,z,w,r=WALK_RADIUS)=>x+r>w.x0&&x-r<w.x1&&z+r>w.z0&&z-r<w.z1;
-
-/** Prevent walking through real masonry, but allow the three entry openings and
- * both continuous passage pairs to the connected wings and rear corridor. */
-export function collidesAt(x,z,foot,architect,entryDoors=[]){
-  const r=WALK_RADIUS;
-  if(between(x,-112-r,112+r)&&at(z,21,.36+r)&&!nearPortal(x,FRONT_PORTALS,3.05))return true;
-  if(between(x,-112-r,112+r)&&at(z,-21,.36+r)&&(foot>8.85||!nearPortal(x,MAIN_WING_PORTALS,4.35)))return true;
-  if(between(z,-21-r,21+r)&&(at(x,-112,.36+r)||at(x,112,.36+r)))return true;
-  for(const side of [-1,1]){
-    for(const boundary of [70.5,105.5]){
-      if(between(z,-158.4,-20.5)&&at(x,side*boundary,.36+r))return true;
-    }
+const near=(x,centers,width)=>centers.some(c=>Math.abs(x-c)<width/2-WALK_RADIUS*.53);
+function touches(x,z,w,r=WALK_RADIUS){return x+r>w.x0&&x-r<w.x1&&z+r>w.z0&&z-r<w.z1;}
+export function collidesAt(x,z,foot,architecture,doors=[]){
+  const r=WALK_RADIUS,og=foot>(EG+OG)/2+.18;
+  if(between(x,-HALF_W-r,HALF_W+r)&&Math.abs(z-HALF_D)<.23+r){
+     if(og||!near(x,FRONT_DOORS,1.52))return true;
   }
-  if(between(x,-105.5-r,105.5+r)&&at(z,-157.5,.36+r)&&(foot>8.85||!nearPortal(x,WING_REAR_PORTALS,4.35)))return true;
-  if(between(x,-105.5-r,105.5+r)&&at(z,-196.5,.36+r))return true;
-  if(between(z,-196.5-r,-157.5+r)&&(at(x,-105.5,.36+r)||at(x,105.5,.36+r)))return true;
-  // The oak leaves are actual opening/closing collider geometry, not ghosts.
-  for(const e of entryDoors){if(e.door.blocks(x,z,r,foot))return true;}
-  // Roissy: a continuous physical suite of rooms with intentionally open doorways.
-  if(insideMain(x,z)&&architect?.interiorCollision){
-    const which=foot>8.85?'og':'eg';
-    for(const w of architect.interiorCollision[which]||[]){if(closeToWall(x,z,w,r))return true;}
-    // Original double-height Salon and western stairwell: real void in the 1.OG.
-    if(which==='og'){
-      if(between(x,-24.4,24.4)&&between(z,-19.5,-4.3))return true;
-      if(between(x,-53.8,-28.8)&&between(z,-4.15,15.35)){
-        // The staircase itself and its upper landing are legitimate floor surfaces.
-        const gallery=between(x,-32.35,-28.50)&&between(z,1.0,19.60);
-        if(!gallery&&!upperFlight(x,z)&&!middleLanding(x,z)&&!lowerFlight(x,z))return true;
-      }
+  if(between(x,-HALF_W-r,HALF_W+r)&&Math.abs(z+HALF_D)<.23+r)return true;
+  if(between(z,-HALF_D-r,HALF_D+r)&&(Math.abs(x-HALF_W)<.23+r||Math.abs(x+HALF_W)<.23+r))return true;
+  for(const d of doors){if(d.door.blocks(x,z,r,foot))return true;}
+  if(inside(x,z)&&architecture?.interiorCollision){
+    for(const w of architecture.interiorCollision[og?'og':'eg']||[]){if(touches(x,z,w))return true;}
+    // No walkable floor over the double-height Salon or stairwell except on the U flights.
+    if(og){
+      if(between(x,-6.65,6.65)&&between(z,-11.1,-2.34))return true;
+      if(between(x,-13.14,-6.80)&&between(z,-2.12,10.72)&&!first(x,z)&&!second(x,z)&&!landing(x,z)&&!between(z,8.7,10.72))return true;
     }
   }
   return false;
 }
-
-/** The physical step is rejected when it requires climbing an unrelated solid
- * wall/slab or dropping off the side of the monumental entrance stairs. */
-export function candidateStep(from,x,z,architect,entryDoors=[]){
+export function candidateStep(from,x,z,arch,doors=[]){
   const foot=surfaceHeight(x,z,from.footY);
-  if(foot-from.footY>.44||from.footY-foot>1.05)return null;
-  if(collidesAt(x,z,foot,architect,entryDoors))return null;
+  if(foot-from.footY>.37||from.footY-foot>.75)return null;
+  if(collidesAt(x,z,foot,arch,doors))return null;
   return {x,z,footY:foot};
 }
-export function describePlace(x,z,foot,architect){
-  if(onMonumentalStair(x,z))return 'Monumentaltreppe';
-  if(onTerrace(x,z))return 'Eingangsportikus';
-  if(insideMain(x,z)){
-    const which=foot>8.85?'og':'eg';
-    const floor=which==='og'?'1. Obergeschoss':'Erdgeschoss';
-    const room=(architect?.historicalFloors?.[which]||[]).find(r=>Math.abs(x-r.x)<=r.w/2&&Math.abs(z-r.z)<=r.d/2);
-    return room?`${floor} · ${room.name}`:floor;
+export function describePlace(x,z,foot,architecture){
+  if(onSteps(x,z))return 'Perron · Eingangsstufen';
+  if(terrace(x,z))return 'Historische Eingangs-Terrasse';
+  if(inside(x,z)){
+    const key=foot>(EG+OG)*.5+.2?'og':'eg',pre=key==='eg'?'Erdgeschoss':'1. Obergeschoss';
+    const room=(architecture?.historicalFloors?.[key]||ROOMDATA[key]).find(r=>Math.abs(x-r.x)<r.w*.5&&Math.abs(z-r.z)<r.d*.5);
+    return room?pre+' · '+room.name:pre;
   }
-  if(insideWing(x,z))return foot>8.85?'Seitenflügel · 1. OG':'Seitenflügel · EG';
-  if(insideRear(x,z))return foot>8.85?'Rücktrakt · 1. OG':'Rücktrakt · EG';
-  return 'Schlosspark';
+  return 'Schlosspark · Château de Roissy';
 }

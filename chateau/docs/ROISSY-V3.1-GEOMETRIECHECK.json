@@ -1,0 +1,13 @@
+{
+  "roomsEG": 18,
+  "roomsOG": 21,
+  "estimatedWidth": 54,
+  "estimatedDepth": 23,
+  "source": "Le Rouge, Plan du Rez-de-Chaussée / Premier Etage du Château de Roissy (1776)",
+  "doorwayOcclusionRemoved": true,
+  "egOgElevation": [
+    1.08,
+    6.78
+  ],
+  "verifiedRoomExtents": true
+}

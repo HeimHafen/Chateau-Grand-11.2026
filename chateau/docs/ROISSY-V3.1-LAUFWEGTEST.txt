@@ -1,0 +1,21 @@
+SUCCESS {"dims":{"width":54,"depth":23,"height":27.6,"calibration":"estimated using Le Rouge 1776 scale; 23m incl projections not confirmed"},"portico":25,"doors":3,"meshes":320,"verts":57428,"roomCountEG":18,"roomCountOG":21,"batches":15,"instances":1407,"colliderWallsEG":42,"colliderWallsOG":46}
+Entrance path {"at":11.999999999999803,"p":{"x":0,"z":12.099999999999802,"footY":1.08},"foot":1.08,"blocked":true}
+surface 0 35 0 0 Schlosspark · Château de Roissy
+surface 0 19.8 0 0.18299003322259078 Perron · Eingangsstufen
+surface 0 18.2 0.82 0.7570764119601332 Perron · Eingangsstufen
+surface 0 13 1.08 1.08 Historische Eingangs-Terrasse
+surface -11.37 8.5 1.08 1.1599599198396793 Erdgeschoss · Grand escalier
+surface -11.37 -1 3.93 3.872885771543086 Erdgeschoss · Grand escalier
+surface -8.55 8.5 6.78 6.672559523809523 1. Obergeschoss · Grand escalier
+WALK door to vestibule {"ok":true,"p":{"x":0,"z":8.04999999999977,"footY":1.08},"n":270}
+WALK vestibule to Salon {"ok":true,"p":{"x":0,"z":-4.445000000000226,"footY":1.08},"n":147}
+WALK back to vestibule {"ok":true,"p":{"x":0,"z":7.96499999999977,"footY":1.08},"n":146}
+WALK vestibule to west doorway {"ok":true,"p":{"x":-5.6,"z":5.3,"footY":1.08},"n":73}
+WALK west doorway to stair landing {"ok":true,"p":{"x":-8.065,"z":5.3,"footY":1.08},"n":29}
+WALK approach first flight at bottom {"ok":true,"p":{"x":-8.05020104032691,"z":8.614966966772453,"footY":1.08},"n":39}
+WALK stair foot {"ok":true,"p":{"x":-11.364896087658519,"z":8.659930765490062,"footY":1.1142883084522368},"n":39}
+WALK first stair flight {"ok":true,"p":{"x":-11.369987657446305,"z":-1.625067974223855,"footY":3.93},"n":121}
+WALK intermediate landing {"ok":true,"p":{"x":-8.565097279549395,"z":-1.6498665221949176,"footY":3.93},"n":33}
+WALK second stair flight {"ok":true,"p":{"x":-8.550094636313728,"z":8.63512253568433,"footY":6.710763812172653},"n":121}
+WALK upper stair landing {"ok":true,"p":{"x":-8.550004617120253,"z":9.31512252972591,"footY":6.78},"n":8}
+WALK 1OG gallery door {"ok":true,"p":{"x":-5.660213601253014,"z":9.349877164135536,"footY":6.78},"n":34}

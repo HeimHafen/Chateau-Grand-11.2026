@@ -1,0 +1,101 @@
+{
+  "version": "2.5",
+  "source": "Vom Nutzer hochgeladener historischer Roissy-Plan, proportional auf Château-Fantasiebau übertragen",
+  "dimensions": {
+    "width": 224,
+    "depth": 217,
+    "height": 64
+  },
+  "rooms": {
+    "EG": 18,
+    "OG": 21
+  },
+  "mainFront": {
+    "wallDividers": [
+      -91.3,
+      -54.8,
+      -28,
+      28,
+      58,
+      85
+    ],
+    "windows": 24,
+    "entrances": [
+      -16.28,
+      0,
+      16.28
+    ],
+    "clearanceMeters": [
+      {
+        "divider": -91.3,
+        "distance": 3.450000000000003
+      },
+      {
+        "divider": -54.8,
+        "distance": 3.3499999999999943
+      },
+      {
+        "divider": -28,
+        "distance": 3.3500000000000014
+      },
+      {
+        "divider": 28,
+        "distance": 3.75
+      },
+      {
+        "divider": 58,
+        "distance": 3.375
+      },
+      {
+        "divider": 85,
+        "distance": 3.375
+      }
+    ]
+  },
+  "mainRear": {
+    "wallDividers": [
+      -89,
+      -54.6,
+      -28,
+      28,
+      52,
+      85
+    ],
+    "windows": 29,
+    "wingPassages": [
+      -89.7,
+      89.7
+    ],
+    "clearanceMeters": [
+      {
+        "divider": -89,
+        "distance": 10.319999999999993
+      },
+      {
+        "divider": -54.6,
+        "distance": 3.325000000000003
+      },
+      {
+        "divider": -28,
+        "distance": 3.3249999999999993
+      },
+      {
+        "divider": 28,
+        "distance": 3.5
+      },
+      {
+        "divider": 52,
+        "distance": 3.299999999999997
+      },
+      {
+        "divider": 85,
+        "distance": 3.299999999999997
+      }
+    ]
+  },
+  "minimumDividerClearanceMeters": 3.299999999999997,
+  "notes": [
+    "Das Fensterachsen-Raster verwendet die Raumtrennwände beider historischen Geschosse, keine frei gesetzte Fensterreihe.",
+    "Die Außenproportionen des 224-m-Schlosses bleiben eine Adaption und sind keine exakte Rekonstruktion."
+  ]
+}

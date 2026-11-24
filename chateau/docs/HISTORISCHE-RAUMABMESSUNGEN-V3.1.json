@@ -1,0 +1,334 @@
+{
+  "version": "3.1",
+  "construction": "1703–1709",
+  "planPublished": "1776",
+  "source": "Le Rouge – verified built layout",
+  "isExactMeasuredSurvey": false,
+  "explanation": "Alle Raummaße sind Näherungen aus der 10-Toises-Zeichnung; ohne archäologischen Bestandsplan nicht zentimetergenau.",
+  "footprint": {
+    "width": 54,
+    "depth": 23,
+    "groundFloor": 1.08,
+    "firstFloor": 6.78,
+    "cornice": 12.26,
+    "ridge": 16.65
+  },
+  "rooms": {
+    "eg": [
+      {
+        "room": "Cabinet",
+        "centerX_m": -24.155,
+        "centerZ_m": -6.708,
+        "width_m": 4.747,
+        "depth_m": 8.357,
+        "areaApprox_m2": 39.7
+      },
+      {
+        "room": "Chambre à coucher",
+        "centerX_m": -17.333,
+        "centerZ_m": -6.708,
+        "width_m": 7.785,
+        "depth_m": 8.357,
+        "areaApprox_m2": 65.1
+      },
+      {
+        "room": "Antichambre",
+        "centerX_m": -9.956,
+        "centerZ_m": -6.708,
+        "width_m": 5.856,
+        "depth_m": 8.357,
+        "areaApprox_m2": 48.9
+      },
+      {
+        "room": "Salon",
+        "centerX_m": 0,
+        "centerZ_m": -6.708,
+        "width_m": 12.944,
+        "depth_m": 8.357,
+        "areaApprox_m2": 108.2
+      },
+      {
+        "room": "Antichambre",
+        "centerX_m": 9.643,
+        "centerZ_m": -6.708,
+        "width_m": 5.229,
+        "depth_m": 8.357,
+        "areaApprox_m2": 43.7
+      },
+      {
+        "room": "Chambre de parade",
+        "centerX_m": 16.489,
+        "centerZ_m": -6.708,
+        "width_m": 7.351,
+        "depth_m": 8.357,
+        "areaApprox_m2": 61.4
+      },
+      {
+        "room": "Grand Cabinet d’Assemblée",
+        "centerX_m": 23.625,
+        "centerZ_m": -3.313,
+        "width_m": 5.808,
+        "depth_m": 15.147,
+        "areaApprox_m2": 88
+      },
+      {
+        "room": "Garde-robe",
+        "centerX_m": -24.421,
+        "centerZ_m": -0.274,
+        "width_m": 4.217,
+        "depth_m": 3.045,
+        "areaApprox_m2": 12.8
+      },
+      {
+        "room": "Logement du concierge",
+        "centerX_m": -24.421,
+        "centerZ_m": 3.45,
+        "width_m": 4.217,
+        "depth_m": 3.045,
+        "areaApprox_m2": 12.8
+      },
+      {
+        "room": "Conciergerie",
+        "centerX_m": -24.421,
+        "centerZ_m": 8.214,
+        "width_m": 4.217,
+        "depth_m": 5.126,
+        "areaApprox_m2": 21.6
+      },
+      {
+        "room": "Lingerie",
+        "centerX_m": -17.61,
+        "centerZ_m": 1.205,
+        "width_m": 8.243,
+        "depth_m": 6.002,
+        "areaApprox_m2": 49.5
+      },
+      {
+        "room": "Passage",
+        "centerX_m": -17.61,
+        "centerZ_m": 7.831,
+        "width_m": 8.243,
+        "depth_m": 5.892,
+        "areaApprox_m2": 48.6
+      },
+      {
+        "room": "Grand escalier",
+        "centerX_m": -9.98,
+        "centerZ_m": 4.49,
+        "width_m": 5.904,
+        "depth_m": 12.573,
+        "areaApprox_m2": 74.2
+      },
+      {
+        "room": "Vestibule",
+        "centerX_m": 0,
+        "centerZ_m": 4.49,
+        "width_m": 12.944,
+        "depth_m": 12.573,
+        "areaApprox_m2": 162.7
+      },
+      {
+        "room": "Salle à manger",
+        "centerX_m": 10.366,
+        "centerZ_m": 4.49,
+        "width_m": 6.676,
+        "depth_m": 12.573,
+        "areaApprox_m2": 83.9
+      },
+      {
+        "room": "Escalier secondaire",
+        "centerX_m": 17.213,
+        "centerZ_m": -0.383,
+        "width_m": 5.904,
+        "depth_m": 2.826,
+        "areaApprox_m2": 16.7
+      },
+      {
+        "room": "Antichambre",
+        "centerX_m": 17.213,
+        "centerZ_m": 6.243,
+        "width_m": 5.904,
+        "depth_m": 9.069,
+        "areaApprox_m2": 53.5
+      },
+      {
+        "room": "Cabinet de musique",
+        "centerX_m": 23.625,
+        "centerZ_m": 7.858,
+        "width_m": 5.808,
+        "depth_m": 5.838,
+        "areaApprox_m2": 33.9
+      }
+    ],
+    "og": [
+      {
+        "room": "Chambre à coucher (aile ouest)",
+        "centerX_m": -24.155,
+        "centerZ_m": -7.53,
+        "width_m": 4.747,
+        "depth_m": 6.714,
+        "areaApprox_m2": 31.9
+      },
+      {
+        "room": "Chambre à coucher",
+        "centerX_m": -17.333,
+        "centerZ_m": -6.708,
+        "width_m": 7.785,
+        "depth_m": 8.357,
+        "areaApprox_m2": 65.1
+      },
+      {
+        "room": "Antichambre",
+        "centerX_m": -9.956,
+        "centerZ_m": -6.708,
+        "width_m": 5.856,
+        "depth_m": 8.357,
+        "areaApprox_m2": 48.9
+      },
+      {
+        "room": "Vide sur le Salon du Rez-de-Chaussée",
+        "centerX_m": 0,
+        "centerZ_m": -6.708,
+        "width_m": 12.944,
+        "depth_m": 8.357,
+        "areaApprox_m2": 108.2
+      },
+      {
+        "room": "Antichambre commune",
+        "centerX_m": 10.366,
+        "centerZ_m": -6.708,
+        "width_m": 6.676,
+        "depth_m": 8.357,
+        "areaApprox_m2": 55.8
+      },
+      {
+        "room": "Chambre à coucher",
+        "centerX_m": 17.213,
+        "centerZ_m": -6.708,
+        "width_m": 5.904,
+        "depth_m": 8.357,
+        "areaApprox_m2": 49.3
+      },
+      {
+        "room": "Cabinet (aile est)",
+        "centerX_m": 23.625,
+        "centerZ_m": -9.063,
+        "width_m": 5.808,
+        "depth_m": 3.647,
+        "areaApprox_m2": 21.2
+      },
+      {
+        "room": "Garde-robe (aile est)",
+        "centerX_m": 23.625,
+        "centerZ_m": -4.545,
+        "width_m": 5.808,
+        "depth_m": 4.03,
+        "areaApprox_m2": 23.4
+      },
+      {
+        "room": "Antichambre (aile ouest)",
+        "centerX_m": -24.421,
+        "centerZ_m": -2.245,
+        "width_m": 4.217,
+        "depth_m": 2.497,
+        "areaApprox_m2": 10.5
+      },
+      {
+        "room": "Cabinet (aile ouest)",
+        "centerX_m": -24.421,
+        "centerZ_m": 1.095,
+        "width_m": 4.217,
+        "depth_m": 2.826,
+        "areaApprox_m2": 11.9
+      },
+      {
+        "room": "Chambre à coucher (aile ouest)",
+        "centerX_m": -24.421,
+        "centerZ_m": 6.982,
+        "width_m": 4.217,
+        "depth_m": 7.59,
+        "areaApprox_m2": 32
+      },
+      {
+        "room": "Chambre à coucher (escalier ouest)",
+        "centerX_m": -17.61,
+        "centerZ_m": 4.49,
+        "width_m": 8.243,
+        "depth_m": 12.573,
+        "areaApprox_m2": 103.6
+      },
+      {
+        "room": "Grand escalier",
+        "centerX_m": -9.98,
+        "centerZ_m": 4.49,
+        "width_m": 5.904,
+        "depth_m": 12.573,
+        "areaApprox_m2": 74.2
+      },
+      {
+        "room": "Vestibule / galerie",
+        "centerX_m": 0,
+        "centerZ_m": 4.49,
+        "width_m": 12.944,
+        "depth_m": 12.573,
+        "areaApprox_m2": 162.7
+      },
+      {
+        "room": "Garde-robe",
+        "centerX_m": 10.366,
+        "centerZ_m": 0.082,
+        "width_m": 6.676,
+        "depth_m": 3.757,
+        "areaApprox_m2": 25.1
+      },
+      {
+        "room": "Chambre à coucher",
+        "centerX_m": 10.366,
+        "centerZ_m": 6.708,
+        "width_m": 6.676,
+        "depth_m": 8.138,
+        "areaApprox_m2": 54.3
+      },
+      {
+        "room": "Passage",
+        "centerX_m": 17.213,
+        "centerZ_m": -0.082,
+        "width_m": 5.904,
+        "depth_m": 3.428,
+        "areaApprox_m2": 20.2
+      },
+      {
+        "room": "Garde-robe",
+        "centerX_m": 17.213,
+        "centerZ_m": 3.532,
+        "width_m": 5.904,
+        "depth_m": 2.442,
+        "areaApprox_m2": 14.4
+      },
+      {
+        "room": "Cabinet",
+        "centerX_m": 17.213,
+        "centerZ_m": 8.105,
+        "width_m": 5.904,
+        "depth_m": 5.345,
+        "areaApprox_m2": 31.6
+      },
+      {
+        "room": "Chambre à coucher (aile est)",
+        "centerX_m": 23.625,
+        "centerZ_m": 1.287,
+        "width_m": 5.808,
+        "depth_m": 6.166,
+        "areaApprox_m2": 35.8
+      },
+      {
+        "room": "Cabinet (aile est, sud)",
+        "centerX_m": 23.625,
+        "centerZ_m": 7.913,
+        "width_m": 5.808,
+        "depth_m": 5.728,
+        "areaApprox_m2": 33.3
+      }
+    ]
+  }
+}

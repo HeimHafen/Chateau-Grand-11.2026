@@ -1,0 +1,18 @@
+{
+  "version": "2.5",
+  "basis": "Chateau MaxGame Palast V2.4 und hochaufgeloester Roissy-Grundriss",
+  "checks": {
+    "sourceSyntax": "bestanden",
+    "threejsModelBuild": "bestanden",
+    "donorPorticoGroups": 17,
+    "historicalRoomsEG": 18,
+    "historicalRooms1OG": 21,
+    "automaticFrontDoors": 3,
+    "opaqueWindowBackgrounds": 0,
+    "externalPlanAxisAlignment": "bestanden",
+    "routeEntranceFirstFloorAndBack": "bestanden",
+    "routeWestWingRearRange": "bestanden"
+  },
+  "notTested": ["Live iPhone Safari", "Visuelle Einzelabnahme aller Ornamentprofile", "Exakte historische 1:1-Maße"],
+  "nextFocus": "historische Innenwandstärken, Türflügel und Nebenerschliessung"
+}

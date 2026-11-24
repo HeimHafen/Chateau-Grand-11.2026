@@ -1,50 +1,24 @@
-# CHÂTEAU GRAND 2027 · MAXGAME-PALAST V2.4
+# CHÂTEAU GRAND — ROISSY V3.1 · HISTORISCHER GRUNDRISS
 
-## Völlig frei durch die Eingänge gehen – wie im Herrenhaus
+Spielbares Three.js-Projekt aus der V3.0-Quelle. Schwerpunkt dieser Revision: **Raumaufteilung und Zimmermaße anhand der erhaltenen Pläne von Le Rouge (1776), die grundsätzlich dem 1703–1709 errichteten Schloss entsprechen.**
 
-Dies ist das **vollständige GitHub-Pages-Projekt**, direkt als Ersatz für die V2.3. Es bleibt bei der MaxGame-Three.js-Engine, der ca. 224 m breiten Schaufassade, dem Herrenhaus-Portikus, den 18 Roissy-Raumzonen im EG, 21 Raumzonen im 1. OG und transparenten Fenstern.
+**Kein Einrichtungsprojekt.** Keine Möbel, keine Innendekoration. Maßgeblich sind historische Raumbezeichnungen, Raumzonen, Wände, Durchgänge, Salon-Luftraum, seitliches Grand Escalier, Fenster- und Türpositionen.
 
-**Neu und funktionsfähig auf Modellniveau:**
+## Was geändert wurde
 
-- Der Klick auf **„Château erkunden“** startet **direkt im Schlosspark**, nicht in einem teleportierten Zimmer.
-- Zu Fuß über die **26 großen Außentreppenstufen** bis zur Terrasse.
-- **Drei bewegliche Eichendoppeltüren** nach dem Türsystem von MaxGame; sie öffnen sich automatisch bei Annäherung und schließen wieder, wenn du weggehst.
-- **Echte begehbare Türöffnungen** und **Wandkollisionen**: Außerhalb der Türen sind die Wände nicht mehr einfach durchquerbar.
-- Durch das Vestibül und die historischen Raumfolgen gehen, ohne die Kamera neu zu positionieren.
-- Im westlichen **Grand Escalier** zwei Läufe mit je zwölf Stufen und ein Zwischenpodest **zu Fuß auf- und absteigen**. Die Laufhöhe wird an die konkreten Stufenkoordinaten angepasst. Am oberen Treppenabsatz wurde eine fehlende Gangbrücke ergänzt.
-- Vom Hauptbau durch reale Öffnungen in den westlichen/östlichen Seitenflügel, von dort in den hinteren Quertrakt laufen (EG).
-- Einblendung der aktuellen Umgebung und des Raum-/Geschossnamens beim Rundgang.
-- **Keine Verdunkelung der Fenster**: Die zwei- bzw. beidseitig sichtbare MaxGame-Verglasung aus V2.3 bleibt erhalten.
+- Die bisherigen Raumangaben wurden von *Wandachsen-/Buchtmaßen* zu näherungsweisen **lichten Raummaßen** umgestellt; nominelle 46 cm Wandstärke abgezogen. Dies ist eine technische Näherung, keine archäologisch gesicherte Zimmervermessung.
+- Der massive **2,86 m hohe Vollquader in Innen-Türdurchgängen** wurde entfernt. Der Rahmen besitzt jetzt nur noch Türpfosten und Sturz, der Durchgang bleibt optisch frei.
+- Versions- und Forschungsdokumentation aktualisiert; die Pläne wurden mit ihrer ursprünglichen Jahreszahl 1776 gekennzeichnet.
+- Durchgehende Begehbarkeit sowie der ursprüngliche MaxGame-Portikus bleiben erhalten. Portikus und Kuppel sind **bewusste kreative Ergänzungen**, nicht historisch für Roissy belegt.
 
-### Steuerung auf dem iPhone
+## Quellen
 
-- **Links auf der Spielfläche ziehen:** vorwärts/rückwärts und seitlich laufen.
-- **Rechts auf der Spielfläche ziehen:** Blickrichtung verändern.
-- **Eichentüren:** ohne Button automatisch öffnen, wenn du darauf zuläufst.
-- **Rundgang neu:** erneut vom Park starten. **Zurücksetzen:** Kamera- und Fassadenansichten öffnen.
-- Die Ansicht von **EG · Grundriss** und **1. OG · Grundriss** bleibt optional – du musst sie zum Betreten nicht benutzen.
+Die Bauphase liegt ungefähr zwischen 1703 und 1709. Der Stich von 1776 zeigt den nachweislich gebauten Grundkörper; der ältere imposante U-förmige Entwurf von Tessin ist **nicht ausgeführt** worden. Ein gesicherter Ausführungsgrundriss von 1708 oder 1730 liegt uns nicht vor. In `chateau/docs/ROISSY-HISTORISCHER-GRUNDRISS-V3.1.json` sind Quellen und die Grenzen unserer metrischen Schätzung dokumentiert.
 
-Auf dem Computer: **WASD oder Pfeiltasten** zum Laufen, mit gedrückter Maus ziehen, um die Blickrichtung zu ändern.
+## Upload
 
-### Tatsächlicher Testablauf
+Archivinhalt direkt ins GitHub-Repository-Hauptverzeichnis kopieren, keine zusätzliche Ordnerstufe. `index.html` muss im Root liegen. Commit → Push. Danach URL mit `?v=roissy31` öffnen. Bildschirm-Version: **ROISSY · V3.1**.
 
-Die **aktive Geometrie** wurde in Node.js mit dem Original-MaxGame-GLB geladen. Anschließend wurde die Bewegung als Folge von über 3.700 kleinen Bewegungs-/Kollisionsschritten geprüft:
+## Transparenz
 
-1. Schlosspark → Außentreppe → mittlere Eichentür → Vestibül
-2. Vestibül → Grand Escalier → erster Treppenlauf → Zwischenpodest → zweiter Treppenlauf → Galerie des 1. OG
-3. Derselbe Weg **zu Fuß zurück** bis zum Schlosspark
-4. Vestibül → westliche Raumfolge → Seitenflügel → hinterer Quertrakt
-
-Jeweils wurde die tatsächliche Kollision mit Wänden und bewegten Eichentürflügeln berücksichtigt. Auch beide äußeren Türöffnungen wurden im Geometriemodell geprüft.
-
-**Einschränkung:** Eine iPhone-Safari-Liveprüfung war in dieser Umgebung nicht möglich. Die historischen Räume des Haupttraktes sind als Wand- und Raumstruktur vorhanden, aber noch nicht vollständig möbliert. Seitenflügel und Rücktrakt sind zusammenhängend begehbare Gebäudeschalen, jedoch noch nicht vollständig als einzelne Zimmer ausgebaut. Mehr als zwei ausgebaute Geschosse sollten noch nicht behauptet werden.
-
-## GitHub Pages / Working Copy
-
-1. ZIP entpacken.
-2. **Alle Dateien und Ordner auf die oberste Ebene** deines bestehenden GitHub-Repositories `Chateau-Grand-2027` kopieren. `index.html` liegt **direkt im Hauptverzeichnis**, nicht in einem V2.4-Unterordner.
-3. Bestehende gleichnamige Dateien überschreiben.
-4. **Commit → Push**.
-5. GitHub-Pages-Adresse mit `?v=palast24` öffnen; Anzeige **MAXGAME-PALAST · 2.4** prüfen.
-
-Schlüsseldateien: `chateau/main.js` (Steuerung), `chateau/navigation.js` (Laufhöhen und Kollision), `chateau/architecture.js` (begehbare Türen und Gebäude), `wohnzimmer/portal-doors-v2.js` (originale MaxGame-Türmechanik), `assets/white-house-structure.glb` (bestehendes 3D-Donormodell).
+Die exakten historischen Innenmaße sowie mehrere Wand-/Türachsen sind aus den Stichen nur näherungsweise rekonstruierbar; weder perfekte Grundrisstreue auf Zentimeter noch ein realer Safari-Test sind bestätigt. Den vorhandenen Quellstand nicht löschen, bevor die neue Fassung auf dem iPhone kontrolliert ist.

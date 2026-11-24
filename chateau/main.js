@@ -3,8 +3,8 @@ import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from '../wohnzimmer/sky-atmosphere.js';
-import {buildChateau} from './architecture.js?v=palast24';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=palast24';
+import {buildChateau} from './architecture.js?v=roissy31';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy31';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -12,8 +12,8 @@ const start=document.getElementById('start');
 const status=document.getElementById('status');
 const hint=document.getElementById('controlHint');
 const mobile=matchMedia('(pointer:coarse)').matches;
-let renderer,scene,camera,orbit={theta:.43,phi:.52,d:355,target:new THREE.Vector3(0,17,-72)},mode='orbit';
-let player={x:0,y:EYE_Y,footY:0,z:72,yaw:0,pitch:0};
+let renderer,scene,camera,orbit={theta:.43,phi:.52,d:100,target:new THREE.Vector3(0,10,0)},mode='orbit';
+let player={x:0,y:EYE_Y,footY:0,z:31,yaw:0,pitch:0};
 let walkTouch=null,lookTouch=null,forward=0,strafe=0,lookPointer=null;
 let last=0;
 let atmospheric;
@@ -34,7 +34,7 @@ async function run(){
   const sun=new THREE.DirectionalLight(0xffe8ca,2.05);
   sun.position.set(-135,210,168);sun.castShadow=true;
   const s=mobile?1024:2048;sun.shadow.mapSize.set(s,s);
-  Object.assign(sun.shadow.camera,{left:-270,right:270,top:270,bottom:-270,near:1,far:580});
+  Object.assign(sun.shadow.camera,{left:-91,right:91,top:91,bottom:-91,near:1,far:270});
   sun.shadow.camera.updateProjectionMatrix();sun.shadow.bias=-.00022;sun.shadow.normalBias=.027;
   scene.add(sun);
   const mats=createExteriorMaterialLibrary(THREE);
@@ -52,10 +52,10 @@ async function run(){
   glass.needsUpdate=true;
   // Verify that we really used donor assets, not a recreated imitation.
   if(chateau.originalPortico.children.length<17)throw Error('Originalportikus aus MaxGame wurde unvollständig übernommen.');
-  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'2.4',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length};
-  document.getElementById('version').textContent='MAXGAME-PALAST · 2.4';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'3.1',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length};
+  document.getElementById('version').textContent='ROISSY · V3.1';
   start.disabled=false;start.textContent='Château erkunden';
-  status.textContent='Schloss bereit · Begehbare Eingangstreppe, automatisch öffnende Eichentüren und durchgehender Rundgang bis ins 1. OG.';
+  status.textContent='54 × 23 Meter · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
   resize();view('angle');
   start.addEventListener('click',()=>{splash.hidden=true;renderer.shadowMap.needsUpdate=true;setWalk();}, {once:true});
   requestAnimationFrame(frame);
@@ -73,11 +73,11 @@ function buildLandscape(mats){
   applyProceduralFinish(THREE,grass,'grassBreakup');
   const floor=new THREE.Mesh(new THREE.PlaneGeometry(1200,1200),grass);floor.rotation.x=-Math.PI/2;floor.position.y=-.08;floor.receiveShadow=true;scene.add(floor);
   const paving=new THREE.MeshStandardMaterial({color:0xe0d2c0,roughness:.95});
-  const pavement=new THREE.Mesh(new THREE.BoxGeometry(17,.08,205),mats.porticoPaving);
-  pavement.position.set(0,-.02,145);pavement.receiveShadow=true;scene.add(pavement);
-  for(let x of [-23,23]){
-    for(let z of [95,145]){
-      const patch=new THREE.Mesh(new THREE.BoxGeometry(30,.035,22),grass);
+  const pavement=new THREE.Mesh(new THREE.BoxGeometry(9,.08,105),mats.porticoPaving);
+  pavement.position.set(0,-.02,70);pavement.receiveShadow=true;scene.add(pavement);
+  for(let x of [-16,16]){
+    for(let z of [36,69]){
+      const patch=new THREE.Mesh(new THREE.BoxGeometry(17,.035,15),grass);
       patch.position.set(x,-.027,z);patch.receiveShadow=true;scene.add(patch);
     }
   }
@@ -85,7 +85,7 @@ function buildLandscape(mats){
 function setCutaway(floor){
   // Clipping takes away the upper shell for a real top-down view of constructed rooms.
   clippedMode=!!floor;
-  renderer.clippingPlanes=floor?[new THREE.Plane(new THREE.Vector3(0,-1,0),floor==='eg'?10.77:17.18)]:[];
+  renderer.clippingPlanes=floor?[new THREE.Plane(new THREE.Vector3(0,-1,0),floor==='eg'?6.69:12.17)]:[];
   renderer.shadowMap.enabled=!floor;
   if(historicalChateau){
     for(const key of ['eg','og'])historicalChateau.historicalLayers[key].traverse(obj=>{
@@ -106,13 +106,13 @@ function view(which){
   document.body.classList.remove('walking');
   floorChoice=which==='eg'||which==='og'?which:null;
   const views={
-    front:{theta:0,phi:.10,d:390,target:[0,18,-65]},
-    angle:{theta:.44,phi:.46,d:356,target:[0,18,-65]},
-    above:{theta:.35,phi:1.02,d:339,target:[0,18,-65]},
-    entrance:{theta:0,phi:.065,d:84,target:[0,13,26]},
-    stairSide:{theta:1.04,phi:.16,d:77,target:[0,7,39]},
-    eg:{theta:.24,phi:1.32,d:167,target:[0,6.7,0]},
-    og:{theta:.24,phi:1.32,d:167,target:[0,13.3,0]}
+    front:{theta:0,phi:.11,d:118,target:[0,10.5,0]},
+    angle:{theta:.46,phi:.38,d:99,target:[0,10.5,0]},
+    above:{theta:.45,phi:1.16,d:89,target:[0,8,0]},
+    entrance:{theta:0,phi:.08,d:39,target:[0,5,12]},
+    stairSide:{theta:1.10,phi:.22,d:35,target:[0,3,17]},
+    eg:{theta:.14,phi:1.38,d:53,target:[0,3.3,0]},
+    og:{theta:.14,phi:1.38,d:53,target:[0,9.3,0]}
   };
   const selected=views[which]||views.angle;
   Object.assign(orbit,{theta:selected.theta,phi:selected.phi,d:selected.d});
@@ -131,9 +131,9 @@ function setWalk(){
     // Optional shortcut for testing the two plans; normal exploration never
     // teleports: approach stairs and walk through the automatic entrance doors.
     player.x=0;player.footY=(activeWalkingFloor==='eg'?EG_Y:OG_Y);
-    player.z=13.0;
+    player.z=7.0;
   }else{
-    player.x=0;player.footY=0;player.z=72;
+    player.x=0;player.footY=0;player.z=31;
   }
   player.y=player.footY+EYE_Y;
   player.yaw=0;player.pitch=.025;
@@ -181,7 +181,7 @@ function release(e){activePointers.delete(e.pointerId);window.__pinchDist=0;if(e
 for(const t of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(t,release);
 canvas.addEventListener('wheel',e=>{if(mode==='orbit'){orbit.d=THREE.MathUtils.clamp(orbit.d*Math.exp(e.deltaY*.001),30,650);e.preventDefault();}},{passive:false});
 const keys=new Set();addEventListener('keydown',e=>{keys.add(e.key.toLowerCase());if([' ','arrowup','arrowdown'].includes(e.key.toLowerCase()))e.preventDefault();});addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
-function resize(){const w=innerWidth,h=innerHeight;renderer.setPixelRatio(Math.min(devicePixelRatio,mobile?1.30:1.85));renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=mobile?72:60;camera.updateProjectionMatrix();}
+function resize(){const w=innerWidth,h=innerHeight;renderer.setPixelRatio(Math.min(devicePixelRatio,mobile?1.35:1.85));renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=mobile?72:60;camera.updateProjectionMatrix();}
 addEventListener('resize',()=>{if(renderer)resize();});
 function frame(ms){
   const dt=Math.min(.040,(ms-last)/1000||0);last=ms;
@@ -206,9 +206,9 @@ function frame(ms){
     if(candidate){player.z=candidate.z;player.footY=candidate.footY;}
     // Keep the eye-height human-sized; damp out the discrete stair risers.
     player.y=THREE.MathUtils.damp(player.y,player.footY+EYE_Y,11,dt);
-    player.x=THREE.MathUtils.clamp(player.x,-319,319);
-    player.z=THREE.MathUtils.clamp(player.z,-250,325);
-    activeWalkingFloor=player.footY>=9.7?'og':player.footY>=4.5?'eg':null;
+    player.x=THREE.MathUtils.clamp(player.x,-85,85);
+    player.z=THREE.MathUtils.clamp(player.z,-85,125);
+    activeWalkingFloor=player.footY>=(EG_Y+OG_Y)/2+.15?'og':player.footY>=EG_Y-.14?'eg':null;
     showWalkLocation();
     camera.position.set(player.x,player.y,player.z);
     camera.rotation.set(player.pitch,player.yaw,0,'YXZ');

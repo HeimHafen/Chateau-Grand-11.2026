@@ -1,11 +1,1 @@
-CHÂTEAU GRAND 2.4 — DURCHGAENGIGER 3D-RUNDGANG
-
-1. ZIP entpacken.
-2. ALLE Dateien/Ordner direkt nach Chateau-Grand-2027 (Repository-ROOT) kopieren.
-3. Bestehendes index.html und chateau/ ersetzen. KEINEN extra V2.4-Ordner anlegen.
-4. Working Copy: Commit -> Push.
-5. GitHub Pages mit ?v=palast24 aufrufen.
-6. Anzeige rechts oben: MAXGAME-PALAST · 2.4
-
-Start: "Château erkunden" -> im Schlosspark starten -> zur Treppe laufen ->
-Eichentüren öffnen sich automatisch -> Räume besuchen -> Haupttreppe zum 1. OG.
+ROISSY V3.1 — Projektdateien DIREKT ins Stammverzeichnis des Repos übertragen; index.html ersetzen. Kein extra Unterordner. Commit -> Push. Browser URL mit ?v=roissy31.

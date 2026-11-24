@@ -1,0 +1,24 @@
+{
+  "release": "V3.1",
+  "authenticFloorPlan": "Georges-Louis Le Rouge, 1776, Château de Roissy, Rez-de-Chaussée and Premier Étage",
+  "builtDate": "1703–1709",
+  "alternatePlan": "Unbuilt Nicodème Tessin U-shaped design excluded",
+  "verified": [
+    "Centreline of principal salon and vestibule; grand stair to west; room sequences; separate EG and 1.OG; main body footprint validated by archaeological excavations"
+  ],
+  "estimated": [
+    "54m overall width from graphic scale",
+    "23m including frontage/projections from graphic scale",
+    "all individual room clear widths and depths",
+    "all heights"
+  ],
+  "scope": "room sizes and partition layout only; no furnishings, historical interior decoration or unauthorised 1730 plan claims",
+  "fixedCodeErrors": [
+    "Removed opaque full-height doorframe block spanning every longitudinal interior doorway"
+  ],
+  "refs": [
+    "https://www.rijksmuseum.nl/en/collection/object/Plattegronden-van-de-begane-grond-en-eerste-verdieping-van-het-kasteel-Roissy--5df618ecbc2ebfe72eff689a21d509b4",
+    "https://www.persee.fr/doc/bulmo_0007-473x_2015_num_173_4_12237",
+    "https://agorha.inha.fr/ark:/54721/3e0c51c5-191f-4850-b43f-0c00e44b3fd5"
+  ]
+}
