@@ -32,7 +32,7 @@ for(const g of batches.filter(o=>o.name==='Historische_Bauteile_shell:ceiling'))
   for(let i=0;i<g.count;i++){
     g.getMatrixAt(i,m);m.decompose(p,q,s);
     if(Math.abs(p.y-(OG-.095-.114))>.02)continue;
-    for(const h of [[-6.70,6.70,-11.10,-2.32],[-13.18,-6.77,-2.10,10.80]]){
+    for(const h of [[-6.70,6.70,-11.10,-2.32],[-13.18,-6.77,-2.10,8.70]]){
       const ix=Math.max(0,Math.min(p.x+s.x/2,h[1])-Math.max(p.x-s.x/2,h[0]));
       const iz=Math.max(0,Math.min(p.z+s.z/2,h[3])-Math.max(p.z-s.z/2,h[2]));
       if(ix*iz>.00001)throw Error('An underside ceiling mesh spans the Salon/stairwell open volume');

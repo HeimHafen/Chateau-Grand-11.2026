@@ -1,0 +1,116 @@
+{
+  "version": "3.12",
+  "actualGLB": true,
+  "porticoParts": 25,
+  "instances": 3268,
+  "drawcalls": 24,
+  "hallSupports": 8,
+  "westUpperPassageSteps": 195,
+  "invalidTransforms": 0,
+  "doorways": 45,
+  "checks": {
+    "roomCountEG": 18,
+    "roomCountOG": 21,
+    "directMeshes": 205,
+    "roofDormersPerSide": 7,
+    "roofPlaneCutouts": 14,
+    "floatingRoofDecor": 0,
+    "orphanSideStairs": 0,
+    "roofHipAndRidgeCaps": 9,
+    "salonUpperDoorsIntoVoid": 0,
+    "ceilingUndersides": true,
+    "roissyRoomOverlapCount": 0,
+    "facadeOpeningsChecked": true,
+    "perronNavigationUsesStoneStepHeights": true,
+    "stairRailAnchoredToTreads": true,
+    "stairGeometrySharesNavigationConfig": true,
+    "salonGalleryGuardedWidth": 4.9,
+    "vestibuleSupports": 8,
+    "stairInnerRails": 2,
+    "stairRisersPerFlight": 18,
+    "donorPedimentClearOfUpperVestibule": true,
+    "externalCornerQuoinsOnly": true,
+    "vestibuleNaturalStonePBR": true,
+    "vestibuleFloorSize": [
+      13.19,
+      13.277999999999999
+    ],
+    "roofOpeningSlope": [
+      0.29,
+      0.7
+    ],
+    "dormerGlassBackedBySolidStone": false,
+    "sideWindowsCheckedAgainstPartitionColliders": true,
+    "sideWindowCollisions": 0,
+    "realDoorReveals": true,
+    "interiorLintelsClearHeight": 2.8,
+    "fullDoorwayCoreCollisions": 0,
+    "doorsAndWindowsCheckedAgainstSolidGeometry": true,
+    "roofAndCeilingAreaConformsToPlan": true,
+    "slabPerimeterWallOverlap": [
+      0.030000000000001137,
+      0.030000000000001137
+    ],
+    "deckEdgeSegments": 8,
+    "slabOpeningIntrusions": 0,
+    "slabArealCoverage": 3447.2,
+    "ceilingNeverBridgesSalonOrStair": true,
+    "grandEscalierConstruction": {
+      "steps": 36,
+      "riser": 0.15833333333333333,
+      "stairStart": 1.08,
+      "stairMid": 3.9299999999999997,
+      "stairEnd": 6.78,
+      "soffits": 6,
+      "handrails": 7,
+      "balusters": 309,
+      "endPiers": 10,
+      "landings": 2,
+      "railClearance": 2.17
+    },
+    "roomDerivedAxes": {
+      "source": "Le Rouge 1776 room boundary midlines (approximate, not measured as-built)",
+      "rearCuts": [
+        -27,
+        -21.5035,
+        -13.1623,
+        -6.75,
+        6.7503,
+        12.5355,
+        20.4428,
+        27
+      ],
+      "rearCutsOG": [
+        -27,
+        -21.5035,
+        -13.1623,
+        -6.75,
+        6.75,
+        13.9825,
+        20.443,
+        27
+      ],
+      "frontCuts": [
+        -27,
+        -22.022,
+        -13.2102,
+        -6.75,
+        6.75,
+        13.9825,
+        20.443,
+        27
+      ],
+      "crossZ": -2.163,
+      "minimumExteriorWallPenetration": 0.075
+    },
+    "partitionSegments": 43,
+    "derivedTransverseWallCount": 13,
+    "checkedMasonryJoins": 56,
+    "wallJoinConflicts": 0,
+    "historicGrandStairOpeningPreserved": true,
+    "exteriorConnectionOverlap": {
+      "x": 0.3049999999999997,
+      "z": 0.11000000000000121
+    }
+  }
+}

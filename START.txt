@@ -1,5 +1,3 @@
-CHÂTEAU GRAND 2027 · ROISSY V3.10
-
-Spiel starten: index.html über GitHub Pages öffnen.
-Installation: Siehe README.md und IMPORTIEREN.txt.
-Fokus dieser Version: historische Haupttreppe, Geländer, Untersichten und Podeste.
+CHÂTEAU GRAND 2027 · ROISSY V3.12
+Spiel über index.html / GitHub Pages öffnen.
+Installation und Prüfgrenzen siehe README.md.

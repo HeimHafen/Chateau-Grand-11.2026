@@ -1,5 +1,5 @@
 /** Château Grand V3.4 – walkable ground floor and Premier Étage, shared plan metres. */
-import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR,PERRON} from './roissy-config.js?v=roissy311';
+import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR,PERRON} from './roissy-config.js?v=roissy312';
 export const EG_Y=EG,OG_Y=OG,EYE_Y=1.69;
 export const WALK_RADIUS=.30;
 const H=(OG-EG)*.5;
@@ -64,7 +64,9 @@ export function collidesAt(x,z,foot,architecture,doors=[]){
     // No walkable floor over the double-height Salon or stairwell except on the U flights.
     if(og){
       if(between(x,-6.65,6.65)&&between(z,-11.1,-2.34))return true;
-      if(between(x,-13.14,-6.80)&&between(z,-2.12,10.72)&&!first(x,z)&&!second(x,z)&&!landing(x,z)&&!between(z,8.7,10.72))return true;
+      const rect=(q)=>between(x,q.x-q.width/2,q.x+q.width/2)&&between(z,q.z-q.depth/2,q.z+q.depth/2);
+      const solidDeck=architecture.upperDeckRectangles?.some(([x0,x1,z0,z1])=>between(x,x0,x1)&&between(z,z0,z1));
+      if(architecture.upperDeckRectangles&&!solidDeck&&!second(x,z)&&!rect(S.upperLanding)&&!rect(S.passage))return true;
     }
   }
   return false;
@@ -73,6 +75,18 @@ export function candidateStep(from,x,z,arch,doors=[]){
   const foot=surfaceHeight(x,z,from.footY);
   if(foot-from.footY>.37||from.footY-foot>.75)return null;
   if(collidesAt(x,z,foot,arch,doors))return null;
+  // Prevent sideways escape through the actual inner and outer stair rails.
+  const rise=(OG-EG)/(2*STEPS);
+  for(const [f,offset] of [[S.first,0],[S.second,STEPS]]){
+    const t=(z-f.startZ)*f.direction;
+    if(t<.15||t>f.length-.15)continue;
+    const idx=Math.min(STEPS-1,Math.floor(t/stepDepth(f))), tread=EG+(offset+idx+1)*rise;
+    if(Math.abs(foot-tread)>.37)continue;
+    for(const side of [-1,1]){
+      const railX=f.x+side*(f.width/2-.10);
+      if(Math.abs(x-railX)<WALK_RADIUS+.04)return null;
+    }
+  }
   return {x,z,footY:foot};
 }
 export function describePlace(x,z,foot,architecture){

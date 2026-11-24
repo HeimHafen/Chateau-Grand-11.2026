@@ -1,5 +1,4 @@
-CHÂTEAU GRAND ROISSY V3.11
-ZIP entpacken, INHALT direkt in den Stammordner Chateau-Grand-2027 übertragen.
-Die alte index.html und chateau/-Dateien ersetzen. Kein extra Unterordner.
-Commit und Push. Web-Adresse mit ?v=roissy311 laden.
-Oben rechts muss ROISSY · V3.11 stehen.
+CHÂTEAU GRAND ROISSY V3.12
+ZIP entpacken. Gesamten INHALT ins Stammverzeichnis von Chateau-Grand-2027 kopieren, vorhandene Dateien ersetzen. Kein zusätzlicher Ordner.
+Commit und Push. GitHub-Pages-Adresse mit ?v=roissy312 laden.
+Oben rechts muss ROISSY · V3.12 erscheinen.

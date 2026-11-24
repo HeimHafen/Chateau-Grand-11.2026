@@ -20,9 +20,9 @@ let floor=null,inlays=0;scene.traverse(o=>{
  if(o.name==='Roissy_Vestibule_Eingelassener_Steinfries')inlays++;
 });
 if(!floor)throw Error('Vestibule material plane missing');
-if(inlays!==6)throw Error('Expected six stone perimeter inlays, got '+inlays);
+if(inlays!==8)throw Error('Expected eight stone perimeter inlays, got '+inlays);
 const size=new THREE.Box3().setFromObject(floor).getSize(new THREE.Vector3());
-if(Math.abs(size.x-12.35)>.02||Math.abs(size.z-12.26)>.02)throw Error('Floor does not fit plan '+size.toArray());
+if(Math.abs(size.x-13.19)>.02||Math.abs(size.z-13.278)>.02)throw Error('Floor does not fit plan '+size.toArray());
 if(Math.abs(floor.position.y-(EG+.008))>1e-6)throw Error('Floating vestibule floor');
 const porch=data.originalPortico;
 const back=11.68*.75+porch.position.z;
