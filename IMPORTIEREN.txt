@@ -1,6 +1,3 @@
-CHÂTEAU ROISSY V3.3 – DACH-, DECKEN- UND SALON-ANSCHLÜSSE
+CHÂTEAU ROISSY V3.4 – TREPPE UND GALERIE
 
-ZIP entpacken. ALLE DATEIEN DIREKT in die Wurzel deines Repositories Chateau-Grand-2027 einfügen; nicht in einen neuen Ordner.
-index.html, chateau/ und alle übrigen Projektdateien ersetzen.
-Working Copy: Commit → Push. Im Browser ?v=roissy33 öffnen.
-Oben rechts muss stehen: ROISSY · V3.3
+ZIP ohne Zusatzordner entpacken; ALLE Inhalte direkt ins Repository Chateau-Grand-2027 kopieren. Commit → Push; ?v=roissy34. Die Startseite muss ROISSY · V3.4 anzeigen.

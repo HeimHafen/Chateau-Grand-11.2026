@@ -1,5 +1,5 @@
-/** Château Grand V3.1 – walkable ground floor and Premier Étage, shared plan metres. */
-import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS} from './roissy-config.js';
+/** Château Grand V3.4 – walkable ground floor and Premier Étage, shared plan metres. */
+import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR} from './roissy-config.js';
 export const EG_Y=EG,OG_Y=OG,EYE_Y=1.69;
 export const WALK_RADIUS=.30;
 const H=(OG-EG)*.5;
@@ -7,16 +7,30 @@ const between=(x,a,b)=>x>=a&&x<=b;
 const inside=(x,z)=>between(x,-HALF_W+.35,HALF_W-.35)&&between(z,-HALF_D+.34,HALF_D-.34);
 const onSteps=(x,z)=>Math.abs(x)<6.25&&between(z,17.3,20.31);
 const terrace=(x,z)=>Math.abs(x)<7.35&&between(z,HALF_D-.75,17.43);
-const first=(x,z)=>between(x,-12.75,-10.02)&&between(z,-1.20,8.78);
-const second=(x,z)=>between(x,-9.86,-7.18)&&between(z,-1.20,8.88);
-const landing=(x,z)=>between(x,-12.86,-7.16)&&between(z,-2.42,-1.15);
+const S=GRAND_STAIR, STEPS=S.stepsPerFlight;
+const stepDepth=f=>f.length/STEPS;
+const first=(x,z)=>between(x,S.first.x-S.first.width/2+.04,S.first.x+S.first.width/2-.04)&&
+  between(z,S.first.startZ-S.first.length-.01,S.first.startZ+.012);
+const second=(x,z)=>between(x,S.second.x-S.second.width/2+.04,S.second.x+S.second.width/2-.04)&&
+  between(z,S.second.startZ-.012,S.second.startZ+S.second.length+.012);
+const landing=(x,z)=>between(x,S.landing.x-S.landing.width/2+.04,S.landing.x+S.landing.width/2-.04)&&
+  between(z,S.landing.z-S.landing.depth/2+.01,S.landing.z+S.landing.depth/2-.01);
 export function isInsidePalace(x,z){return inside(x,z);}
 export function onMonumentalStair(x,z){return onSteps(x,z);}
 export function onTerrace(x,z){return terrace(x,z);}
 function stairHeight(x,z,prior){
+  // Same discrete top-of-tread heights as the geometry. Stair traversal does
+  // not pretend a solid continuous ramp exists inside the visible stair.
+  const rise=(OG-EG)/(2*STEPS);
   if(landing(x,z)&&prior>=EG+H-.65&&prior<=EG+H+.70)return EG+H;
-  if(first(x,z)&&prior<EG+H+.55)return EG+Math.min(1,Math.max(0,(8.78-z)/9.98))*H;
-  if(second(x,z)&&prior>EG+H-.45)return EG+H+Math.min(1,Math.max(0,(z+1.20)/10.08))*H;
+  if(first(x,z)&&prior<EG+H+.55){
+    const i=Math.max(0,Math.min(STEPS-1,Math.floor((S.first.startZ-z)/stepDepth(S.first))));
+    return EG+(i+1)*rise;
+  }
+  if(second(x,z)&&prior>EG+H-.45){
+    const i=Math.max(0,Math.min(STEPS-1,Math.floor((z-S.second.startZ)/stepDepth(S.second))));
+    return EG+(STEPS+i+1)*rise;
+  }
   return null;
 }
 export function surfaceHeight(x,z,prev=0){

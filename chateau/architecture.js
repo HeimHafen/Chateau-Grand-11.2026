@@ -1,12 +1,12 @@
 /**
- * CHÂTEAU GRAND V3.3 – structural cleanup: ceilings, salon openings and roof ornament anchoring.
+ * CHÂTEAU GRAND V3.4 – coherent grand staircase, landings, salon-gallery edge.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * The classical MaxGame portico and small cupola are creative additions, not historical evidence.
  */
 import {addPorticoColumn} from '../wohnzimmer/portico-columns-v2.js';
 import {addPortalDoors} from '../wohnzimmer/portal-doors-v2.js';
-import {PLAN,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,FRONT_X_CUTS,CROSS_WALL_Z} from './roissy-config.js';
+import {PLAN,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR} from './roissy-config.js';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_HISTORISCHER_KERN_54X23';scene.add(root);
@@ -138,16 +138,20 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  const salonVoid=[-6.70,6.70,-11.10,-2.32],stairVoid=[-13.18,-6.77,-2.10,10.80];
  addSlab(OG-.095,[salonVoid,stairVoid]);
  addSlab(CORNICE-.15,[]);
- // Salon double-height opening: balustrade stands on the *solid* north
- // slab edge, not as an isolated beam floating across the salon void.
- // z=-2.31 is the void edge; offset toward the supported gallery (+z).
- const galleryZ=-2.08;
- addBox('stone',0,OG+.10,galleryZ,13.0,.20,.24);
- for(let x=-6.22;x<=6.24;x+=.69){
-   addBox('bronzeTrim',x,OG+.62,galleryZ,.055,1.02,.074);
+ // V3.4 Salon gallery: the garden-side salon has a two-storey void.
+ // The dividing wall on z=CROSS_WALL_Z has a single 4.9m opening at x=-2.45..2.45.
+ // A 13-m railing behind/through that wall was geometrically WRONG and partly
+ // embedded in stone. The guard now spans only the unprotected actual opening.
+ // Side edges are guarded by the actual full-height masonry partitions at x=±6.72.
+ const galleryZ=CROSS_WALL_Z+.12, galleryL=-2.31,galleryR=2.31;
+ const galleryW=galleryR-galleryL;
+ addBox('stone',0,OG+.055,galleryZ,galleryW,.11,.18);
+ for(let i=0;i<=8;i++){
+   const x=galleryL+i*galleryW/8;
+   addBox('bronzeTrim',x,OG+.57,galleryZ,.06,1.03,.075);
  }
- addBox('trim',0,OG+1.13,galleryZ,13.20,.14,.20);
- addBox('bronzeTrim',0,OG+.43,galleryZ,13.00,.045,.055);
+ addBox('trim',0,OG+1.115,galleryZ,galleryW+.08,.14,.16);
+ addBox('bronzeTrim',0,OG+.43,galleryZ,galleryW,.052,.072);
  // Plan-aware partition wall with physical doorway holes and identical collider segments.
  function innerWall(f,axis,fixed,a,b,doorAt,doorW=1.38){
    const y=f==='eg'?EG:OG,upper=f==='eg'?OG-.15:CORNICE-.22;
@@ -216,31 +220,68 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      innerWall(f,'x',4.65,20.58,26.75,[23.5],1.25);
    }
  }
- // One floating-free historic U-shaped double-flight stair, west of the Vestibule.
- const RUN=12, rise=(OG-EG)/24;
- for(let i=0;i<RUN;i++){
-   const y=EG+(i+1)*rise;
-   const z=8.65-(i+.5)*(10.05/RUN);
-   addBox('floor',-11.37,y-.087,z,2.67,.17,10.05/RUN+.025);
-   addBox('trim',-11.37,y+.005,z+.31,2.70,.045,.11);
+ // V3.4 GRAND ESCALIER – geometry and pedestrian heights use the SAME
+ // GRAND_STAIR dimensions in roissy-config.js. No suspended floor-height bars.
+ const S=GRAND_STAIR, RUN=S.stepsPerFlight, rise=(OG-EG)/(2*RUN), MID=EG+RUN*rise;
+ const flight=(cfg,offset)=>{
+   const dz=cfg.length/RUN, samples=[];
+   for(let i=0;i<RUN;i++){
+     const y=EG+(offset+i+1)*rise;
+     const z=cfg.startZ+cfg.direction*(i+.5)*dz;
+     samples.push({x:cfg.x,y,z});
+     // Treads' actual upper face is equal to the navigation step height.
+     addBox('floor',cfg.x,y-.085,z,cfg.width,.17,dz+.018);
+     // Short riser right at the leading edge – closes the previous dark slit
+     // without introducing a massive solid block under the whole staircase.
+     const edge=z-cfg.direction*(dz*.49);
+     addBox('stone',cfg.x,y-rise/2+.012,edge,cfg.width-.028,rise-.022,.058);
+     addBox('trim',cfg.x,y+.014,edge,cfg.width+.028,.028,.065);
+   }
+   return samples;
+ };
+ const firstRun=flight(S.first,0);
+ addBox('floor',S.landing.x,MID-.09,S.landing.z,S.landing.width,.18,S.landing.depth);
+ const secondRun=flight(S.second,RUN);
+ // Upper landing and connecting bridge span the stair void at exactly OG.
+ addBox('floor',S.upperLanding.x,OG-.09,S.upperLanding.z,S.upperLanding.width,.18,S.upperLanding.depth);
+ addBox('floor',S.passage.x,OG-.09,S.passage.z,S.passage.width,.18,S.passage.depth);
+ // Stone stringers sit beneath both real stair runs and terminate at the landing.
+ for(const x of [-12.66,-10.08])
+   beam('trim',[x,EG+.05,8.76],[x,MID-.19,-1.25],.067);
+ for(const x of [-9.74,-7.34])
+   beam('trim',[x,MID-.17,-1.13],[x,OG-.14,8.71],.067);
+ // Bespoke balustrades attached to each tread (no arbitrary OG-height posts).
+ // On the first flight the guard runs along the western outer edge; on the
+ // second it runs along the eastern edge. These are traversable stair widths.
+ function addFlightGuard(samples,x){
+   const h=S.railHeight;
+   for(let i=0;i<samples.length;i++){
+     const p=samples[i];
+     if(i%2===0||i===samples.length-1){
+       addBox('bronzeTrim',x,p.y+h*.50,p.z,.07,h,.07);
+       addBox('stone',x,p.y+.055,p.z,.17,.11,.17);
+     }
+     if(i+1<samples.length){
+       const b=samples[i+1];
+       beam('bronzeTrim',[x,p.y+h,p.z],[x,b.y+h,b.z],.055);
+       beam('bronzeTrim',[x,p.y+.46,p.z],[x,b.y+.46,b.z],.028);
+     }
+   }
  }
- // Intermediate landing across both flights; height agrees with floor-navigation.
- addBox('floor',-10.0,EG+12*rise-.09,-1.79,5.78,.18,1.30);
- for(let i=0;i<RUN;i++){
-   const y=EG+(RUN+i+1)*rise;
-   const z=-1.24+(i+.5)*(9.98/RUN);
-   addBox('floor',-8.55,y-.087,z,2.62,.17,9.98/RUN+.025);
-   addBox('trim',-8.55,y+.005,z+.31,2.65,.045,.11);
+ addFlightGuard(firstRun,S.first.x-S.first.width/2+.13);
+ addFlightGuard(secondRun,S.second.x+S.second.width/2-.13);
+ // Landing rear edge protected – placed entirely on top of its floor plate.
+ const backZ=S.landing.z-S.landing.depth/2+.11;
+ for(let i=0;i<=6;i++){
+   const x=S.landing.x-S.landing.width/2+.24+i*(S.landing.width-.48)/6;
+   addBox('bronzeTrim',x,MID+.55,backZ,.075,1.08,.075);
  }
- addBox('floor',-8.55,OG-.09,9.35,2.82,.18,2.05);
- addBox('floor',-6.89,OG-.09,9.35,3.45,.18,2.05); // gallery connector across the stair void
- // Solid stair stringers below the stairs, visually slender (not giant vertical boxes).
- for(const xx of [-12.80,-9.99,-9.96,-7.18]){
-   beam('trim',[xx,EG+.10,8.9],[xx,EG+12*rise-.12,-1.65],.09);
- }
- for(const xx of [-9.95,-7.20])beam('trim',[xx,EG+12*rise-.12,-1.24],[xx,OG-.08,8.85],.09);
- for(const xx of [-12.85,-7.04])for(let zz=-1.1;zz<8.6;zz+=1.1)
-   addBox('bronzeTrim',xx,OG-.48,zz,.06,.91,.06,'og');
+ beam('bronzeTrim',[S.landing.x-S.landing.width/2+.18,MID+1.09,backZ],
+   [S.landing.x+S.landing.width/2-.18,MID+1.09,backZ],.055);
+ // Upper landing guard: short western edge where the adjoining stair void is open.
+ const topGuardX=S.upperLanding.x-S.upperLanding.width/2+.11;
+ for(const z of [8.75,9.45,10.12])addBox('bronzeTrim',topGuardX,OG+.55,z,.075,1.10,.075);
+ beam('bronzeTrim',[topGuardX,OG+1.1,8.75],[topGuardX,OG+1.1,10.12],.055);
  // Ground-level perron. No five-metre block; seven realistic shallow steps.
  addBox('stone',0,.46,14.25,14.60,.90,6.65);
  addBox('floor',0,EG-.10,14.25,14.80,.18,6.65);
@@ -405,7 +446,8 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    planAxes:{frontDoors:FRONT_DOORS,frontWindows:FRONT_WINDOW_AXES,rearWindows:REAR_WINDOW_AXES},
    validations:{roomCountEG:ROOMDATA.eg.length,roomCountOG:ROOMDATA.og.length,directMeshes,
      roofDormersPerSide:roofDormerAxes.length,roofPlaneCutouts:roofDormerAxes.length*2,
-     floatingRoofDecor:0,salonUpperDoorsIntoVoid:0,ceilingUndersides:true,
+     floatingRoofDecor:0,salonUpperDoorsIntoVoid:0,ceilingUndersides:true,stairRailAnchoredToTreads:true,stairGeometrySharesNavigationConfig:true,
+     salonGalleryGuardedWidth:4.62,stairRisersPerFlight:RUN,
      roofOpeningSlope:[roofOpeningT0,roofOpeningT1],dormerGlassBackedBySolidStone:false}
  };
 }

@@ -55,3 +55,37 @@ let p2={x:0,z:31,footY:0};
 for(const [x,z,description] of [[0,8,'door to vestibule'],[0,-4.5,'vestibule to Salon'],[0,8,'back to vestibule'],[-5.6,5.3,'vestibule to west doorway'],[-8.1,5.3,'west doorway to stair landing'],[-8.05,8.66,'approach first flight at bottom'],[-11.37,8.66,'stair foot'],[-11.37,-1.65,'first stair flight'],[-8.55,-1.65,'intermediate landing'],[-8.55,8.7,'second stair flight'],[-8.55,9.35,'upper stair landing'],[-5.65,9.35,'1OG gallery door']]){
  const result=moveTo(x,z,p2);console.log('WALK',description,JSON.stringify(result));if(!result.ok)break;p2=result.p;
 }
+// V3.4 precise stair-to-navigation correspondence, both flights.
+const {GRAND_STAIR: S}=await import('./chateau/roissy-config.js');
+const delta=(OG_Y-EG_Y)/(S.stepsPerFlight*2);
+for(const [flight,baseStep] of [[S.first,0],[S.second,S.stepsPerFlight]]){
+  for(let i=0;i<S.stepsPerFlight;i++){
+    const z=flight.startZ+flight.direction*(i+.5)*flight.length/S.stepsPerFlight;
+    const h=EG_Y+(baseStep+i+1)*delta;
+    const prior=EG_Y+(baseStep+i)*delta;
+    const computed=surfaceHeight(flight.x,z,prior);
+    if(Math.abs(computed-h)>1e-7)throw Error(`Mismatched stair step ${baseStep+i+1}: model ${h} vs navigation ${computed}`);
+  }
+}
+if(data.validations.salonGalleryGuardedWidth!==4.62)throw Error('Unsupported gallery dimensions');
+if(data.validations.stairRisersPerFlight!==S.stepsPerFlight)throw Error('Missing stone risers per flight');
+if(!data.validations.stairRailAnchoredToTreads)throw Error('Stair guards not aligned');
+for(const floorName of ['eg','og']){
+  const floorLayer=data.historicalLayers[floorName];
+  if(!floorLayer)throw Error('Missing historical floor layer '+floorName);
+}
+scene.traverse(o=>{
+  if(!o.isInstancedMesh)return;
+  const matrix=o.instanceMatrix.array;
+  for(const v of matrix)if(!Number.isFinite(v))throw Error(`Invalid instance matrix ${o.name}`);
+});
+console.log('V3.4 CHECKS PASSED: 36 treads match navigation, salon gallery spans 4.62m, all matrices finite.');
+// Verify the return route down the U-stair (no hidden one-way drop).
+let reverse={x:-5.66,z:9.35,footY:OG_Y};
+for(const [x,z,description] of [[-8.55,9.35,'OG passage to stair'],[-8.55,8.65,'upper stair foot'],[-8.55,-1.66,'second flight downhill'],[-11.37,-1.66,'landing west'],[-11.37,8.66,'first flight downhill'],[-8.05,8.66,'EG stair exit'],[-8.05,5.30,'approach EG west door'],[0,5.30,'EG vestibule']]){
+  const result=moveTo(x,z,reverse);
+  if(!result.ok)throw Error('Descending route BLOCKED at '+description+': '+JSON.stringify(result));
+  reverse=result.p;
+}
+if(Math.abs(reverse.footY-EG_Y)>.001)throw Error('Downstairs did not return to EG');
+console.log('V3.4 DESCENT PASS: upper floor to vestibule without teleporting.');

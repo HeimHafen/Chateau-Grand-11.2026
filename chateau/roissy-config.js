@@ -1,4 +1,4 @@
-// Château Grand V3.2 – shared coordinates for facade, interior and navigation.
+// Château Grand V3.4 – shared coordinates for facade, interior and navigation.
 // Historically justified *proportions*, not a centimetre-accurate archaeological survey.
 export const PLAN={
   "id": "CHATEAU_ROISSY_PLAN_V3_2",
@@ -350,3 +350,16 @@ export const SIDE_WINDOW_AXES=[-8.4,-4.2,1.75,6.6];
 export const REAR_X_CUTS=[-27,-21.5,-13.26,-6.72,6.72,12.5,20.46,27];
 export const FRONT_X_CUTS=[-27,-21.93,-13.26,-6.72,6.72,14.0,20.46,27];
 export const CROSS_WALL_Z=-2.18;
+
+// V3.4: one source of truth for step geometry AND walk navigation.
+// These are architectural working measurements derived from the scaled Roissy plan,
+// not verified archaeological centimetre measurements.
+export const GRAND_STAIR=Object.freeze({
+  stepsPerFlight:18,
+  first:Object.freeze({x:-11.37,width:2.67,startZ:8.65,length:10.05,direction:-1}),
+  second:Object.freeze({x:-8.55,width:2.62,startZ:-1.24,length:9.98,direction:1}),
+  landing:Object.freeze({x:-10.00,z:-1.79,width:5.78,depth:1.30}),
+  upperLanding:Object.freeze({x:-8.55,z:9.35,width:2.82,depth:2.05}),
+  passage:Object.freeze({x:-6.89,z:9.35,width:3.45,depth:2.05}),
+  railHeight:1.03
+});

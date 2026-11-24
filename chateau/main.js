@@ -3,8 +3,8 @@ import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from '../wohnzimmer/sky-atmosphere.js';
-import {buildChateau} from './architecture.js?v=roissy33';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy33';
+import {buildChateau} from './architecture.js?v=roissy34';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy34';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -55,8 +55,8 @@ async function run(){
   glass.needsUpdate=true;
   // Verify that we really used donor assets, not a recreated imitation.
   if(chateau.originalPortico.children.length<17)throw Error('Originalportikus aus MaxGame wurde unvollständig übernommen.');
-  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'3.3',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length};
-  document.getElementById('version').textContent='ROISSY · V3.3';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'3.4',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length};
+  document.getElementById('version').textContent='ROISSY · V3.4';
   start.disabled=false;start.textContent='Château erkunden';
   status.textContent='54 × 23 Meter · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
   resize();view('angle');
@@ -201,7 +201,7 @@ function frame(ms){
     const speed=dt*6.1;
     const dx=(-Math.sin(player.yaw)*f+Math.cos(player.yaw)*st)*speed;
     const dz=(-Math.cos(player.yaw)*f-Math.sin(player.yaw)*st)*speed;
-    // Real staircase heights (26 outside steps + two U-shaped interior flights),
+    // Real staircase heights (7 outside steps + 36 risers in two U-shaped flights),
     // real masonry collision and genuine oak doors. Never teleport on a threshold.
     const doors=historicalChateau?.entranceDoors||[];
     for(const d of doors)d.door.update(dt,player.x,player.z,player.footY);

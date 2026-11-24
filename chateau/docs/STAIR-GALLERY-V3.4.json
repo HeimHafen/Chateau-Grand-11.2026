@@ -1,0 +1,15 @@
+{
+  "version": "3.4",
+  "focus": "grand stair and salon gallery",
+  "reference": "Le Rouge 1776 room plan; unverified exact dimensions",
+  "stairSteps": 36,
+  "riseMeters": 0.15833333333333333,
+  "galleryRailSpanMeters": 4.62,
+  "stairsSource": "chateau/roissy-config.js GRAND_STAIR",
+  "geometryAndNavigationUnified": true,
+  "knownLimitations": [
+    "Not physically simulated on iPhone Safari",
+    "Roissy dimensions calibrated approximately"
+  ],
+  "riserDescription": "36 flache Steigungen, 18 pro Lauf (15.83 cm)"
+}
