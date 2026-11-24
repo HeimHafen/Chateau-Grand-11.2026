@@ -1,16 +1,18 @@
-# V3.19 – Stuck und Boiserie
-Basis V3.18; keine Änderung an Grundriss, Bodenbelägen, Außenfassade, Treppe, Navigation oder Beleuchtung.
+# Château Grand Roissy V3.20 – Treppenwand & Hallenkuppel
 
-- Repräsentative Wandpaneele erhalten zusätzliche innere Profilrahmen; an vorhandener Wandgeometrie ausgerichtet und durch die bestehende Öffnungs-/Flächenbereinigung abgesichert.
-- Großer Salon: eigener Stuckspiegel an der oberen Decke mit gestuftem Profil, ovalem Relief und Eckfeldern. Kein Zwischendeckeneinbau.
-- Paradezimmer, Speisesaal, Grand Cabinet d’Assemblée und Musikzimmer: eigene profilierte Stuckfelder. Alle neuen rechteckigen Deckenbauteile werden beim Bau gegen die tatsächlichen Deckenplatten geprüft.
-- Haupttreppenhaus: Relief an der Dachgeschossunterseite; kein Bauteil im Laufbereich. Vestibül: bestehende Kassetten mit Putzfeldern und zweistufiger Profilierung.
-- Materialien: vorhandene Farb-, Normal- und Rauheitskarten weiterverwendet, keine neuen fotografischen Scans. Stuckentwürfe historisch inspiriert, nicht original belegt.
-- Keine Leuchten, keine neuen Lichtquellen. Bestehende allgemeine Umgebungs- und Tageslichtbeleuchtung unverändert.
+Basis V3.19; Grundriss, Außenfassade, Treppengeometrie, Böden, Navigation und Beleuchtung bleiben erhalten. Schwerpunkt dieser Version sind zwei gezielte Architekturkorrekturen aus dem iPhone-Rundgang: die falsche Tür an der westlichen Treppenwand und der bisher nur grafisch angedeutete Deckenmittelpunkt der Halle.
 
-Tests: JavaScript-Syntax der aktiven Module, Innenraum-/Deckenprüfung, Flächenprüfung, Treppentest, Fassaden- und Öffnungstests erfolgreich. Browsernavigation im Testsystem mit ERR_BLOCKED_BY_ADMINISTRATOR verweigert; keine visuelle Freigabe oder FPS-Messung auf iPhone.
+## Änderungen
+- Die störende EG-Tür an der westlichen Innenwand des Grand escalier (Achse x≈-13,21) wurde entfernt. Die Öffnung ist wieder als durchgehende Wand mit Sockel, Wandfeld, Profilierung und oberem Abschluss hergestellt.
+- Der Hallenbereich erhält im Obergeschoss keine bloß flache Kreiszeichnung mehr, sondern eine echte flach gespannte Vestibülkuppel / Kuppelkalotte mit umlaufenden Stuckringen.
+- Die Vestibüldecke im OG wurde um die Kuppel herum neu geordnet; der zentrale Bereich ist für die räumliche Kalotte reserviert, während die umgebenden Felder und Profile erhalten bleiben.
+- Keine neuen Leuchten, keine Möbel und keine Änderung an Außenhülle oder Treppenlauf.
+
+## Prüfung
+- Syntaxprüfung der aktiven JS-Module erfolgreich.
+- Innenraum-, Flächen-, Treppen-, Fassaden- und Öffnungstests erfolgreich.
+- Zusätzliche Prüfung: die entfernte Tür existiert nicht mehr in `interiorDoorways`, die Vestibülkuppel ist als 3D-Mesh vorhanden.
+- Browsernavigation im Testsystem weiterhin blockiert; daher keine visuelle Endfreigabe auf iPhone/Safari.
 
 ## Installation
-ZIP entpacken, Dateien auf Repository-Wurzelebene ersetzen, Commit und Push. Aufruf `?v=roissy319`, Anzeige `ROISSY · V3.19`.
-
-Prüfung: `node --experimental-default-type=module tests/validate-interior-v319.mjs` sowie `tests/validate-surfaces-v314.mjs`, `tests/validate-stair-v310.mjs`, `tests/validate-exterior-v313.mjs`, `test-v313-openings.mjs` mit demselben Node-Befehl.
+ZIP komplett entpacken, Inhalt in die Wurzel des bestehenden GitHub-Repositories kopieren und vorhandene Dateien ersetzen. Aufruf `?v=roissy320`, Anzeige `ROISSY · V3.20`.

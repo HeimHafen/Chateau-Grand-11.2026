@@ -1,12 +1,12 @@
 /**
- * CHÂTEAU GRAND V3.19 – Historische Hof- und Parkfassade mit gestaffelter Hülle.
+ * CHÂTEAU GRAND V3.20 – Historische Hof- und Parkfassade mit gestaffelter Hülle.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {resolveStaticFaces} from './surface-cleanup.js?v=roissy319';
+import {resolveStaticFaces} from './surface-cleanup.js?v=roissy320';
 import {addPortalDoors} from '../wohnzimmer/portal-doors-v2.js';
-import {PLAN,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy319';
+import {PLAN,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy320';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_V319_STUCK_UND_BOISERIE';scene.add(root);
@@ -61,7 +61,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    if(/Antichambre|Passage/.test(n))return 'passage';return 'service';
  }
  const palettes={hall:['intHall','intHallPanel'],salon:['intSalon','intSalonPanel'],private:['intPlaster','intPrivatePanel'],passage:['intPlaster','intPassagePanel'],service:['intService','intPanel']};
- const interiorAudit={wallFaces:0,panelFields:0,doorCrowns:0,floorZones:[],floorRects:[],ceilingFields:0,fixtureCount:0,wallTypes:{},salonDoubleProfiles:0,ceilingDesigns:[],ceilingReliefRects:[],ceilingMedallions:0};
+ const interiorAudit={wallFaces:0,panelFields:0,doorCrowns:0,floorZones:[],floorRects:[],ceilingFields:0,fixtureCount:0,wallTypes:{},salonDoubleProfiles:0,ceilingDesigns:[],ceilingReliefRects:[],ceilingMedallions:0,domeCount:0};
  // All profiles are fitted to existing masonry, not to an independent guessed room grid.
  function finishWall(f,axis,fixed,p,q,low,high,side,edge,full,service=false){
    if(q-p<.025||high-low<.025)return;
@@ -440,7 +440,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    geo.setAttribute('position',new THREE.Float32BufferAttribute(b.pos,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(b.uv,2));geo.computeVertexNormals();
    const o=new THREE.Mesh(geo,floorMats[kind]);o.name='Roissy_Interiorboden_'+key;o.receiveShadow=true;layers[f].add(o);directMeshes++;
  }
- // V3.19: ceiling design attached to existing soffits; no fake ceilings in voids.
+ // V3.20: ceiling design attached to existing soffits; no fake ceilings in voids.
  // Each design uses clear room bounds and is verified against the actual slab.
  const ceilingArea=r=>Math.max(0,r[1]-r[0])*Math.max(0,r[3]-r[2]);
  function ceilingIntersection(a,b){return [Math.max(a[0],b[0]),Math.min(a[1],b[1]),Math.max(a[2],b[2]),Math.min(a[3],b[3])];}
@@ -465,6 +465,25 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      const o=mesh(geo,mat,'Roissy_Stuck_Ovalrahmen',layers[layer]);o.position.set(x,upper-drop,z);
    }
    interiorAudit.ceilingMedallions++;
+ }
+ function vestibuleDome(rect,upper,layer,deck){
+   const area=ceilingArea(rect);if(area<1e-7)return;
+   const supported=deck.reduce((n,d)=>n+ceilingArea(ceilingIntersection(rect,d)),0);
+   if(Math.abs(supported-area)>1e-6)throw Error('Unattached vestibule dome '+JSON.stringify(rect));
+   const [a,b,c,d]=rect,x=(a+b)/2,z=(c+d)/2,w=b-a,h=d-c;
+   const ringRect=insetRect(rect,.10);
+   ceilingFrame(ringRect,upper,layer,deck,'intStucRelief',.14,.050,.090);
+   ceilingFrame(insetRect(ringRect,.22),upper,layer,deck,'intStucRecess',.05,.038,.060);
+   const geo=new THREE.SphereGeometry(1,44,24,0,Math.PI*2,0,Math.PI/2);
+   const domeMaterial=new THREE.MeshStandardMaterial({color:0xf2e9db,roughness:.94,metalness:0,side:THREE.DoubleSide});
+   const dome=new THREE.Mesh(geo,domeMaterial); dome.name='Roissy_Vestibule_Kuppel'; dome.castShadow=true; dome.receiveShadow=true; layers[layer].add(dome); directMeshes++;
+   dome.scale.set(w*.47,1.18,h*.47);
+   dome.position.set(x,upper-.06,z);
+   const drum=mesh(new THREE.TorusGeometry(1,.055,10,84),'intStucRelief','Roissy_Vestibule_Kuppelring',layers[layer]);
+   drum.rotation.x=Math.PI/2;drum.scale.set(w*.43,1,h*.43);drum.position.set(x,upper-.09,z);
+   const inner=mesh(new THREE.TorusGeometry(1,.028,8,72),'intStucRecess','Roissy_Vestibule_Kuppelring_Innen',layers[layer]);
+   inner.rotation.x=Math.PI/2;inner.scale.set(w*.36,1,h*.36);inner.position.set(x,upper-.02,z);
+   interiorAudit.domeCount++;
  }
  function designedCeiling(name,style,rect,upper,layer,deck){
    const [a,b,c,d]=rect,w=b-a,h=d-c;if(w<1.25||h<1.25)return;
@@ -508,18 +527,25 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  }
  // The upper roof slab spans the stairwell: ornament only at that level.
  designedCeiling('Grand escalier','stair',[-12.65,-7.20,-1.60,8.20],CORNICE-.283,'og',slabAudit[2].rectangles);
- // Nine coffers per vestibule, aligned with existing piers and beams.
+ // Vestibule ceilings: lower level keeps framed coffers around the central bay;
+ // upper level receives a true shallow dome rather than a merely drawn circle.
  for(const f of ['eg','og']){
    const top=f==='eg'?OG-.228:CORNICE-.283,deck=slabAudit[f==='eg'?1:2].rectangles;
    const rangesX=[[hallLeft+.34,-2.24-.39],[-2.24+.39,2.24-.39],[2.24+.39,hallRight-.34]];
    const rangesZ=[[hallBack+.34,2.15-.41],[2.15+.41,6.45-.41],[6.45+.41,hallFront-.34]];
+   const domeRect=[-3.55,3.55,1.05,8.05];
    for(const [a,b] of rangesX)for(const [c,d] of rangesZ){
      const w=b-a,h=d-c;if(w<.4||h<.4)continue;
-     const rect=[a,b,c,d];ceilingBox('intStucField',rect,top,.005,.023,f,deck);
+     const rect=[a,b,c,d];
+     const ix=ceilingIntersection(rect,domeRect);
+     const overlap=ceilingArea(ix);
+     if(f==='og'&&overlap>0.85*ceilingArea(rect))continue; // central bay reserved for dome
+     ceilingBox('intStucField',rect,top,.005,.023,f,deck);
      ceilingFrame(rect,top,f,deck,'intStucRelief',.115,.042,.082);
      if(w>.85&&h>.85)ceilingFrame(insetRect(rect,.17),top,f,deck,'intStucRecess',.035,.028,.048);
      interiorAudit.ceilingFields++;
    }
+   if(f==='og')vestibuleDome(domeRect,top,f,deck);
  }
  // V3.4 Salon gallery: the garden-side salon has a two-storey void.
  // The dividing wall on z=CROSS_WALL_Z has a single 4.9m opening at x=-2.45..2.45.
@@ -686,12 +712,13 @@ export function buildChateau(THREE,scene,donor,mats,glass){
       // not detected by the V3.7 narrower doorway-core test. Move their
       // thresholds within the same historic service-room passage, away from
       // the cross walls terminating at z=4.53 and z=4.65 respectively.
-      const groundJunctionDoor=f==='eg'&&(Math.abs(x+13.26)<.15||Math.abs(x-20.46)<.15);
+      const groundStairDoorRemoved=f==='eg'&&Math.abs(x+13.26)<.15;
+      const groundJunctionDoor=f==='eg'&&Math.abs(x-20.46)<.15;
       const entry=f==='og'&&Math.abs(x+13.21)<.15?9.68:
         f==='og'&&Math.abs(x+6.72)<.15?9.27:
         (westServiceDoor||eastUpperDoor)?7.30:
         groundJunctionDoor?5.75:5.30;
-      innerWall(f,'z',x,CROSS_WALL_Z-.075,frontAt(x)-.12,[entry],1.35);
+      innerWall(f,'z',x,CROSS_WALL_Z-.075,frontAt(x)-.12,groundStairDoorRemoved?[]:[entry],1.35);
    }
    for(const divider of SECONDARY_ROOM_WALLS[f]){
      innerWall(f,'x',divider.z,divider.from,divider.to,[divider.door],divider.width);
@@ -964,7 +991,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    addBox('stone',x,16.75,0,.72,3.0,.82);addBox('trim',x,18.24,0,.92,.22,1.02);
    for(const q of [-1,1])addBox('bronzeTrim',x+q*.19,18.39,0,.24,.13,.30);
  }
- // V3.19 intentionally adds no new interior light fixtures. Material realism is
+ // V3.20 intentionally adds no new interior light fixtures. Material realism is
  // developed first, while local lantern geometry and helper light sources stay absent
  // so the user can evaluate space purely through daylight and surface response.
  // Room labels visible only during top-down plan inspection (not in walkthrough).
