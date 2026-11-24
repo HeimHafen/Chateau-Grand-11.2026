@@ -1,12 +1,14 @@
 /** Château Grand V3.4 – walkable ground floor and Premier Étage, shared plan metres. */
-import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR} from './roissy-config.js';
+import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR,PERRON} from './roissy-config.js';
 export const EG_Y=EG,OG_Y=OG,EYE_Y=1.69;
 export const WALK_RADIUS=.30;
 const H=(OG-EG)*.5;
 const between=(x,a,b)=>x>=a&&x<=b;
 const inside=(x,z)=>between(x,-HALF_W+.35,HALF_W-.35)&&between(z,-HALF_D+.34,HALF_D-.34);
-const onSteps=(x,z)=>Math.abs(x)<6.25&&between(z,17.3,20.31);
-const terrace=(x,z)=>Math.abs(x)<7.35&&between(z,HALF_D-.75,17.43);
+const onSteps=(x,z)=>Math.abs(x)<PERRON.width/2-.10&&
+  between(z,PERRON.firstCentreZ-PERRON.treadDepth*.5,
+    PERRON.firstCentreZ+(PERRON.steps-.5)*PERRON.treadDepth);
+const terrace=(x,z)=>Math.abs(x)<7.35&&between(z,HALF_D-.75,PERRON.terraceEndZ);
 const S=GRAND_STAIR, STEPS=S.stepsPerFlight;
 const stepDepth=f=>f.length/STEPS;
 const first=(x,z)=>between(x,S.first.x-S.first.width/2+.04,S.first.x+S.first.width/2-.04)&&
@@ -34,7 +36,13 @@ function stairHeight(x,z,prior){
   return null;
 }
 export function surfaceHeight(x,z,prev=0){
-  if(onSteps(x,z))return Math.max(0,Math.min(EG,(20.31-z)/(20.31-17.30)*EG));
+  if(onSteps(x,z)){
+    // The support height is that of the ACTUAL tread under the player, not a
+    // continuous virtual ramp drawn through the discrete stone staircase.
+    const i=Math.max(0,Math.min(PERRON.steps-1,
+      Math.floor((z-(PERRON.firstCentreZ-PERRON.treadDepth*.5))/PERRON.treadDepth)));
+    return PERRON.landingHeight*(PERRON.steps-i)/PERRON.steps;
+  }
   if(terrace(x,z))return EG;
   if(!inside(x,z))return 0;
   const on=stairHeight(x,z,prev);

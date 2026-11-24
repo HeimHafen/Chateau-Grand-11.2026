@@ -1,0 +1,27 @@
+{
+  "version": "3.5",
+  "reference": "Le Rouge 1776 – published plan of built Château de Roissy",
+  "planFootprintMeters": {
+    "width": 54,
+    "depth": 23,
+    "precision": "scaled estimate, not exact survey"
+  },
+  "changes": [
+    "roof hips and ridge aligned",
+    "removed disconnected side stair slabs",
+    "window extents checked",
+    "room rectangles overlap checked"
+  ],
+  "preserved": [
+    "18 ground-floor rooms",
+    "20 upper-floor rooms plus Salon void",
+    "36 stair treads",
+    "three automatic entrance doors",
+    "14 roof dormer cutouts"
+  ],
+  "limitations": [
+    "not a full photographic iPhone render validation",
+    "some historical room heights not verified",
+    "portico and cupola artistic additions"
+  ]
+}

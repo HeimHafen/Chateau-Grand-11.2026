@@ -363,3 +363,11 @@ export const GRAND_STAIR=Object.freeze({
   passage:Object.freeze({x:-6.89,z:9.35,width:3.45,depth:2.05}),
   railHeight:1.03
 });
+
+// V3.5: the seven outside stone treads and walking support use one shared
+// geometry definition. Historic original front-perron dimensions not verified.
+export const PERRON=Object.freeze({
+  steps:7, firstCentreZ:17.40, treadDepth:.41, stoneTreadThickness:.15,
+  width:12.72, groundHeight:0, landingHeight:EG,
+  terraceEndZ:17.43
+});

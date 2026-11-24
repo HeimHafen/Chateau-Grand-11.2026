@@ -1,12 +1,12 @@
 /**
- * CHÂTEAU GRAND V3.4 – coherent grand staircase, landings, salon-gallery edge.
+ * CHÂTEAU GRAND V3.5 – model-wide construction audit and refinements.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * The classical MaxGame portico and small cupola are creative additions, not historical evidence.
  */
 import {addPorticoColumn} from '../wohnzimmer/portico-columns-v2.js';
 import {addPortalDoors} from '../wohnzimmer/portal-doors-v2.js';
-import {PLAN,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR} from './roissy-config.js';
+import {PLAN,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON} from './roissy-config.js';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_HISTORISCHER_KERN_54X23';scene.add(root);
@@ -285,10 +285,11 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  // Ground-level perron. No five-metre block; seven realistic shallow steps.
  addBox('stone',0,.46,14.25,14.60,.90,6.65);
  addBox('floor',0,EG-.10,14.25,14.80,.18,6.65);
- const steps=7;for(let i=0;i<steps;i++){
-   const n=steps-i,zz=17.40+i*.41,h=n*(EG/steps);
-   addBox('stone',0,h-.075,zz,12.72,.15,.42);
-   addBox('trim',0,h+.018,zz+.19,12.79,.035,.055);
+ const steps=PERRON.steps;for(let i=0;i<steps;i++){
+   const n=steps-i,zz=PERRON.firstCentreZ+i*PERRON.treadDepth;
+   const h=n*(PERRON.landingHeight/steps);
+   addBox('stone',0,h-.075,zz,PERRON.width,PERRON.stoneTreadThickness,PERRON.treadDepth+.01);
+   addBox('trim',0,h+.018,zz+PERRON.treadDepth*.46,PERRON.width+.07,.035,.055);
  }
  for(const sx of [-7.32,7.32]){
    addBox('trim',sx,EG+.34,14.20,.28,.75,6.0);
@@ -357,6 +358,26 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  const tri=(pts,mat,name)=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pts.flat(),3));g.computeVertexNormals();return mesh(g,mat,name);};
  tri([[aa,shoulder,cc],[aa,shoulder,dd],[aa+4,ridge,0]],bronze,'Dachwalmdreieck_W');
  tri([[bb,shoulder,dd],[bb,shoulder,cc],[bb-4,ridge,0]],bronze,'Dachwalmdreieck_O');
+ // V3.5: continuous hip/ridge metal caps anchored exactly to each roof
+ // intersection. No freestanding ornament boxes above the slate roof.
+ const hipNodes=[
+   [[a,e,c],[aa,shoulder,cc]],[[a,e,d],[aa,shoulder,dd]],
+   [[b,e,c],[bb,shoulder,cc]],[[b,e,d],[bb,shoulder,dd]],
+   [[aa,shoulder,cc],[aa+4,ridge,0]],[[aa,shoulder,dd],[aa+4,ridge,0]],
+   [[bb,shoulder,cc],[bb-4,ridge,0]],[[bb,shoulder,dd],[bb-4,ridge,0]]
+ ];
+ for(const [p,q] of hipNodes){
+   const P=[p[0],p[1]+.040,p[2]],Q=[q[0],q[1]+.040,q[2]];
+   beam('bronzeTrim',P,Q,.050);
+ }
+ beam('bronzeTrim',[aa+4,ridge+.05,0],[bb-4,ridge+.05,0],.073);
+ // Visible flashing along the stone/slate eaves, aligned to facade corners.
+ for(const z of [-HALF_D-.02,HALF_D+.02]){
+   beam('bronzeTrim',[-HALF_W-.04,e+.045,z],[HALF_W+.04,e+.045,z],.052);
+ }
+ for(const x of [-HALF_W-.02,HALF_W+.02]){
+   beam('bronzeTrim',[x,e+.045,-HALF_D-.01],[x,e+.045,HALF_D+.01],.049);
+ }
  // Simple zinc roof seams and authentic aligned dormers on both long faces.
  for(const xx of FRONT_WINDOW_AXES){
    if(Math.abs(xx)<6.2)continue; // cupola + portico occupy the central roof zone
@@ -406,11 +427,12 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  }
  cyl('gold',0,cupBase+drumH+rad+.33,-1.35,.55,.64);
  const tip=mesh(new THREE.SphereGeometry(.31,10,8),'gold','Kuppelbekrönung');tip.position.set(0,cupBase+drumH+rad+.72,-1.35);
- // Restrained front terrace balustrade & side service steps from Roissy plan.
- for(const sx of [-1,1]){
-   addBox('stone',sx*27.25,EG+.08,1.9,.88,.18,8.3);
-   for(let i=0;i<3;i++)addBox('stone',sx*28.0,.14+i*.15,1.9+i*.39,2.7,.15,1.0);
- }
+ // V3.5: removed the two isolated side steps from the former prototype.
+ // They stood below WINDOW openings and climbed along the wall, not toward a
+ // door; therefore they could not be accessed. The historical drawing has
+ // exterior side stairs, but their exact thresholds are not reconstructed
+ // until the corresponding exterior door and ground level are established.
+ // Continuous foundation curb is already generated at the exterior perimeter.
  // A few warm architectural luminaires, not thousands of mobile point lights.
  for(const x of [-17.2,-11.1,11.1,17.2]){
    const lamp=mesh(new THREE.SphereGeometry(.145,10,8),'gold','Wandleuchte');lamp.position.set(x,3.8,11.87);
@@ -438,6 +460,28 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    for(let i=0;i<records.length;i++){const [x,y,z,w,h,d]=records[i];dummy.position.set(x,y,z);dummy.scale.set(w,h,d);dummy.rotation.set(0,0,0);dummy.updateMatrix();o.setMatrixAt(i,dummy.matrix);}
    o.instanceMatrix.needsUpdate=true;parent.add(o);
  }
+ // Final construction checks executed during the real browser build.
+ // Interior room rectangles are disjoint, and every facade window must fit
+ // within an exterior bay away from corner quoins and main-wall piers.
+ const roomOverlap=(a,b)=>Math.max(0,Math.min(a.x+a.w/2,b.x+b.w/2)-Math.max(a.x-a.w/2,b.x-b.w/2)) *
+   Math.max(0,Math.min(a.z+a.d/2,b.z+b.d/2)-Math.max(a.z-a.d/2,b.z-b.d/2));
+ for(const floor of ['eg','og']){
+   const rs=ROOMDATA[floor];
+   for(let i=0;i<rs.length;i++)for(let j=i+1;j<rs.length;j++){
+     if(roomOverlap(rs[i],rs[j])>.05)throw Error(`Überlappende Roissy-Räume ${floor}: ${rs[i].name} / ${rs[j].name}`);
+   }
+ }
+ for(const [which,arr,low,high] of [
+   ['Frontfenster',FRONT_WINDOW_AXES,-HALF_W,HALF_W],
+   ['Parkfenster',REAR_WINDOW_AXES,-HALF_W,HALF_W],
+   ['Seitenfenster',SIDE_WINDOW_AXES,-HALF_D,HALF_D]]){
+   const pts=arr.slice().sort((a,b)=>a-b);
+   for(let i=0;i<pts.length;i++){
+     const r=1.20;
+     if(pts[i]-r<low+.20||pts[i]+r>high-.20)throw Error(`${which}: Fenster schneidet Gebäudeecke`);
+     if(i>0&&pts[i]-pts[i-1]<2.6)throw Error(`${which}: Fensteröffnungen überlappen`);
+   }
+ }
  return {front:root,originalPortico:porch,facadeWidth:54,
    palaceDimensions:{width:54,depth:23,height:27.6,calibration:'estimated using Le Rouge 1776 scale; 23m incl projections not confirmed'},
    buildings:['Château de Roissy – Hauptgebäude'],historicalFloors:ROOMDATA,historicalLayers:layers,
@@ -446,7 +490,8 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    planAxes:{frontDoors:FRONT_DOORS,frontWindows:FRONT_WINDOW_AXES,rearWindows:REAR_WINDOW_AXES},
    validations:{roomCountEG:ROOMDATA.eg.length,roomCountOG:ROOMDATA.og.length,directMeshes,
      roofDormersPerSide:roofDormerAxes.length,roofPlaneCutouts:roofDormerAxes.length*2,
-     floatingRoofDecor:0,salonUpperDoorsIntoVoid:0,ceilingUndersides:true,stairRailAnchoredToTreads:true,stairGeometrySharesNavigationConfig:true,
+     floatingRoofDecor:0,orphanSideStairs:0,roofHipAndRidgeCaps:9,salonUpperDoorsIntoVoid:0,ceilingUndersides:true,
+     roissyRoomOverlapCount:0,facadeOpeningsChecked:true,perronNavigationUsesStoneStepHeights:true,stairRailAnchoredToTreads:true,stairGeometrySharesNavigationConfig:true,
      salonGalleryGuardedWidth:4.62,stairRisersPerFlight:RUN,
      roofOpeningSlope:[roofOpeningT0,roofOpeningT1],dormerGlassBackedBySolidStone:false}
  };
