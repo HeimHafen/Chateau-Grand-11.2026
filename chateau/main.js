@@ -2,8 +2,8 @@ import * as THREE from '../vendor/three/build/three.module.js';
 import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from '../wohnzimmer/sky-atmosphere.js';
-import {buildChateau} from './architecture.js?v=roissy313';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy313';
+import {buildChateau} from './architecture.js?v=roissy319';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy319';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -18,7 +18,6 @@ let last=0;
 let atmospheric;
 let floorChoice=null, activeWalkingFloor=null, historicalChateau=null, clippedMode=false;
 let lastLocation='';
-
 async function run(){
   renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',alpha:false});
   renderer.outputColorSpace=THREE.SRGBColorSpace;
@@ -27,20 +26,17 @@ async function run(){
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   renderer.shadowMap.autoUpdate=false;
   scene=new THREE.Scene();scene.background=new THREE.Color(0x8293a4);scene.fog=new THREE.FogExp2(0x8293a4,.00048);
-  camera=new THREE.PerspectiveCamera(61,1,.08,1600);camera.rotation.order='YXZ';
+  camera=new THREE.PerspectiveCamera(61,1,.24,850);camera.rotation.order='YXZ';
   atmospheric=buildSky(THREE,scene,camera);
   scene.add(new THREE.HemisphereLight(0xcce1f1,0x9f8c77,1.20));
-  // Three.js has no automatic bounced daylight indoors. A restrained fill
-  // keeps underlit stone legible without adding expensive mobile point lights.
-  scene.add(new THREE.AmbientLight(0xffe9d0,.24));
-  // A single non-shadow local fill brings the real PBR limestone floor out of darkness.
-  const hallFill=new THREE.PointLight(0xffeccd,1.25,24,1.5);
-  hallFill.position.set(0,4.85,4.45);hallFill.castShadow=false;scene.add(hallFill);
+  // V3.19 uses only global daylight/ambient illumination. No added interior
+  // point lights are created so the material judgement is not falsified by helper lighting.
+  scene.add(new THREE.AmbientLight(0xffe9d0,.20));
   const sun=new THREE.DirectionalLight(0xffe8ca,2.05);
   sun.position.set(-135,210,168);sun.castShadow=true;
-  const s=mobile?1024:2048;sun.shadow.mapSize.set(s,s);
-  Object.assign(sun.shadow.camera,{left:-91,right:91,top:91,bottom:-91,near:1,far:270});
-  sun.shadow.camera.updateProjectionMatrix();sun.shadow.bias=-.00022;sun.shadow.normalBias=.027;
+  const s=2048;sun.shadow.mapSize.set(s,s);
+  Object.assign(sun.shadow.camera,{left:-70,right:70,top:70,bottom:-70,near:180,far:390});
+  sun.shadow.camera.updateProjectionMatrix();sun.shadow.bias=-.00035;sun.shadow.normalBias=.055;
   scene.add(sun);
   const mats=createExteriorMaterialLibrary(THREE);
   const glass=createRealisticExteriorGlass(THREE,renderer);
@@ -54,8 +50,8 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.18;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.13',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.13';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.19',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.19';
   start.disabled=false;start.textContent='Château erkunden';
   status.textContent='54 × 28,85 Meter (Rekonstruktionsmaß) · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
   resize();view('angle');
@@ -71,18 +67,13 @@ function buildLandscape(mats){
     if(n==='albedo')t.colorSpace=THREE.SRGBColorSpace;
     return t;
   });
-  const grass=new THREE.MeshStandardMaterial({name:'MaxGame_PBR_Gras',map:texture[0],normalMap:texture[1],roughnessMap:texture[2],roughness:.97,color:0xc7d6b6,normalScale:new THREE.Vector2(.25,.25)});
+  const grass=new THREE.MeshStandardMaterial({name:'MaxGame_PBR_Gras',map:texture[0],normalMap:texture[1],roughnessMap:texture[2],roughness:.97,color:0xc7d6b6,normalScale:new THREE.Vector2(.15,.15)});
   applyProceduralFinish(THREE,grass,'grassBreakup');
   const floor=new THREE.Mesh(new THREE.PlaneGeometry(1200,1200),grass);floor.rotation.x=-Math.PI/2;floor.position.y=-.08;floor.receiveShadow=true;scene.add(floor);
   const paving=new THREE.MeshStandardMaterial({color:0xe0d2c0,roughness:.95});
   const pavement=new THREE.Mesh(new THREE.BoxGeometry(9,.08,105),mats.porticoPaving);
   pavement.position.set(0,-.02,70);pavement.receiveShadow=true;scene.add(pavement);
-  for(let x of [-16,16]){
-    for(let z of [36,69]){
-      const patch=new THREE.Mesh(new THREE.BoxGeometry(17,.035,15),grass);
-      patch.position.set(x,-.027,z);patch.receiveShadow=true;scene.add(patch);
-    }
-  }
+  // One continuous grass surface; no redundant near-parallel lawn overlays.
 }
 function setCutaway(floor){
   // Clipping takes away the upper shell for a real top-down view of constructed rooms.
@@ -127,11 +118,15 @@ function view(which){
   const locationPanel=document.getElementById('locationStatus');
   if(locationPanel)locationPanel.hidden=true;
 }
-function setWalk(){
+function setWalk(entry=null){
   mode='walk';activeWalkingFloor=floorChoice;
   document.body.classList.add('walking');
   setCutaway(null); // Floor plates/ceilings restored for physical exploration.
-  if(activeWalkingFloor){
+  if(typeof entry==='string'){
+    const starts={hall:[0,9.25,EG_Y,0],salon:[0,-3.65,EG_Y,0],stair:[-11.37,9.30,EG_Y,0],gallery:[0,4.5,OG_Y,0]};
+    const [x,z,foot,yaw]=starts[entry]||starts.hall;
+    Object.assign(player,{x,z,footY:foot});activeWalkingFloor=foot===OG_Y?'og':'eg';
+  }else if(activeWalkingFloor){
     // Optional shortcut for testing the two plans; normal exploration never
     // teleports: approach stairs and walk through the automatic entrance doors.
     player.x=0;player.footY=(activeWalkingFloor==='eg'?EG_Y:OG_Y);
@@ -159,7 +154,8 @@ function showWalkLocation(){
   ui.hidden=false;
 }
 for(const b of document.querySelectorAll('[data-view]'))b.addEventListener('click',()=>view(b.dataset.view));
-document.getElementById('walk').addEventListener('click',setWalk);
+document.getElementById('walk').addEventListener('click',()=>setWalk());
+const jump=document.getElementById('interiorJump');jump.addEventListener('change',()=>{if(jump.value){setWalk(jump.value);jump.value='';}});
 document.getElementById('reset').addEventListener('click',()=>view('angle'));
 const activePointers=new Map();
 canvas.addEventListener('pointerdown',e=>{
@@ -190,6 +186,8 @@ function resize(){const w=innerWidth,h=innerHeight;renderer.setPixelRatio(Math.m
 addEventListener('resize',()=>{if(renderer)resize();});
 function frame(ms){
   const dt=Math.min(.040,(ms-last)/1000||0);last=ms;
+  const near=mode==='orbit'?Math.max(.5,orbit.d*.014):.24;
+  if(Math.abs(camera.near-near)>.001){camera.near=near;camera.updateProjectionMatrix();}
   if(mode==='orbit'){
     const p=orbit.phi,t=orbit.theta;
     const cp=Math.cos(p);camera.position.set(orbit.target.x+Math.sin(t)*orbit.d*cp,orbit.target.y+Math.sin(p)*orbit.d,orbit.target.z+Math.cos(t)*orbit.d*cp);

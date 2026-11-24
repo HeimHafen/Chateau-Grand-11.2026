@@ -14,3 +14,5 @@ body.walking #menu{bottom:max(18px,env(safe-area-inset-bottom));right:max(12px,e
 body.walking #menu button{min-height:44px;padding:11px 13px}
 body.walking #controlHint{max-width:52%;font-size:11px;bottom:max(18px,env(safe-area-inset-bottom));}
 @media (max-width:430px){#locationStatus{top:calc(env(safe-area-inset-top) + 58px);max-width:62vw;font-size:11px}body.walking #menu button{font-size:12px}}
+
+#interiorJump{font:600 12px system-ui;min-height:44px;padding:8px 10px;border-radius:12px;border:1px solid #ffffff66;color:#f7f2e8;background:#202f35df;max-width:175px}body.walking #interiorJump{display:none}@media(max-height:780px){#interiorJump{min-height:37px}}

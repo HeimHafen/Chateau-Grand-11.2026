@@ -1,0 +1,59 @@
+{
+  "ceilingDesigns": [
+    {
+      "name": "Salon",
+      "style": "grand",
+      "layer": "og"
+    },
+    {
+      "name": "Chambre de parade",
+      "style": "salon",
+      "layer": "eg"
+    },
+    {
+      "name": "Grand Cabinet d’Assemblée",
+      "style": "salon",
+      "layer": "eg"
+    },
+    {
+      "name": "Salle à manger",
+      "style": "salon",
+      "layer": "eg"
+    },
+    {
+      "name": "Cabinet de musique",
+      "style": "salon",
+      "layer": "eg"
+    },
+    {
+      "name": "Grand escalier",
+      "style": "stair",
+      "layer": "og"
+    }
+  ],
+  "ceilingMedallions": 6,
+  "reliefBoxes": 344,
+  "salonDoubleProfiles": 85,
+  "version": "3.19",
+  "wallFaces": 515,
+  "panelFields": 391,
+  "doorCrowns": 45,
+  "ceilingFields": 51,
+  "fixtureCount": 0,
+  "floorZones": 34,
+  "floorRectangles": 163,
+  "floorFinishAreaM2": 2165,
+  "floorOverlap": 0,
+  "floorVoidIntrusions": 0,
+  "upwardFloorVertices": 978,
+  "clearanceChecks": 106449,
+  "shortcutSpawns": 4,
+  "staticSurfaceCleanup": {
+    "staticBoxes": 11746,
+    "clippedFaces": 8917,
+    "changedBoxes": 3693,
+    "removedAreaM2": 1789.656,
+    "residualOverlap": 0
+  },
+  "drawBatches": 65
+}

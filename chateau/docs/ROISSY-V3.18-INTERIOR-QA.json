@@ -1,0 +1,24 @@
+{
+  "version": "3.18",
+  "wallFaces": 515,
+  "panelFields": 391,
+  "doorCrowns": 45,
+  "ceilingFields": 50,
+  "fixtureCount": 0,
+  "floorZones": 34,
+  "floorRectangles": 163,
+  "floorFinishAreaM2": 2165,
+  "floorOverlap": 0,
+  "floorVoidIntrusions": 0,
+  "upwardFloorVertices": 978,
+  "clearanceChecks": 100794,
+  "shortcutSpawns": 4,
+  "staticSurfaceCleanup": {
+    "staticBoxes": 11174,
+    "clippedFaces": 8863,
+    "changedBoxes": 3684,
+    "removedAreaM2": 1785.595,
+    "residualOverlap": 0
+  },
+  "drawBatches": 59
+}

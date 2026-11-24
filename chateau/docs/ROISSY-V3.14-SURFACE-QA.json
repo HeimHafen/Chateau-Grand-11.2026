@@ -1,0 +1,13 @@
+{
+  "version": "3.14",
+  "staticBoxes": 4319,
+  "clippedFaces": 2883,
+  "changedBoxes": 1322,
+  "removedAreaM2": 1712.295,
+  "residualOverlap": 0,
+  "trianglesChecked": 21778,
+  "upperDeckNonOverlapping": true,
+  "doorClashes": 0,
+  "sideWindowClashes": 0,
+  "drawBatches": 37
+}

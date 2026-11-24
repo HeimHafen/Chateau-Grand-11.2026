@@ -1,1 +1,1 @@
-V3.13 – historische Hof- und Parkfassade. ZIP-Inhalt in Repository-Stammverzeichnis kopieren. Commit & Push. GitHub Pages mit ?v=roissy313 öffnen.
+V3.15: ZIP entpacken, sämtliche Dateien in Repository-Wurzel ersetzen, Commit + Push. Start: ?v=roissy315

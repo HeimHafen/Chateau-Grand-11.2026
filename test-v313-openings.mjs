@@ -42,16 +42,11 @@ for(const f of ['eg','og']){
  }
 }
 let physical=[];
-for(const f of ['eg','og'])model.historicalLayers[f].traverse(o=>{
- if(!o.isInstancedMesh||!o.name.startsWith('Historische_Bauteile_'))return;
- const m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3();
- const material=o.name.split(':').at(-1);
- if(!['wall','window','trim'].includes(material))return;
- for(let i=0;i<o.count;i++){
-  o.getMatrixAt(i,m);m.decompose(p,q,s);
-  physical.push({floor:f,material,x0:p.x-s.x/2,x1:p.x+s.x/2,y0:p.y-s.y/2,y1:p.y+s.y/2,z0:p.z-s.z/2,z1:p.z+s.z/2});
- }
-});
+for(const [key,records] of model.staticConstructionBoxes){
+ const [floor,material]=key.split(':');
+ if(!['eg','og'].includes(floor)||!['wall','window','trim'].includes(material))continue;
+ for(const [x,y,z,w,h,d] of records)physical.push({floor,material,x0:x-w/2,x1:x+w/2,y0:y-h/2,y1:y+h/2,z0:z-d/2,z1:z+d/2});
+}
 for(const door of model.interiorDoorways){
  const half=(door.width-.040)/2,prism=door.axis==='x'
   ?{x0:door.at-half,x1:door.at+half,z0:door.fixed-.14,z1:door.fixed+.14}
