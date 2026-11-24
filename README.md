@@ -1,23 +1,34 @@
-# CHÂTEAU GRAND — ROISSY V3.6 — VESTIBÜL & KONSTRUKTIONSKORREKTUREN
+# Château Grand 2027 – ROISSY V3.10
 
-Vollständiges Browser-Spiel auf der Three.js/MaxGame-Basis. Die historische Roissy-Raumfolge bleibt im EG und 1. OG erhalten (18/21 Zonen), einschließlich der zweigeschossigen Salonöffnung und der begehbaren 36-stufigen Haupttreppe.
+**Vollständiges, spielbares Three.js-/MaxGame-Projekt für GitHub Pages.** Grundlage: Roissy V3.9, historischer EG- und 1.-OG-Grundriss nach Le Rouge (1776) – die Maße sind aus der Zeichnung geschätzt, nicht zentimetergenau nachgewiesen.
 
-## Diesmal gezielt verbessert
+## V3.10: Nur das Grand Escalier weiterentwickelt
 
-- **Eingangshalle:** Maßstäblicher Naturstein-Plattenboden mit 3 PBR-Bildmaps (Farbe, Normale, Rauheit), matt statt spiegelglatt; umlaufendes, bodenbündiges Steinband und Wand-Sockelleisten, an Türöffnungen unterbrochen. Die Bilder sind aus dem bereits vorhandenen MaxGame-Kalksteinmaterial generiert.
-- **Portikus/1. Obergeschoss:** Der originale MaxGame-Dreiecksgiebel ragte in V3.5 um mehr als einen Meter hinter die äußere Fassade. Er wurde als ganze importierte Baugruppe nach außen gerückt; eine Maßprüfung sichert die rückwärtige Giebelkante ab.
-- **Außenecken:** Steinquader an Gebäudeecken werden nur noch an der Außenfläche erzeugt, nicht mehr halb in den Eckzimmern.
-- **Eingangshalle:** Ein dezent warmer, nicht schattenwerfender Lichtfüller verbessert die Lesbarkeit des Steinmaterials, ohne die Mobile-Schattenkarte zu belasten.
-- **Bestand:** Außenhülle (54×23 m), Roissy-Raumfolge, originale Herrenhaus-Säulen, drei automatische Türen, durchsichtige Fenster und Rundgang erhalten.
+- 36 echte, begehbare Kalkstein-Stufen in zwei Läufen mit konstant etwa 15,83 cm Steigung (die Laufsteuerung verwendet dieselben Maße).
+- Zwei zusammenhängende steinerne Treppenuntersichten statt frei sichtbarer Trittplatten.
+- Vier anschließende seitliche Treppenprofile (Wangen), passend zu beiden Steigungen.
+- Durchgehende schmiedeeiserne Baluster und obere Handläufe aus gewachstem Nussbaumholz. Die Baluster stehen auf den tatsächlichen Stufen; die Geländer bleiben außerhalb der mittleren Gehbahn.
+- Geländer am Zwischenpodest und am oberen Treppenabsatz mit gefassten Endpfosten.
+- Leichtere, dünnere Stufenkanten statt grober heller Querbalken.
+- Unverändert: Historische Zimmerachsen, 18 EG-Zonen, 21 OG-Zonen einschließlich Salon-Luftraum, Außenfassade, Fenster, Türen, Vestibülboden, Kuppel und Zugang vom Garten.
 
-## Installation
+**Die Geländergestaltung ist historisch plausibel, aber nicht als originaler Roissy-Bestand nachgewiesen.**
 
-Archiv ohne zusätzlichen Projektordner entpacken, Inhalt direkt in das GitHub-Repository `Chateau-Grand-2027` übertragen. Überschreibe die Dateien, Commit → Push. Adresse mit `?v=roissy36` öffnen. Anzeige oben rechts **ROISSY · V3.6**.
+## Installation mit Working Copy
 
-## Historische Verlässlichkeit
+1. ZIP vollständig entpacken.
+2. Die `index.html` und alle Ordner direkt in die oberste Ebene des bestehenden Repositories `Chateau-Grand-2027` kopieren – **keinen zusätzlichen Unterordner** anlegen.
+3. Bestehende Dateien ersetzen, **Commit → Push** durchführen.
+4. Bereits veröffentlichte GitHub-Pages-Spieladresse mit `?v=roissy310` öffnen (oder an eine vorhandene URL `&v=roissy310` anhängen). Die Versionsanzeige muss **ROISSY · V3.10** lauten.
 
-Die Fenster- und Raummaße sind aus einer publizierten Le-Rouge-Zeichnung (1776) abgeleitete Näherungswerte; die heutige Portikus-Gestaltung und Kuppel sind kreative Weiterentwicklungen. Der neue Natursteinboden ist **historisch plausibel, nicht als Originalbelag nachgewiesen**. Es wird keine exakte bauarchäologische Rekonstruktion behauptet.
+## Validierung
 
-## Prüfung
+Der reproduzierbare 3D-Objektaufbau kann lokal ohne WebGL und ohne Donor-GLB geprüft werden:
 
-`node test-model.mjs`, `node test-building-qa.mjs`, `node test-v36-vestibule.mjs` ausführen. JavaScript-Syntax, begehbare Höhen, Projektstruktur und Archiv zusätzlich prüfen. **Ein echter Safari-Grafiktest ist hier nicht erfolgt.**
+```bash
+node --experimental-default-type=module tests/validate-stair-v310.mjs
+```
+
+Der Test nutzt ein namesgleiches Leichtgewichts-Stand-in für die MaxGame-Portikusteile. Er validiert die erzeugte Treppenhausgeometrie, Zimmerzonen, Türen, Öffnungen und 3D-Koordinaten. **Er ist kein Ersatz für den visuellen WebGL-/iPhone-Safari-Test.** Siehe `PRUEFBERICHT-V3.10.md`.
+
+Die bisherigen Entwicklungsstände und Quellen-Dateien bleiben im Paket erhalten.

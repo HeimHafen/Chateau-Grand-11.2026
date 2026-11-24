@@ -1,3 +1,6 @@
-CHÂTEAU GRAND ROISSY V3.6 – VESTIBÜL UND BAUANSCHLÜSSE
-ZIP ohne Oberordner entpacken; Dateien direkt ins Repository-Root. Commit → Push.
-Spieladresse anschließend mit ?v=roissy36 öffnen. Anzeige: ROISSY · V3.6
+CHÂTEAU GRAND 2027 – ROISSY V3.10
+
+ZIP ENTPACKEN – index.html und ALLE Ordner DIREKT in den ROOT des GitHub-Repositories Chateau-Grand-2027 hochladen / vorhandene Dateien ersetzen.
+KEINEN zusätzlichen Versions-Unterordner hochladen.
+Commit → Push. GitHub-Pages-Spieladresse mit ?v=roissy310 laden.
+Kontrollanzeige oben rechts: ROISSY · V3.10

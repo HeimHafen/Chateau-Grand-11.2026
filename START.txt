@@ -1,49 +1,5 @@
-MAX-TOWN — RABENFELS MIT HERRENHAUSGRAFIK
+CHÂTEAU GRAND 2027 · ROISSY V3.10
 
-Den Inhalt dieses Ordners in das Stammverzeichnis der Rabenfels-Seite
-auf GitHub Pages kopieren. index.html, wohnzimmer/, assets/ und vendor/ gehören
-zusammen. Die Seite läuft über HTTP oder HTTPS.
-
-Der Portikus basiert auf dem Nordportikus aus Herrenhaus V97. Unter dem Portikus rahmen drei große Steinkassetten die mittige Laternenrosette.
-Die acht Säulen haben durchgehend modellierte Kanneluren und neue Steinprofile. Die beiden
-separaten Häuser sind im Erdgeschoss von vorne und hinten begehbar.
-Die Fenster der oberen Stockwerke gehören zur Fassade.
-
-Links ziehen zum Laufen, rechts wischen zum Umsehen.
-
-Zum Vorplatz stehen massive Eichentüren, zum Garten verglaste Flügeltüren.
-Alle Eingänge öffnen bei Annäherung automatisch.
-
-Beide Häuser sind 25 statt 15 Einheiten breit und haben fünf Fassadenachsen.
-Eichentür, Balkon und verglaste Balkontür liegen auf der mittleren Achse.
-Die Häuser haben durchgehende Geschossböden ohne Innentreppen.
-Über Orte → Balkonzimmer links oder rechts gelangst du direkt zum jeweiligen Balkon.
-
-Hinter jeder Eichentür liegt ein Windfang mit automatischer Glasflügeltür.
-Die Eingangshalle verbindet vier Seitenräume und den mittleren Gartengang.
-
-Beide Häuser haben ein steiles Walmdach mit Gauben und anthrazitfarbene Rundbogenfenster in der Halle.
-Der rechteckige Vorbau sitzt mittig im Terrassenzimmer und ragt 2,85 Einheiten in den Garten.
-
-Neuer Einstieg: Die Startseite und das Hilfemenü zeigen „Version Rechtes Haus · Foyer und Galerie“.
-Die Gartenseite beider Häuser ist direkt über Orte → Orangerie links/rechts erreichbar.
-
-Über Orte → Dachgeschoss links/rechts erreichst du die begehbaren Dachräume.
-Die Gauben sind von innen verglast und bieten freie Sicht nach draußen.
-
-Unter Orte → Windfang links stehst du direkt
-vor der dunklen Windfangtür. Die weiße Tür gehört zum Terrassenzimmer.
-
-Orte → Foyer rechts führt zum neuen Hallenzugang.
-Die Treppe im offenen Foyer verbindet das Erdgeschoss mit der Galerie
-im ersten Obergeschoss. Zum Dachgeschoss führt weiterhin das Menü Orte.
-
-Im rechten Haus führt ein durchgehender geschwungener Steinlauf vom Foyer
-zur Galerie im ersten Obergeschoss. Der Austritt liegt auf der linken Seite
-der Deckenöffnung. Geradeaus führt das Foyer zum Terrassenzimmer.
-
-Orte → Foyer rechts zeigt den Treppenantritt vom Eingang aus.
-Der geschwungene Lauf mündet rechts in die Galerie.
-
-Das Wohnzimmer liegt hinten rechts im rechten Haus.
-Direkt öffnen über Orte → Wohnzimmer rechts oder vom Foyer durch die hintere rechte Tür.
+Spiel starten: index.html über GitHub Pages öffnen.
+Installation: Siehe README.md und IMPORTIEREN.txt.
+Fokus dieser Version: historische Haupttreppe, Geländer, Untersichten und Podeste.

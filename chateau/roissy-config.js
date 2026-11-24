@@ -1,4 +1,4 @@
-// Château Grand V3.4 – shared coordinates for facade, interior and navigation.
+// Château Grand V3.9 – shared coordinates for facade, interior and navigation.
 // Historically justified *proportions*, not a centimetre-accurate archaeological survey.
 export const PLAN={
   "id": "CHATEAU_ROISSY_PLAN_V3_2",
@@ -346,7 +346,12 @@ export const ROOMDATA=PLAN.rooms;
 export const FRONT_DOORS=[-3.6,0,3.6];
 export const REAR_WINDOW_AXES=[-24.4,-19.1,-15.6,-10.2,-3.4,0,3.4,10.2,16.1,23.4];
 export const FRONT_WINDOW_AXES=[-24.2,-19.5,-16.1,-10.2,-3.6,0,3.6,10.2,17.4,23.6];
-export const SIDE_WINDOW_AXES=[-8.4,-4.2,1.75,6.6];
+// V3.8 side elevation: preserve four vertically aligned bays but move them
+// clear of BOTH floors' internal partition intersections at the outer walls.
+// Positions are reconstruction coordinates (NOT verified original dimensions).
+// The west facade needs setbacks from z=-3.95,-2.18,.50,1.55,3.20,5.35;
+// the east facade has a transverse partition at z=4.65.
+export const SIDE_WINDOW_AXES=[-8.70,-5.75,6.55,9.35];
 export const REAR_X_CUTS=[-27,-21.5,-13.26,-6.72,6.72,12.5,20.46,27];
 export const FRONT_X_CUTS=[-27,-21.93,-13.26,-6.72,6.72,14.0,20.46,27];
 export const CROSS_WALL_Z=-2.18;

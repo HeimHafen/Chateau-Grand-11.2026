@@ -1,0 +1,13 @@
+{
+  "version":"3.8",
+  "floorPlanSource":"Le Rouge, Roissy, 1776 (reconstruction approximations)",
+  "mainBuildingMeters":{"width":54,"depth":23},
+  "roomZones":{"ground":18,"first":21,"walkableFirst":20,"salonVoid":1},
+  "sideWindowCentresZ_Meters":[-8.7,-5.75,6.55,9.35],
+  "sideWindowOpeningWidthMeters":1.65,
+  "doorClearHeightMeters":2.80,
+  "doorwayCorrections":[{"floor":"eg","x":-13.26,"zBefore":5.30,"zAfter":5.75},{"floor":"eg","x":20.46,"zBefore":5.30,"zAfter":5.75}],
+  "technicalChecks":{"interiorDoorCount":44,"glazedExteriorPositionsAcrossFloors":53,"physicalOverlapErrors":0},
+  "safariVisualVerification":"not performed",
+  "historicalPrecision":"approximate, not exact archaeological survey"
+}
