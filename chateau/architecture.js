@@ -1,12 +1,12 @@
 /**
- * CHÂTEAU GRAND V3.10 – Stufen, Treppenuntersichten und Geländer konstruktiv abgestimmt.
+ * CHÂTEAU GRAND V3.11 – historische Innenwandachsen und lückenfreie Mauerwerksanschlüsse.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * The classical MaxGame portico and small cupola are creative additions, not historical evidence.
  */
 import {addPorticoColumn} from '../wohnzimmer/portico-columns-v2.js';
 import {addPortalDoors} from '../wohnzimmer/portal-doors-v2.js';
-import {PLAN,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON} from './roissy-config.js?v=roissy310';
+import {PLAN,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS} from './roissy-config.js?v=roissy311';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_HISTORISCHER_KERN_54X23';scene.add(root);
@@ -30,6 +30,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    sill:mats.shade,glass,sash:mats.paintedSash,bronze,bronzeTrim,gold,wood,stairIron,stairHandrail,floor:floorStone,ceiling:ceilingStone};
  const baseGeo=new THREE.BoxGeometry(1,1,1),batch=new Map(), collisionWalls={eg:[],og:[]};
  const interiorDoorways=[]; // audited physical openings: floor, wall, position, clear geometry
+ const partitionRegister=[]; // structural walls: floor, orientation, span, and doorway apertures
  const doors=[]; let directMeshes=0;
  function addBox(mat,x,y,z,w,h,d,layer='shell'){
    if(![x,y,z,w,h,d].every(Number.isFinite)||w<=0||h<=0||d<=0)throw Error('Invalid geometry: '+[mat,x,y,z,w,h,d]);
@@ -260,6 +261,8 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  // Plan-aware partition wall with physical doorway holes and identical collider segments.
  function innerWall(f,axis,fixed,a,b,doorAt,doorW=1.38){
    const y=f==='eg'?EG:OG,upper=f==='eg'?OG-.15:CORNICE-.22;
+   const validDoors=doorAt.filter(d=>d-doorW/2>=a+.08 && d+doorW/2<=b-.09);
+   partitionRegister.push({floor:f,axis,fixed,from:a,to:b,doors:validDoors.slice(),doorWidth:doorW});
    const segments=[];let last=a;
    for(const d of doorAt.sort((p,q)=>p-q)){
       const left=d-doorW/2,right=d+doorW/2;
@@ -321,16 +324,26 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  for(const f of ['eg','og']){
    // Longitudinal division into garden suites and entrance/service suites.
    // Wide free stair bay on the west and a 5-metre salon axis in the centre.
-   innerWall(f,'x',CROSS_WALL_Z,-26.65,-13.28,[-24,-17.5],1.6);
-   innerWall(f,'x',CROSS_WALL_Z,-6.66,-2.45,[],1.6);
-   innerWall(f,'x',CROSS_WALL_Z,2.45,26.65,[10.2,17.4,24],1.6);
-   const xBack=REAR_X_CUTS.slice(1,-1),xFront=FRONT_X_CUTS.slice(1,-1);
+   // All three masonry runs meet one another, and the two ends physically
+   // penetrate the massive exterior side walls. The large opening behind the Grand Escalier is required by
+   // the actual U-stair landing; other walls now connect into the facade.
+   const rearStairWest=REAR_X_CUTS[2];
+   const rearStairEast=REAR_X_CUTS[3];
+   const outerJoin=HALF_W+.075;
+   innerWall(f,'x',CROSS_WALL_Z,-outerJoin,rearStairWest,[-24,-17.5],1.6);
+   // The historical Grand Escalier turns within a 5.78m-wide intermediate
+   // landing. It actually traverses this cross-wall axis. This large opening
+   // is INTENTIONAL: closing it would make the staircase impassable. The
+   // reconstructed masonry abuts the full-height stair opening on each side.
+   innerWall(f,'x',CROSS_WALL_Z,rearStairEast,-2.45,[],1.6);
+   innerWall(f,'x',CROSS_WALL_Z,2.45,outerJoin,[10.2,17.4,24],1.6);
+   const xBack=(f==='og'?REAR_X_CUTS_OG:REAR_X_CUTS).slice(1,-1),xFront=FRONT_X_CUTS.slice(1,-1);
    for(const x of xBack){
      const bordersSalon=Math.abs(Math.abs(x)-6.72)<.08;
      // Le Rouge's Salon occupies a double-height volume here. First-floor
      // doors directly into that void were a construction error, not a gallery.
      const doorPositions=(f==='og'&&bordersSalon)?[]:[-6.5];
-     innerWall(f,'z',x,-11.13,CROSS_WALL_Z-.18,doorPositions,1.32);
+     innerWall(f,'z',x,-HALF_D+.0+0.12,CROSS_WALL_Z+.075,doorPositions,1.32);
    }
    for(const x of xFront){
       // 1OG stair landing enters the vestibule through a correctly placed upper doorway.
@@ -348,25 +361,13 @@ export function buildChateau(THREE,scene,donor,mats,glass){
       const entry=f==='og'&&Math.abs(x+6.72)<.15?9.27:
         (westServiceDoor||eastUpperDoor)?7.30:
         groundJunctionDoor?5.75:5.30;
-      innerWall(f,'z',x,CROSS_WALL_Z+.16,10.96,[entry],1.35);
+      innerWall(f,'z',x,CROSS_WALL_Z-.075,HALF_D-.12,[entry],1.35);
    }
-   if(f==='eg'){
-     innerWall(f,'x',1.55,-26.8,-21.98,[-24.30],1.2);
-     innerWall(f,'x',5.35,-26.8,-21.98,[-24.30],1.2);
-     innerWall(f,'x',4.53,-21.81,-13.38,[-17.55],1.3);
-     innerWall(f,'x',1.50,14.15,20.35,[17.3],1.25);
-     innerWall(f,'x',4.65,20.58,26.75,[23.5],1.25);
-   }else{
-     innerWall(f,'x',-3.95,-26.8,-21.98,[-24.45],1.2);
-     innerWall(f,'x',.50,-26.8,-21.98,[-24.45],1.2);
-     innerWall(f,'x',3.20,-26.8,-21.98,[-24.45],1.2);
-     innerWall(f,'x',2.18,6.85,13.85,[10.2],1.25);
-     innerWall(f,'x',1.84,14.15,20.35,[17.3],1.25);
-     innerWall(f,'x',4.97,14.15,20.35,[17.3],1.25);
-     innerWall(f,'x',4.65,20.58,26.75,[23.5],1.25);
+   for(const divider of SECONDARY_ROOM_WALLS[f]){
+     innerWall(f,'x',divider.z,divider.from,divider.to,[divider.door],divider.width);
    }
  }
- // V3.10 GRAND ESCALIER – elevations, real stone treads, structural soffits,
+ // GRAND ESCALIER inherited from V3.10 – elevations, stone treads and soffits,
  // landings, wrought-iron balusters and handrails share the SAME plan geometry
  // as navigation. No rail crosses a stair lane, landing transfer or doorway.
  // This is a historically PLAUSIBLE finish, not documented original decoration.
@@ -714,6 +715,57 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    }
  }
  if(internalDoorClashes)throw Error('Historische Innentüren überlappt: '+internalDoorClashes);
+ // V3.11 independent junction audit: the historical rear/entrance row
+ // dividers MUST intersect transverse masonry and the two outer facades.
+ // Earlier builds left a 12cm side gap, 31cm entrance gap, and 2.5cm
+ // cross-wall gap even while all 44 door-clearance tests passed.
+ function hasWallCovering(f,axis,fixed,coord,eps=.17){
+   return partitionRegister.some(w=>w.floor===f&&w.axis===axis&&Math.abs(w.fixed-fixed)<eps
+     &&coord>=w.from-.005&&coord<=w.to+.005
+     &&!w.doors.some(d=>Math.abs(coord-d)<w.doorWidth/2-.02));
+ }
+ const junctionProblems=[];
+ const joins=[];
+ for(const f of ['eg','og']){
+   for(const x of (f==='og'?REAR_X_CUTS_OG:REAR_X_CUTS).slice(1,-1)){
+     joins.push({floor:f,type:'rear-exterior',x,z:-HALF_D+.12});
+     joins.push({floor:f,type:'rear-transverse',x,z:CROSS_WALL_Z});
+   }
+   for(const x of FRONT_X_CUTS.slice(1,-1)){
+     joins.push({floor:f,type:'front-transverse',x,z:CROSS_WALL_Z});
+     joins.push({floor:f,type:'front-exterior',x,z:HALF_D-.12});
+   }
+   for(const x of [-HALF_W+.12,HALF_W-.12])joins.push({floor:f,type:'side-transverse',x,z:CROSS_WALL_Z});
+   // The staircase and landing occupy the historic opening. It must stay
+   // free across both floors, while masonry to either side stays connected.
+   if(hasWallCovering(f,'x',CROSS_WALL_Z,GRAND_STAIR.first.x))
+     junctionProblems.push({floor:f,type:'stair route walled off'});
+   if(!hasWallCovering(f,'x',CROSS_WALL_Z,REAR_X_CUTS[2]-.28)
+     ||!hasWallCovering(f,'x',CROSS_WALL_Z,REAR_X_CUTS[3]+.28))
+     junctionProblems.push({floor:f,type:'stair lateral abutment missing'});
+ }
+ for(const floor of ['eg','og'])for(const w of SECONDARY_ROOM_WALLS[floor]){
+   const span=(w.from+w.to)/2;
+   // The doorway occupies the middle but both outside shoulders must be solid.
+   for(const x of [w.from+.25, w.to-.25]){
+     if(!hasWallCovering(floor,'x',w.z,x))junctionProblems.push({floor,source:w.source,x,z:w.z});
+   }
+   if(!partitionRegister.some(p=>p.floor===floor&&p.axis==='x'&&Math.abs(p.fixed-w.z)<.0001))
+     junctionProblems.push({floor,source:w.source,missingPartition:true});
+ }
+ for(const j of joins){
+   if(j.type==='rear-exterior'||j.type==='rear-transverse'){
+     if(!hasWallCovering(j.floor,'z',j.x,j.z))junctionProblems.push(j);
+   }else if(j.type==='front-exterior'||j.type==='front-transverse'){
+     if(!hasWallCovering(j.floor,'z',j.x,j.z))junctionProblems.push(j);
+   }else if(!hasWallCovering(j.floor,'x',CROSS_WALL_Z,j.x))junctionProblems.push(j);
+ }
+ if(junctionProblems.length)throw Error('Roissy Mauerwerksanschlüsse offen: '+JSON.stringify(junctionProblems.slice(0,5)));
+ // Explicitly measure the connection overlap against the 0.46m exterior
+ // and 0.31m interior wall thickness, rather than just endpoint equality.
+ const envelopeInnerX=HALF_W-.23,envelopeInnerZ=HALF_D-.23;
+ const joinOverlap={x:(HALF_W+.075)-envelopeInnerX,z:(HALF_D-.12)-envelopeInnerZ};
+ if(joinOverlap.x<.075||joinOverlap.z<.075)throw Error('Missing overlap with outer facade');
  // V3.8 side-window bay check: historical room partitions must never be
  // positioned directly across the side glazing. We check the SOLID partition
  // colliders, not just the room names or theoretical elevation raster. The
@@ -775,7 +827,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  return {front:root,originalPortico:porch,facadeWidth:54,
    palaceDimensions:{width:54,depth:23,height:27.6,calibration:'estimated using Le Rouge 1776 scale; 23m incl projections not confirmed'},
    buildings:['Château de Roissy – Hauptgebäude'],historicalFloors:ROOMDATA,historicalLayers:layers,
-   interiorCollision:collisionWalls,interiorDoorways,entranceDoors:doors,
+   interiorCollision:collisionWalls,interiorDoorways,planPartitions:partitionRegister,entranceDoors:doors,
    instancedElements:[...batch.values()].reduce((s,a)=>s+a.length,0),instancedDrawcalls:batch.size,
    planAxes:{frontDoors:FRONT_DOORS,frontWindows:FRONT_WINDOW_AXES,rearWindows:REAR_WINDOW_AXES},
    validations:{roomCountEG:ROOMDATA.eg.length,roomCountOG:ROOMDATA.og.length,directMeshes,
@@ -791,6 +843,9 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      fullDoorwayCoreCollisions:internalDoorClashes,doorsAndWindowsCheckedAgainstSolidGeometry:true,
      roofAndCeilingAreaConformsToPlan:true,slabPerimeterWallOverlap:[wallEmbedX,wallEmbedZ],
      deckEdgeSegments,slabOpeningIntrusions:holeSurfaceIntrusions,slabArealCoverage:slabArea,
-     ceilingNeverBridgesSalonOrStair:true,grandEscalierConstruction:stairAudit}
+     ceilingNeverBridgesSalonOrStair:true,grandEscalierConstruction:stairAudit,
+     roomDerivedAxes:AXIS_AUDIT,partitionSegments:partitionRegister.length,derivedTransverseWallCount:SECONDARY_ROOM_WALLS.eg.length+SECONDARY_ROOM_WALLS.og.length,
+     checkedMasonryJoins:joins.length+4,wallJoinConflicts:junctionProblems.length,
+     historicGrandStairOpeningPreserved:true,exteriorConnectionOverlap:joinOverlap}
  };
 }

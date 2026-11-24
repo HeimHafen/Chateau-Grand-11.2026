@@ -41,5 +41,5 @@ for(const door of arch.interiorDoorways){
 }
 console.log(JSON.stringify({interiorDoors:arch.interiorDoorways.length,testedObjects:A.length,blocked:violations.length}));
 if(violations.length){for(const v of violations.slice(0,20))console.error(JSON.stringify(v));throw Error(violations.length+' doorway obstructions');}
-if(arch.interiorDoorways.length!==44)throw Error('Door count changed from 44');
-console.log('PASS: all 44 interior clearances clear of wall, jamb and lintel intrusions');
+if(arch.interiorDoorways.length!==45)throw Error('Door count changed from 45');
+console.log('PASS: all 45 interior clearances clear of wall, jamb and lintel intrusions');

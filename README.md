@@ -1,34 +1,37 @@
-# Château Grand 2027 – ROISSY V3.10
+# CHÂTEAU GRAND ROISSY – V3.11
 
-**Vollständiges, spielbares Three.js-/MaxGame-Projekt für GitHub Pages.** Grundlage: Roissy V3.9, historischer EG- und 1.-OG-Grundriss nach Le Rouge (1776) – die Maße sind aus der Zeichnung geschätzt, nicht zentimetergenau nachgewiesen.
+**Plan- und Wandverbund-Korrektur auf Basis von V3.10.** Das Projekt startet direkt aus `index.html` in GitHub Pages. Der historische Maßstab des Hauptgebäudes bleibt bei **ungefähr 54 × 23 Metern**. Die verwendeten lichten Zimmermaße sind Näherungen aus dem veröffentlichten Grundriss von Le Rouge (1776), **nicht zentimetergenau durch Bauaufmaß belegt**.
 
-## V3.10: Nur das Grand Escalier weiterentwickelt
+## Was tatsächlich geändert wurde
 
-- 36 echte, begehbare Kalkstein-Stufen in zwei Läufen mit konstant etwa 15,83 cm Steigung (die Laufsteuerung verwendet dieselben Maße).
-- Zwei zusammenhängende steinerne Treppenuntersichten statt frei sichtbarer Trittplatten.
-- Vier anschließende seitliche Treppenprofile (Wangen), passend zu beiden Steigungen.
-- Durchgehende schmiedeeiserne Baluster und obere Handläufe aus gewachstem Nussbaumholz. Die Baluster stehen auf den tatsächlichen Stufen; die Geländer bleiben außerhalb der mittleren Gehbahn.
-- Geländer am Zwischenpodest und am oberen Treppenabsatz mit gefassten Endpfosten.
-- Leichtere, dünnere Stufenkanten statt grober heller Querbalken.
-- Unverändert: Historische Zimmerachsen, 18 EG-Zonen, 21 OG-Zonen einschließlich Salon-Luftraum, Außenfassade, Fenster, Türen, Vestibülboden, Kuppel und Zugang vom Garten.
+1. **Raumachsen zentralisiert:** Die Trennwände zwischen den Zimmern werden aus denselben Raumgrenzen ermittelt, die das Raumregister von EG und OG verwendet (`chateau/roissy-config.js`). Die alten unabhängig geschätzten Teilungspositionen wurden entfernt.
+2. **EG und OG getrennt:** Der östliche Abschnitt der Gartenzimmer hat in beiden Geschossen unterschiedliche Raumgrenzen. Bisher wurde die EG-Achse ungeprüft im 1. OG verwendet. Das wurde korrigiert.
+3. **Querwände nach Raumplan:** 5 abgeleitete Querwandlinien im EG und 8 im OG. Insbesondere die Eckräume im 1. OG sind jetzt durch die tatsächlichen Zimmertrennungen geteilt, statt zusammenzulaufen. Die zusätzliche Trennung enthält eine begehbare Türöffnung.
+4. **Lückenlose Mauerwerksanschlüsse:** Die Innenwände reichen jetzt mit definierter Überlappung bis in die 46 cm starke Außenwand sowie bis in die Querwände hinein. Davor endeten einzelne Wände bis zu 31 cm vor dem Fassadenanschluss.
+5. **Historische Treppenöffnung erhalten:** Das rund 5,8 m breite Zwischenpodest benötigt den freien Durchgang im Treppenraum. Die scheinbare Wandlücke dort darf nicht zugemauert werden; der Test erkennt diese Ausnahme ausdrücklich.
+6. **Bisherige Stände erhalten:** Der Natursteinboden im Vestibül, die MaxGame-Materialien, automatische Eingangstüren, 36 Stufen und die historische Raumfolge bleiben erhalten.
 
-**Die Geländergestaltung ist historisch plausibel, aber nicht als originaler Roissy-Bestand nachgewiesen.**
-
-## Installation mit Working Copy
-
-1. ZIP vollständig entpacken.
-2. Die `index.html` und alle Ordner direkt in die oberste Ebene des bestehenden Repositories `Chateau-Grand-2027` kopieren – **keinen zusätzlichen Unterordner** anlegen.
-3. Bestehende Dateien ersetzen, **Commit → Push** durchführen.
-4. Bereits veröffentlichte GitHub-Pages-Spieladresse mit `?v=roissy310` öffnen (oder an eine vorhandene URL `&v=roissy310` anhängen). Die Versionsanzeige muss **ROISSY · V3.10** lauten.
-
-## Validierung
-
-Der reproduzierbare 3D-Objektaufbau kann lokal ohne WebGL und ohne Donor-GLB geprüft werden:
+## Reproduzierbare technische Prüfung
 
 ```bash
-node --experimental-default-type=module tests/validate-stair-v310.mjs
+node tests/audit-plan-walls-v311.mjs
+node tests/validate-stair-v310.mjs
+node test-building-qa.mjs
+node test-v37-openings.mjs
+node test-v38-partitions-fenestration.mjs
+node test-v39-ceiling-shell.mjs
 ```
 
-Der Test nutzt ein namesgleiches Leichtgewichts-Stand-in für die MaxGame-Portikusteile. Er validiert die erzeugte Treppenhausgeometrie, Zimmerzonen, Türen, Öffnungen und 3D-Koordinaten. **Er ist kein Ersatz für den visuellen WebGL-/iPhone-Safari-Test.** Siehe `PRUEFBERICHT-V3.10.md`.
+**Ergebnis:** 62 bauliche Nachbarschaftsgrenzen beider Stockwerke geprüft. 60 davon werden durch reale Trennwände abgebildet; zwei sind absichtlich freie Öffnungen für die U-Treppe. 56 Wand-Anschlusspositionen kontrolliert. 45 Innentüröffnungen und 53 Fensterpositionen geprüft. Alle 18 EG-Räume und 20 begehbaren Räume/Zonen des OG bleiben im simulierten Laufweg erreichbar; der 21. OG-Planbereich ist der Luftraum über dem Salon.
 
-Die bisherigen Entwicklungsstände und Quellen-Dateien bleiben im Paket erhalten.
+Die Prüfungen belegen interne Geometrie- und Navigationskonsistenz des Codes, **nicht** die historische Zentimetergenauigkeit und **nicht** eine visuell perfekte iPhone-Ausgabe. Ein echter Safari-WebGL-Test konnte in der Entwicklungsumgebung nicht gestartet werden.
+
+## GitHub Pages / Working Copy
+
+1. ZIP **entpacken**. `index.html`, `chateau/`, `vendor/`, `assets/` und alle restlichen Projektdateien direkt ins **Stammverzeichnis** von `Chateau-Grand-2027` übertragen. **Keinen zusätzlichen V3.11-Ordner hochladen.**
+2. Vorhandene Dateien überschreiben, **Commit → Push**.
+3. Spieladresse mit `?v=roissy311` laden. Oben rechts muss **ROISSY · V3.11** erscheinen.
+
+## Was noch aussteht
+
+Die ursprüngliche Historienvorlage von Le Rouge ist als Bild im Projekt `chateau/docs/` enthalten. Eine vollständige Vermessung des tatsächlich gebauten, heute nicht mehr vorhandenen Schlosses einschließlich aller Fenster- und Geschosshöhen ist nicht gesichert. Das klassische MaxGame-Portikus und die große Kuppel bleiben kreativ ergänzte Elemente, nicht Bestandteile des belegten Originalentwurfs. Diese beiden Bereiche wurden in V3.11 bewusst nicht geändert.

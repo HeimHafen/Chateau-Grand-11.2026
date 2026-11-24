@@ -1,0 +1,51 @@
+{
+  "planRoomZones": {
+    "eg": 18,
+    "og": 21
+  },
+  "axes": {
+    "rear": [
+      -27,
+      -21.5035,
+      -13.1623,
+      -6.75,
+      6.7503,
+      12.5355,
+      20.4428,
+      27
+    ],
+    "rearOG": [
+      -27,
+      -21.5035,
+      -13.1623,
+      -6.75,
+      6.75,
+      13.9825,
+      20.443,
+      27
+    ],
+    "front": [
+      -27,
+      -22.022,
+      -13.2102,
+      -6.75,
+      6.75,
+      13.9825,
+      20.443,
+      27
+    ],
+    "cross": -2.163
+  },
+  "verifiedAdjacentRoomInterfaces": 62,
+  "modelledRoomBoundaries": 60,
+  "intentionalStairOpeningInterfaces": 2,
+  "missingRoomPartitions": 0,
+  "secondaryPartitionLines": {
+    "ground": 5,
+    "first": 8
+  },
+  "wallJunctionsTested": 56,
+  "doorways": 45,
+  "heightAccuracy": "Not an original 1708 architectural measured survey",
+  "safariRender": "Not tested in real Safari"
+}

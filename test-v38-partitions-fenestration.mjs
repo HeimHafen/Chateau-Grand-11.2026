@@ -70,7 +70,7 @@ for(const door of model.interiorDoorways){
 }
 console.log(JSON.stringify({version:'3.8',outerWindowLocations:windows.length,interiorDoors:model.interiorDoorways.length,testedRoomAndFrameSolids:physical.length,roomWindowConflicts:model.validations.sideWindowCollisions,failures:failures.length}));
 if(windows.length!==53)throw Error('Unexpected window location count: '+windows.length);
-if(model.interiorDoorways.length!==44)throw Error('Expected 44 plan-based doorways');
+if(model.interiorDoorways.length!==45)throw Error('Expected 45 plan-based doorways');
 if(!model.validations.realDoorReveals||!model.validations.sideWindowsCheckedAgainstPartitionColliders)throw Error('V3.8 construction checks missing');
 if(failures.length){for(const violation of failures.slice(0,10))console.error(JSON.stringify(violation));throw Error(`${failures.length} physical window/door overlap(s)`);}
 console.log('PASS: plan-aware outside window apertures and all interior doorway cores remain free.');

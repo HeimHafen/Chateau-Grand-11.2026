@@ -1,6 +1,5 @@
-CHÂTEAU GRAND 2027 – ROISSY V3.10
-
-ZIP ENTPACKEN – index.html und ALLE Ordner DIREKT in den ROOT des GitHub-Repositories Chateau-Grand-2027 hochladen / vorhandene Dateien ersetzen.
-KEINEN zusätzlichen Versions-Unterordner hochladen.
-Commit → Push. GitHub-Pages-Spieladresse mit ?v=roissy310 laden.
-Kontrollanzeige oben rechts: ROISSY · V3.10
+CHÂTEAU GRAND ROISSY V3.11
+ZIP entpacken, INHALT direkt in den Stammordner Chateau-Grand-2027 übertragen.
+Die alte index.html und chateau/-Dateien ersetzen. Kein extra Unterordner.
+Commit und Push. Web-Adresse mit ?v=roissy311 laden.
+Oben rechts muss ROISSY · V3.11 stehen.

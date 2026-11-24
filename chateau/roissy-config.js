@@ -1,4 +1,4 @@
-// Château Grand V3.9 – shared coordinates for facade, interior and navigation.
+// Château Grand V3.11 – all partition axis coordinates derived from the Roissy room register.
 // Historically justified *proportions*, not a centimetre-accurate archaeological survey.
 export const PLAN={
   "id": "CHATEAU_ROISSY_PLAN_V3_2",
@@ -352,9 +352,57 @@ export const FRONT_WINDOW_AXES=[-24.2,-19.5,-16.1,-10.2,-3.6,0,3.6,10.2,17.4,23.
 // The west facade needs setbacks from z=-3.95,-2.18,.50,1.55,3.20,5.35;
 // the east facade has a transverse partition at z=4.65.
 export const SIDE_WINDOW_AXES=[-8.70,-5.75,6.55,9.35];
-export const REAR_X_CUTS=[-27,-21.5,-13.26,-6.72,6.72,12.5,20.46,27];
-export const FRONT_X_CUTS=[-27,-21.93,-13.26,-6.72,6.72,14.0,20.46,27];
-export const CROSS_WALL_Z=-2.18;
+// V3.11: structural axes are calculated from the SAME room limits shown in the
+// Roissy register, rather than maintained as disconnected lists. Each dividing
+// wall is centered in the space BETWEEN two adjacent surveyed-plan rectangles.
+// The room sizes themselves remain approximations from the printed 1776 plan.
+const edgeX=(room,dir)=>room.x+dir*room.w/2;
+const wallBetweenX=(left,right)=>+(0.5*(edgeX(left,1)+edgeX(right,-1))).toFixed(4);
+function rowAxes(indices){
+  const row=indices.map(i=>ROOMDATA.eg[i]);
+  return [-HALF_W,...row.slice(1).map((next,i)=>wallBetweenX(row[i],next)),HALF_W];
+}
+export const REAR_X_CUTS=rowAxes([0,1,2,3,4,5,6]);
+// The eastern first-floor Antichambre commune is wider than the ground-floor
+// Antichambre. Reusing the EG partition at x≈12.54 creates a fake wall inside
+// the OG room; the historical Premier Étage drawing shows a separate axis.
+const ogRear=ROOMDATA.og.slice(0,7);
+export const REAR_X_CUTS_OG=[-HALF_W,...ogRear.slice(1).map((r,i)=>wallBetweenX(ogRear[i],r)),HALF_W];
+export const FRONT_X_CUTS=rowAxes([8,10,12,13,14,16,17]);
+const rearSalon=ROOMDATA.eg[3],frontVestibule=ROOMDATA.eg[13];
+export const CROSS_WALL_Z=+((rearSalon.z+rearSalon.d/2+frontVestibule.z-frontVestibule.d/2)/2).toFixed(4);
+// All secondary transverse walls are similarly derived from pairs of
+// directly adjacent historical rooms, never re-entered as approximate numbers.
+const midWallZ=(f,i,j)=>{
+  const a=ROOMDATA[f][i],b=ROOMDATA[f][j];
+  const back=a.z<b.z?a:b,front=a.z<b.z?b:a;
+  return +((back.z+back.d/2+front.z-front.d/2)/2).toFixed(4);
+};
+export const SECONDARY_ROOM_WALLS=Object.freeze({
+ eg:Object.freeze([
+   {z:midWallZ('eg',7,8),from:-HALF_W-.075,to:-21.98,door:-24.30,width:1.20,source:'Garde-robe / Logement'},
+   {z:midWallZ('eg',8,9),from:-HALF_W-.075,to:-21.98,door:-24.30,width:1.20,source:'Logement / Conciergerie'},
+   {z:midWallZ('eg',10,11),from:-21.81,to:-13.38,door:-17.55,width:1.30,source:'Lingerie / Passage'},
+   {z:midWallZ('eg',15,16),from:14.15,to:20.35,door:17.30,width:1.25,source:'Escalier secondaire / Antichambre'},
+   {z:midWallZ('eg',6,17),from:20.58,to:HALF_W+.075,door:23.50,width:1.25,source:'Grand Cabinet / Cabinet de musique'}
+ ]),
+ og:Object.freeze([
+   {z:midWallZ('og',0,8),from:-HALF_W-.075,to:-21.98,door:-24.45,width:1.20,source:'Chambre ouest / Antichambre'},
+   {z:midWallZ('og',8,9),from:-HALF_W-.075,to:-21.98,door:-24.45,width:1.20,source:'Antichambre / Cabinet ouest'},
+   {z:midWallZ('og',9,10),from:-HALF_W-.075,to:-21.98,door:-24.45,width:1.20,source:'Cabinet / Chambre ouest'},
+   {z:midWallZ('og',14,15),from:6.85,to:13.85,door:10.20,width:1.25,source:'Garde-robe / Chambre'},
+   {z:midWallZ('og',16,17),from:14.15,to:20.35,door:17.30,width:1.25,source:'Passage / Garde-robe'},
+   {z:midWallZ('og',17,18),from:14.15,to:20.35,door:17.30,width:1.25,source:'Garde-robe / Cabinet'},
+   // These eastern pavilion partitions were omitted or misplaced in V3.10.
+   {z:midWallZ('og',6,7),from:20.58,to:HALF_W+.075,door:23.50,width:1.25,source:'Cabinet est / Garde-robe est'},
+   {z:midWallZ('og',19,20),from:20.58,to:HALF_W+.075,door:23.50,width:1.25,source:'Chambre est / Cabinet est sud'}
+ ])
+});
+export const AXIS_AUDIT=Object.freeze({
+  source:'Le Rouge 1776 room boundary midlines (approximate, not measured as-built)',
+  rearCuts:REAR_X_CUTS.slice(),rearCutsOG:REAR_X_CUTS_OG.slice(),frontCuts:FRONT_X_CUTS.slice(),crossZ:CROSS_WALL_Z,
+  minimumExteriorWallPenetration:0.075
+});
 
 // V3.4: one source of truth for step geometry AND walk navigation.
 // These are architectural working measurements derived from the scaled Roissy plan,
