@@ -1,10 +1,7 @@
-# Château Grand Roissy V3.24 – Französische Innentüren
+# V3.28 – Grand Escalier: klassisches Stuckrelief und Gesimse
+Basis V3.27. 21 plastisch modellierte ovale Wandkartuschen mit symmetrischen Blattornamenten innerhalb vorhandener Wandfelder; neun zusätzliche gestufte Gesimsabschnitte; vier flache Eckfleurons im bestehenden Deckenfeld. Die Reliefs sind in zwei nach Geschoss zusammengefassten Meshes gebündelt, Deckenornamente in einem Mesh. Material: vorhandenes elfenbeinfarbenes Stuckmaterial mit lokalen Texturen. Historisch inspirierte Eigenentwicklung, kein originales Roissy-Aufmaß. Keine Änderungen an der Treppenführung, Geländern, Türen, Fenstern, Grundriss, Außenarchitektur, Beleuchtung oder Möblierung.
 
-44 automatisch öffnende Innentüren mit 88 Eichen-Kassettenflügeln, profilierten Zargen und Messingbeschlägen. Zwei Türöffnungen im Obergeschoss korrigiert. Fenster, Außenfassade, Eichenportale, Treppen und Bodenbeläge unverändert. Keine neue Beleuchtung.
+QA: `tests/validate-stair-style-v328.mjs` prüft 146160 Wandrelief- und 17760 Deckenornament-Vertices auf Lage innerhalb der vorgesehenen Felder, 44 Innentüröffnungen und null verbleibende geprüfte koplanare Boxflächenüberlappungen. Die Regressionstests für Treppe, Oberflächen, Innenräume, Stil V3.26/V3.27, Innentüren, Fenster, Portale, Türfugen und Fassade liefen erfolgreich vor der letzten kleinen Tiefenkorrektur am Kartuschenrahmen (danach V3.28-Test wiederholt). Syntax der aktiven Hauptmodule geprüft. Chromium mit Software-GPU scheiterte an EGL-Initialisierung und Zeitlimit; keine visuelle WebGL-/Safari-Freigabe und kein FPS-Nachweis.
 
 ## Installation
-ZIP komplett entpacken und den Inhalt in die Wurzel des bestehenden Repositorys kopieren; vorhandene Dateien ersetzen. GitHub Pages: `?v=roissy324`. Versionsanzeige `ROISSY · V3.24`.
-
-## Tests
-`node --experimental-default-type=module tests/validate-interior-doors-v324.mjs`
-Weitere bestandene Regressionstests: `validate-exterior-v313`, `validate-interior-v320`, `validate-surfaces-v314`, `validate-stair-v310`, `validate-portals-v321`, `validate-windows-v323` (gleicher Node-Aufruf). Details in CHANGES-V3.24.md. Browserprüfung wegen EGL/ANGLE-Fehler nicht möglich.
+ZIP entpacken und Inhalt in die Wurzel des bestehenden GitHub-Repositories übernehmen. Aufruf `?v=roissy328`; Anzeige ROISSY · V3.28.

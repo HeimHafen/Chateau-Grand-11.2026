@@ -16,7 +16,7 @@ export function createInteriorDoorKit(THREE){
   function add(list,g,x,y,z,tint=0xffffff){g.translate(x,y,z);if(g.index){const old=g;g=g.toNonIndexed();old.dispose();}if(list===wood){const color=new THREE.Color(tint),p=g.attributes.position,uv=g.attributes.uv;const arr=new Float32Array(p.count*3);for(let i=0;i<p.count;i++){arr.set([color.r,color.g,color.b],i*3);uv.setXY(i,p.getX(i)*1.7,p.getY(i)*.72);}g.setAttribute('color',new THREE.BufferAttribute(arr,3));}list.push(g);}
   const box=(list,x,y,z,w,h,d,tint)=>add(list,new THREE.BoxGeometry(w,h,d),x,y,z,tint);
   function relief(w,h,cut,lip,depth,x,y,z,tint){const s=shape(w,h,cut),hole=shape(w-2*lip,h-2*lip,Math.max(.006,cut-lip*.6));s.holes.push(new THREE.Path(hole.getPoints().reverse()));const g=new THREE.ExtrudeGeometry(s,{depth,bevelEnabled:true,bevelThickness:.003,bevelSize:.003,bevelSegments:1,steps:1,curveSegments:2});add(wood,g,x,y,z-depth/2,tint);}
-  const bottom=.026,top=bottom+height;
+  const bottom=.020,top=bottom+height;
   for(const sign of [-1,1])box(wood,cx+sign*(width-stile)/2,bottom+height/2,0,stile,height,.060,0xe7d9c8);
   const bars=[[bottom+.070,.140],[.94,.115],[1.96,.115],[top-.070,.140]];
   for(const [y,h] of bars)box(wood,cx,y,0,inner,h,.060,0xe7d9c8);
@@ -30,6 +30,9 @@ export function createInteriorDoorKit(THREE){
     add(wood,g,cx,cy,face*.027-.005,0xd9c6ad);
    }
   }
+  // Flexible closing strips hide the central and lower light gaps without rigid interlocking.
+  box(wood,-side*(width+.002),bottom+height/2-.0025,side*.001,.0048,height+.005,.024,0x645242);
+  box(wood,cx,bottom-.0025,0,width,.005,.024,0x645242);
   // Matching brass lever and escutcheon on both faces, one per leaf.
   const hx=-side*(width-.050);
   for(const face of [-1,1]){
@@ -43,8 +46,8 @@ export function createInteriorDoorKit(THREE){
   const merged=[mergeGeometries(wood,false),mergeGeometries(metal,false)];for(const g of [...wood,...metal])g.dispose();for(const g of merged){if(!g)throw Error('Interior door merge failed');g.computeBoundingSphere();}cache.set(key,merged);return merged;
  }
  function create(parent,d,grand,swing){
-  const root=new THREE.Group();root.name='Roissy_Innentuer_V324';root.position.set(d.axis==='x'?d.at:d.fixed,d.baseY,d.axis==='x'?d.fixed:d.at);root.rotation.y=d.axis==='x'?0:-Math.PI/2;parent.add(root);
-  const hingeAt=d.width/2-.048,leafWidth=hingeAt-.004,height=d.clearHeight-.075,leaves=[];
+  const root=new THREE.Group();root.name='Roissy_Innentuer_V325';root.position.set(d.axis==='x'?d.at:d.fixed,d.baseY,d.axis==='x'?d.fixed:d.at);root.rotation.y=d.axis==='x'?0:-Math.PI/2;parent.add(root);
+  const hingeAt=d.width/2-.048,leafWidth=hingeAt-.004,height=d.clearHeight-.078,leaves=[];
   for(const side of [-1,1]){const hinge=new THREE.Group();hinge.name='Roissy_Kassettenfluegel';hinge.position.x=side*hingeAt;root.add(hinge);const geos=geometry(leafWidth,height,side,grand);for(const [i,m] of [oak,brass].entries()){const mesh=new THREE.Mesh(geos[i],m);mesh.name=i?'Roissy_Innentuer_Beschlaege':'Roissy_Innentuer_Eichenkassetten';mesh.receiveShadow=true;mesh.castShadow=false;hinge.add(mesh);}leaves.push({side,hinge});}
   let angle=0;const local=(x,z)=>d.axis==='x'?[x-d.at,z-d.fixed]:[z-d.at,d.fixed-x];
   function blocked(u,v,r,a){return leaves.some(({side})=>{const dx=u-side*hingeAt,ux=-side*Math.cos(a),uz=swing*Math.sin(a),t=THREE.MathUtils.clamp(dx*ux+v*uz,0,leafWidth);return Math.hypot(dx-t*ux,v-t*uz)<r+.105;});}

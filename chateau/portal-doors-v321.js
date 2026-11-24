@@ -31,10 +31,16 @@ export function addRoissyPortal(THREE, parent, mats, glass, x, wallZ, width, hei
    for(let j=1;j<n;j++){const a=j*Math.PI/n;line(root,iron,[[hub*Math.cos(a),spring+hub*Math.sin(a),z],[(fanR-.035)*Math.cos(a),spring+(fanR-.035)*Math.sin(a),z]],.013);}
    for(const s of [-1,1]){const pts=[];for(let j=0;j<=25;j++){const t=j/25,ang=t*Math.PI*1.7,rr=fanR*.115*(1-t*.82);pts.push([s*(fanR*.45+rr*Math.cos(ang)),spring+fanR*.29+rr*Math.sin(ang),z]);}line(root,iron,pts,.010);}
  }
- const leafWidth=r-.073, leafH=spring-.108, base=.035, leaves=[];
+ // Fixed rebates on the outside of the inward-opening doors, and a shallow sill.
+ for(const side of [-1,1])box(root,oak,side*(r-.077),spring/2,.075,.036,spring,.022);
+ box(root,oak,0,spring-.066,.075,width-.154,.076,.022);
+ box(root,edge,0,.009,0,width-.124,.018,.16);
+ const leafWidth=r-.073, leafH=spring-.093, base=.020, leaves=[];
  for(const side of [-1,1]){
    const hinge=new THREE.Group();hinge.name='Roissy_Eichenfluegel';hinge.position.x=side*(r-.065);root.add(hinge);leaves.push({hinge,side});
    const cx=-side*leafWidth/2, stile=Math.min(.132,leafWidth*.21), iw=leafWidth-2*stile;
+   box(hinge,edge,-side*(leafWidth+.004),base+leafH/2-.0025,side*.001,.0088,leafH+.005,.035);
+   box(hinge,edge,cx,base-.0025,0,leafWidth,.005,.035);
    const bottom=base+.16, split=base+leafH*.38, top=base+leafH-.16;
    // Actual glazed upper aperture: four structural wooden rails, not an opaque block with glass pasted on it.
    for(const s of [-1,1])box(hinge,oak,cx+s*(leafWidth-stile)/2,base+leafH/2,0,stile,leafH,.12);
