@@ -3,8 +3,8 @@ import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from '../wohnzimmer/sky-atmosphere.js';
-import {buildChateau} from './architecture.js?v=roissy31';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy31';
+import {buildChateau} from './architecture.js?v=roissy311';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy311';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -52,8 +52,8 @@ async function run(){
   glass.needsUpdate=true;
   // Verify that we really used donor assets, not a recreated imitation.
   if(chateau.originalPortico.children.length<17)throw Error('Originalportikus aus MaxGame wurde unvollständig übernommen.');
-  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'3.1',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length};
-  document.getElementById('version').textContent='ROISSY · V3.1';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'3.1.1',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length};
+  document.getElementById('version').textContent='ROISSY · V3.1.1';
   start.disabled=false;start.textContent='Château erkunden';
   status.textContent='54 × 23 Meter · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
   resize();view('angle');
@@ -121,7 +121,8 @@ function view(which){
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('selected',b.dataset.view===which));
   document.getElementById('walk').classList.remove('selected');
   hint.textContent=floorChoice?'Historischer Grundriss: drehen / zoomen · „'+(floorChoice==='eg'?'EG':'1. OG')+' betreten“ als Schnellstart':'Ansicht: ziehen zum Drehen · mit zwei Fingern zoomen';
-  document.getElementById('locationStatus').hidden=true;
+  const locationPanel=document.getElementById('locationStatus');
+  if(locationPanel)locationPanel.hidden=true;
 }
 function setWalk(){
   mode='walk';activeWalkingFloor=floorChoice;
@@ -148,6 +149,7 @@ function setWalk(){
 }
 function showWalkLocation(){
   const ui=document.getElementById('locationStatus');
+  if(!ui)return;
   if(mode!=='walk'){ui.hidden=true;return;}
   const label=describePlace(player.x,player.z,player.footY,historicalChateau);
   if(label!==lastLocation){lastLocation=label;ui.textContent=label;}
@@ -162,7 +164,7 @@ canvas.addEventListener('pointerdown',e=>{
   const p={x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY};
   activePointers.set(e.pointerId,p);
   if(mode==='walk'&&e.pointerType==='touch'){
-    if(e.clientX<innerWidth*.5&&!walkTouch){walkTouch=e.pointerId;document.getElementById('walkStick').hidden=false;}
+    if(e.clientX<innerWidth*.5&&!walkTouch){walkTouch=e.pointerId;const stick=document.getElementById('walkStick');if(stick)stick.hidden=false;}
     else if(!lookTouch)lookTouch=e.pointerId;
   }
 });
@@ -173,11 +175,11 @@ canvas.addEventListener('pointermove',e=>{
     if(activePointers.size===1){orbit.theta-=dx*.0065;orbit.phi=THREE.MathUtils.clamp(orbit.phi+dy*.0055,-.09,1.34);}
     else if(activePointers.size===2){const pair=[...activePointers.values()];const dist=Math.hypot(pair[0].x-pair[1].x,pair[0].y-pair[1].y);if(window.__pinchDist){orbit.d=THREE.MathUtils.clamp(orbit.d*window.__pinchDist/Math.max(1,dist),30,650);}window.__pinchDist=dist;}
   }else{
-    if(e.pointerId===walkTouch){const vx=e.clientX-p.startX,vy=e.clientY-p.startY;strafe=THREE.MathUtils.clamp(vx/55,-1,1);forward=THREE.MathUtils.clamp(-vy/55,-1,1);document.getElementById('stickKnob').style.transform=`translate(${strafe*26}px, ${-forward*26}px)`;}
+    if(e.pointerId===walkTouch){const vx=e.clientX-p.startX,vy=e.clientY-p.startY;strafe=THREE.MathUtils.clamp(vx/55,-1,1);forward=THREE.MathUtils.clamp(-vy/55,-1,1);const knob=document.getElementById('stickKnob');if(knob)knob.style.transform=`translate(${strafe*26}px, ${-forward*26}px)`;}
     else if(e.pointerId===lookTouch||e.pointerType==='mouse'){player.yaw-=dx*.005;player.pitch=THREE.MathUtils.clamp(player.pitch-dy*.004,-1.25,1.25);}
   }
 });
-function release(e){activePointers.delete(e.pointerId);window.__pinchDist=0;if(e.pointerId===walkTouch){walkTouch=null;forward=strafe=0;document.getElementById('walkStick').hidden=true;document.getElementById('stickKnob').style.transform='translate(0,0)';}if(e.pointerId===lookTouch)lookTouch=null;}
+function release(e){activePointers.delete(e.pointerId);window.__pinchDist=0;if(e.pointerId===walkTouch){walkTouch=null;forward=strafe=0;const stick=document.getElementById('walkStick');if(stick)stick.hidden=true;const knob=document.getElementById('stickKnob');if(knob)knob.style.transform='translate(0,0)';}if(e.pointerId===lookTouch)lookTouch=null;}
 for(const t of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(t,release);
 canvas.addEventListener('wheel',e=>{if(mode==='orbit'){orbit.d=THREE.MathUtils.clamp(orbit.d*Math.exp(e.deltaY*.001),30,650);e.preventDefault();}},{passive:false});
 const keys=new Set();addEventListener('keydown',e=>{keys.add(e.key.toLowerCase());if([' ','arrowup','arrowdown'].includes(e.key.toLowerCase()))e.preventDefault();});addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));

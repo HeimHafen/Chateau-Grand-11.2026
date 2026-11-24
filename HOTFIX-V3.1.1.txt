@@ -1,0 +1,4 @@
+Startfehler behoben: locationStatus, walkStick, stickKnob wiederhergestellt.
+Version: ROISSY · V3.1.1
+Dateien direkt in den Repository-Root entpacken; Commit/Push.
+Spiel mit ?v=roissy311 aufrufen.

@@ -1,3 +1,25 @@
+# CHÂTEAU GRAND – ROISSY V3.1.1 – STARTFIX
+
+**Behebung des Startabbruchs auf iPhone Safari:** Der Quellcode von V3.1 versuchte beim Aufruf der Außenansicht auf `#locationStatus` zuzugreifen, das im HTML fehlte. Es fehlten auch `#walkStick` und `#stickKnob` für den mobilen Rundgang. In V3.1.1 sind die benötigten Elemente jetzt im HTML vorhanden und die Zugriffe im JavaScript gegen einen fehlenden DOM-Knoten abgesichert.
+
+Unverändert: Roissy-Grundriss von EG und 1. OG, 3D-Modell, Innenwände, Treppen, historische Größenannahmen, automatische Eichentüren, Fenster und alle Grafikassets.
+
+## Installation
+
+1. ZIP entpacken. **Inhalt direkt** in das Hauptverzeichnis des vorhandenen GitHub-Pages-Repositorys kopieren, sodass `index.html` im Root liegt.
+2. Vorhandene Dateien ersetzen, **insbesondere** `index.html` und `chateau/main.js`.
+3. In Working Copy **Commit → Push**.
+4. Die vorhandene Spieladresse mit `?v=roissy311` aufrufen (bei einer bestehenden Query-Zeile `&v=roissy311`).
+5. Erwartete Anzeige oben rechts: **ROISSY · V3.1.1**. Nach dem Laden wird „Château erkunden“ aktiv.
+
+## Prüfung
+
+Die DOM-IDs und JavaScript-Syntax wurden getestet. Das ZIP ist vollständig und fehlerfrei entpackbar. Ein echter Test auf deinem iPhone konnte hier nicht durchgeführt werden. Dies ist **ein gezielter Laufzeit-Hotfix**, keine neue Stufe der historischen Architektur.
+
+---
+
+## V3.1-Dokumentation
+
 # CHÂTEAU GRAND — ROISSY V3.1 · HISTORISCHER GRUNDRISS
 
 Spielbares Three.js-Projekt aus der V3.0-Quelle. Schwerpunkt dieser Revision: **Raumaufteilung und Zimmermaße anhand der erhaltenen Pläne von Le Rouge (1776), die grundsätzlich dem 1703–1709 errichteten Schloss entsprechen.**

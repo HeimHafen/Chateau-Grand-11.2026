@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#18232a">
-<title>CHÂTEAU GRAND 2027 · Roissy 3.0 · grundrissgetreuer Kernbau</title>
-<link rel="stylesheet" href="chateau/style.css?v=roissy31">
+<title>CHÂTEAU GRAND 2027 · Roissy 3.1.1 · Startfehler behoben</title>
+<link rel="stylesheet" href="chateau/style.css?v=roissy311">
 </head>
 <body>
 <canvas id="world" aria-label="Château Grand: historischer Roissy-Grundriss-Rundgang"></canvas>
 <header><div class="wordmark">CHÂTEAU</div><small>GRAND · 2027</small></header>
-<div id="version">ROISSY · V3.1</div>
+<div id="version">ROISSY · V3.1.1</div>
 <div id="menu">
   <button data-view="front">Front</button>
   <button data-view="angle">Perspektive</button>
@@ -24,6 +24,9 @@
   <a href="maxgame-original.html" target="_blank" rel="noopener">Original MaxGame</a>
 </div>
 <div id="floorInfo" hidden></div>
+<!-- Bedienelemente für den freien Rundgang – erforderlich für V3.1.1 -->
+<div id="locationStatus" role="status" aria-live="polite" hidden></div>
+<div id="walkStick" aria-hidden="true" hidden><div id="stickKnob"></div></div>
 <div id="controlHint">Ansicht: mit dem Finger drehen · mit zwei Fingern zoomen</div>
 <section id="splash">
   <div class="splashInner"><span class="eyebrow">MAXGAME-TECHNIK · GRAND PALAIS 2027</span>
@@ -33,6 +36,6 @@
     <div id="status" role="status">Schlossanlage und Originalbauteile werden geladen.</div>
   </div>
 </section>
-<script type="module" src="chateau/main.js?v=roissy31"></script>
+<script type="module" src="chateau/main.js?v=roissy311"></script>
 </body>
 </html>

@@ -1,0 +1,24 @@
+{
+  "version": "3.1.1",
+  "fixed_dom_elements": [
+    "locationStatus",
+    "walkStick",
+    "stickKnob"
+  ],
+  "all_referenced_html_ids_present": true,
+  "referenced_ids": [
+    "controlHint",
+    "floorInfo",
+    "locationStatus",
+    "reset",
+    "splash",
+    "start",
+    "status",
+    "stickKnob",
+    "version",
+    "walk",
+    "walkStick",
+    "world"
+  ],
+  "architecture_changed": false
+}
