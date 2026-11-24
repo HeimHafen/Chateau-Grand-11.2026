@@ -3,8 +3,8 @@ import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from '../wohnzimmer/sky-atmosphere.js';
-import {buildChateau} from './architecture.js?v=roissy311';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy311';
+import {buildChateau} from './architecture.js?v=roissy32';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy32';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -52,7 +52,7 @@ async function run(){
   glass.needsUpdate=true;
   // Verify that we really used donor assets, not a recreated imitation.
   if(chateau.originalPortico.children.length<17)throw Error('Originalportikus aus MaxGame wurde unvollständig übernommen.');
-  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'3.1.1',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length};
+  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'3.2',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length};
   document.getElementById('version').textContent='ROISSY · V3.1.1';
   start.disabled=false;start.textContent='Château erkunden';
   status.textContent='54 × 23 Meter · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';

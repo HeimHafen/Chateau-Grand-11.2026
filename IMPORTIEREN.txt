@@ -1,1 +1,10 @@
-ROISSY V3.1 — Projektdateien DIREKT ins Stammverzeichnis des Repos übertragen; index.html ersetzen. Kein extra Unterordner. Commit -> Push. Browser URL mit ?v=roissy31.
+CHÂTEAU GRAND – ROISSY V3.2
+
+ZIP ENTPACKEN – ALLE DATEIEN DIREKT IN DAS ROOT-VERZEICHNIS
+VON Chateau-Grand-2027 KOPIEREN. KEINEN EXTRA V3.2-ORDNER ANLEGEN.
+Alte Dateien ersetzen; Working Copy: Commit → Push.
+Nach dem Deploy Spieladresse mit ?v=roissy32 öffnen.
+Versionsanzeige: ROISSY · V3.2
+
+Einzelner Fokus: Gaubenfenster + tatsächliche Öffnungen in der Dachfläche.
+Historischer Grundriss, Innenwände, Türen und Treppen bleiben erhalten.

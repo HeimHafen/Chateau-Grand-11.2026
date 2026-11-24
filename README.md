@@ -1,46 +1,32 @@
-# CHÂTEAU GRAND – ROISSY V3.1.1 – STARTFIX
+# CHÂTEAU GRAND – ROISSY V3.2 – DACHGAUBEN & ECHTE FENSTERÖFFNUNGEN
 
-**Behebung des Startabbruchs auf iPhone Safari:** Der Quellcode von V3.1 versuchte beim Aufruf der Außenansicht auf `#locationStatus` zuzugreifen, das im HTML fehlte. Es fehlten auch `#walkStick` und `#stickKnob` für den mobilen Rundgang. In V3.1.1 sind die benötigten Elemente jetzt im HTML vorhanden und die Zugriffe im JavaScript gegen einen fehlenden DOM-Knoten abgesichert.
+**Komplettes, auf V3.1.1 basierendes GitHub-Pages-Projekt.** In V3.2 wurde gezielt die Geometrie der Dachgauben überarbeitet, weil die Schiefer-Dachhaut und massive Steinquader zuvor direkt hinter den Gaubenfenstern lagen.
 
-Unverändert: Roissy-Grundriss von EG und 1. OG, 3D-Modell, Innenwände, Treppen, historische Größenannahmen, automatische Eichentüren, Fenster und alle Grafikassets.
+## Was sich geändert hat
 
-## Installation
+- **14 echte Dachöffnungen:** sieben Fensterachsen auf der vorderen, sieben auf der hinteren Dachschräge. Die Schieferflächen sind an der betreffenden Stelle in einzelne Dreiecksflächen aufgeteilt; der Fensterdurchblick wird nicht länger durch ein durchgehendes Dachpolygon versperrt.
+- **Hohle Gaubenrahmen statt Steinblöcke:** seitliche Wangen, Sturz und Sohlbank umgeben die Glasscheibe. Die früher vorhandene massive Steinrückwand wurde entfernt.
+- **Achsengenaue Lage:** Die Dachöffnungen sind in Weltkoordinaten an derselben X-Achse wie die Gauben ausgerichtet. Der bisher mögliche seitliche Versatz zum Dachrand ist beseitigt.
+- **Fensterflügel:** transparente Scheiben und schlanke Sprossen; die vorhandenen MaxGame-Glasmaterialien werden weiterverwendet.
+- **Erhalten:** die historische Grundrisskonfiguration, 54 × 23 m Maßannahme, EG (18 Raumzonen), 1. OG (21 Raumzonen), offener Salon, Haupttreppe, automatische Eingangstüren, Terrain und gesamtes andere äußere Modell.
 
-1. ZIP entpacken. **Inhalt direkt** in das Hauptverzeichnis des vorhandenen GitHub-Pages-Repositorys kopieren, sodass `index.html` im Root liegt.
-2. Vorhandene Dateien ersetzen, **insbesondere** `index.html` und `chateau/main.js`.
-3. In Working Copy **Commit → Push**.
-4. Die vorhandene Spieladresse mit `?v=roissy311` aufrufen (bei einer bestehenden Query-Zeile `&v=roissy311`).
-5. Erwartete Anzeige oben rechts: **ROISSY · V3.1.1**. Nach dem Laden wird „Château erkunden“ aktiv.
+Die große Portikus-Konstruktion und die Kuppel bleiben gestalterische Erweiterungen und sind **keine nachgewiesenen Originalbauteile** von Château de Roissy.
 
-## Prüfung
+## Einspielen in Working Copy / GitHub Pages
 
-Die DOM-IDs und JavaScript-Syntax wurden getestet. Das ZIP ist vollständig und fehlerfrei entpackbar. Ein echter Test auf deinem iPhone konnte hier nicht durchgeführt werden. Dies ist **ein gezielter Laufzeit-Hotfix**, keine neue Stufe der historischen Architektur.
+1. ZIP entpacken. Alle Dateien **direkt** ins Root-Verzeichnis des vorhandenen Repositories `Chateau-Grand-2027` kopieren; **keinen zusätzlichen Oberordner** anlegen.
+2. Vorhandene Dateien ersetzen, besonders `index.html`, `chateau/architecture.js`, `chateau/main.js` und `chateau/roissy-config.js`.
+3. **Commit → Push**, anschließend deine GitHub-Pages-Adresse mit `?v=roissy32` laden.
+4. Oben rechts soll **ROISSY · V3.2** erscheinen. Gauben frontal und von der Dachseite prüfen; Rundgang im EG/1. OG weiterhin testen.
 
----
+## Technische Prüfung
 
-## V3.1-Dokumentation
+- `node --check` für alle 13 direkt oder indirekt verwendeten lokalen JavaScript-Module: **bestanden**.
+- 14 Dachöffnungen rechnerisch auf ihre Lage **innerhalb des realen Dachrands** und auf die Lage der Fensterachsen geprüft: **bestanden**.
+- Referenziertes MaxGame-Originalmodell mit den erforderlichen Portikus-Teilen vorhanden.
+- Alle für die Steuerung nötigen HTML-Knoten, die in V3.1.1 ergänzt wurden, bleiben enthalten.
+- Die ausführlichen Prüfwerte stehen unter `chateau/docs/ROISSY-V3.2-GAUBEN-PRUEFUNG.json`.
 
-# CHÂTEAU GRAND — ROISSY V3.1 · HISTORISCHER GRUNDRISS
+**Einschränkung:** Ein echter lokaler Browser-/iPhone-Safari-Livetest konnte nicht abgeschlossen werden, weil die Testumgebung den lokalen Browserzugriff blockiert (`ERR_BLOCKED_BY_ADMINISTRATOR`). Deshalb ist die sichtbare Darstellung und Performance auf dem iPhone nicht abschließend bestätigt. Es wurde keine angebliche Live-Vorschau gerendert.
 
-Spielbares Three.js-Projekt aus der V3.0-Quelle. Schwerpunkt dieser Revision: **Raumaufteilung und Zimmermaße anhand der erhaltenen Pläne von Le Rouge (1776), die grundsätzlich dem 1703–1709 errichteten Schloss entsprechen.**
-
-**Kein Einrichtungsprojekt.** Keine Möbel, keine Innendekoration. Maßgeblich sind historische Raumbezeichnungen, Raumzonen, Wände, Durchgänge, Salon-Luftraum, seitliches Grand Escalier, Fenster- und Türpositionen.
-
-## Was geändert wurde
-
-- Die bisherigen Raumangaben wurden von *Wandachsen-/Buchtmaßen* zu näherungsweisen **lichten Raummaßen** umgestellt; nominelle 46 cm Wandstärke abgezogen. Dies ist eine technische Näherung, keine archäologisch gesicherte Zimmervermessung.
-- Der massive **2,86 m hohe Vollquader in Innen-Türdurchgängen** wurde entfernt. Der Rahmen besitzt jetzt nur noch Türpfosten und Sturz, der Durchgang bleibt optisch frei.
-- Versions- und Forschungsdokumentation aktualisiert; die Pläne wurden mit ihrer ursprünglichen Jahreszahl 1776 gekennzeichnet.
-- Durchgehende Begehbarkeit sowie der ursprüngliche MaxGame-Portikus bleiben erhalten. Portikus und Kuppel sind **bewusste kreative Ergänzungen**, nicht historisch für Roissy belegt.
-
-## Quellen
-
-Die Bauphase liegt ungefähr zwischen 1703 und 1709. Der Stich von 1776 zeigt den nachweislich gebauten Grundkörper; der ältere imposante U-förmige Entwurf von Tessin ist **nicht ausgeführt** worden. Ein gesicherter Ausführungsgrundriss von 1708 oder 1730 liegt uns nicht vor. In `chateau/docs/ROISSY-HISTORISCHER-GRUNDRISS-V3.1.json` sind Quellen und die Grenzen unserer metrischen Schätzung dokumentiert.
-
-## Upload
-
-Archivinhalt direkt ins GitHub-Repository-Hauptverzeichnis kopieren, keine zusätzliche Ordnerstufe. `index.html` muss im Root liegen. Commit → Push. Danach URL mit `?v=roissy31` öffnen. Bildschirm-Version: **ROISSY · V3.1**.
-
-## Transparenz
-
-Die exakten historischen Innenmaße sowie mehrere Wand-/Türachsen sind aus den Stichen nur näherungsweise rekonstruierbar; weder perfekte Grundrisstreue auf Zentimeter noch ein realer Safari-Test sind bestätigt. Den vorhandenen Quellstand nicht löschen, bevor die neue Fassung auf dem iPhone kontrolliert ist.
+**Historische Genauigkeit:** Die lichte Raumgeometrie ist weiterhin eine Näherung aus Le Rouges Zeichnung von 1776; sie ist keine zentimetergenaue Bauaufnahme. Die V3.2-Änderungen betreffen ausschließlich die bewusst ergänzte Dachgeometrie.

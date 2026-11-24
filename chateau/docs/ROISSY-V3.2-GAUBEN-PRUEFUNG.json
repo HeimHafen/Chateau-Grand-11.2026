@@ -1,0 +1,116 @@
+{
+  "version": "3.2",
+  "focus": "durchsichtige Gauben und durchbrochene Mansard-Dachflächen",
+  "roomPlan": "Le Rouge 1776, approximate 54 x 23 metre projection",
+  "egRooms": 18,
+  "ogRooms": 21,
+  "dormersTotal": 14,
+  "dormerRoofHoles": 14,
+  "dormerOpeningWorldWidth_m": 1.26,
+  "fullRoofBehindDormerGlass": false,
+  "stoneBehindDormerGlass": false,
+  "activeModuleFilesVerified": 13,
+  "donorRequiredNodesPresent": true,
+  "javascriptSyntax": "passed",
+  "liveSafariTest": "not available in runtime (local headless browser blocked by administrator)",
+  "checks": [
+    {
+      "side": "rear",
+      "axisX_m": -24.2,
+      "roofCutout_m": 1.26,
+      "slopeStart_t": 0.29,
+      "slopeEnd_t": 0.7
+    },
+    {
+      "side": "rear",
+      "axisX_m": -19.5,
+      "roofCutout_m": 1.26,
+      "slopeStart_t": 0.29,
+      "slopeEnd_t": 0.7
+    },
+    {
+      "side": "rear",
+      "axisX_m": -16.1,
+      "roofCutout_m": 1.26,
+      "slopeStart_t": 0.29,
+      "slopeEnd_t": 0.7
+    },
+    {
+      "side": "rear",
+      "axisX_m": -10.2,
+      "roofCutout_m": 1.26,
+      "slopeStart_t": 0.29,
+      "slopeEnd_t": 0.7
+    },
+    {
+      "side": "rear",
+      "axisX_m": 10.2,
+      "roofCutout_m": 1.26,
+      "slopeStart_t": 0.29,
+      "slopeEnd_t": 0.7
+    },
+    {
+      "side": "rear",
+      "axisX_m": 17.4,
+      "roofCutout_m": 1.26,
+      "slopeStart_t": 0.29,
+      "slopeEnd_t": 0.7
+    },
+    {
+      "side": "rear",
+      "axisX_m": 23.6,
+      "roofCutout_m": 1.26,
+      "slopeStart_t": 0.29,
+      "slopeEnd_t": 0.7
+    },
+    {
+      "side": "front",
+      "axisX_m": -24.2,
+      "roofCutout_m": 1.26,
+      "slopeStart_t": 0.29,
+      "slopeEnd_t": 0.7
+    },
+    {
+      "side": "front",
+      "axisX_m": -19.5,
+      "roofCutout_m": 1.26,
+      "slopeStart_t": 0.29,
+      "slopeEnd_t": 0.7
+    },
+    {
+      "side": "front",
+      "axisX_m": -16.1,
+      "roofCutout_m": 1.26,
+      "slopeStart_t": 0.29,
+      "slopeEnd_t": 0.7
+    },
+    {
+      "side": "front",
+      "axisX_m": -10.2,
+      "roofCutout_m": 1.26,
+      "slopeStart_t": 0.29,
+      "slopeEnd_t": 0.7
+    },
+    {
+      "side": "front",
+      "axisX_m": 10.2,
+      "roofCutout_m": 1.26,
+      "slopeStart_t": 0.29,
+      "slopeEnd_t": 0.7
+    },
+    {
+      "side": "front",
+      "axisX_m": 17.4,
+      "roofCutout_m": 1.26,
+      "slopeStart_t": 0.29,
+      "slopeEnd_t": 0.7
+    },
+    {
+      "side": "front",
+      "axisX_m": 23.6,
+      "roofCutout_m": 1.26,
+      "slopeStart_t": 0.29,
+      "slopeEnd_t": 0.7
+    }
+  ]
+}

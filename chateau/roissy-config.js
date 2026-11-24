@@ -1,7 +1,7 @@
-// Château Grand V3.1 – shared coordinates for facade, interior and navigation.
+// Château Grand V3.2 – shared coordinates for facade, interior and navigation.
 // Historically justified *proportions*, not a centimetre-accurate archaeological survey.
 export const PLAN={
-  "id": "CHATEAU_ROISSY_PLAN_V3_1",
+  "id": "CHATEAU_ROISSY_PLAN_V3_2",
   "status": "Le Rouge 1776: dated plan of built château (1703–1709), archaeologically confirmed broad footprint; no earlier verified as-built drawing, all room sizes approximate",
   "source": "Le Rouge, Plan du Rez-de-Chaussée / Premier Etage du Château de Roissy (1776)",
   "sourceToiseApproxM": 1.94904,

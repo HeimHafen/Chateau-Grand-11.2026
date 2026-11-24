@@ -1,5 +1,5 @@
 /**
- * CHÂTEAU GRAND V3.1 – historical main core rebuilt after Le Rouge (1776).
+ * CHÂTEAU GRAND V3.2 – historical main core and open dormers rebuilt after Le Rouge (1776).
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * The classical MaxGame portico and small cupola are creative additions, not historical evidence.
@@ -253,8 +253,38 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  const e=CORNICE+.16,shoulder=15.38,ridge=17.10, inset=2.55;
  for(const x0 of [-27,-21.7,21.7]){/* Corners set out by plan axes; no independent roof footprint. */}
  const a=-27,b=27,c=-11.5,d=11.5,aa=a+inset,bb=b-inset,cc=c+inset,dd=d-inset;
- faceRoof([a,e,d],[b,e,d],[bb,shoulder,dd],[aa,shoulder,dd]);
- faceRoof([b,e,c],[a,e,c],[aa,shoulder,cc],[bb,shoulder,cc]);
+ // V3.2: the earlier roof was a single uninterrupted opaque sheet BEHIND
+ // every dormer window. Cut actual roof-plane openings aligned to their sash,
+ // leaving watertight-looking upper and lower flashing strips. The holes are
+ // true missing triangles, not black transparent textures or visual decals.
+ const roofDormerAxes=FRONT_WINDOW_AXES.filter(xx=>Math.abs(xx)>=6.2);
+ const dormerHoleHalfWidth=.63;
+ const roofOpeningT0=.29,roofOpeningT1=.70;
+ function roofPoint(x,t,sign){
+   // x is WORLD x, not an eave-space percentage; otherwise the roof cutouts
+   // drift inward and cover the glazing near the end pavilions.
+   return [x, e+(shoulder-e)*t,sign*(HALF_D-inset*t)];
+ }
+ function slopePanel(left,right,t0,t1,sign,outerLeft=false,outerRight=false){
+   if(right-left<.001||t1-t0<.001)return;
+   const L=t=>outerLeft?a+inset*t:left;
+   const R=t=>outerRight?b-inset*t:right;
+   if(sign>0)faceRoof(roofPoint(L(t0),t0,sign),roofPoint(R(t0),t0,sign),roofPoint(R(t1),t1,sign),roofPoint(L(t1),t1,sign));
+   else faceRoof(roofPoint(R(t0),t0,sign),roofPoint(L(t0),t0,sign),roofPoint(L(t1),t1,sign),roofPoint(R(t1),t1,sign));
+ }
+ for(const sign of [-1,1]){
+   let cursor=a,first=true;
+   for(const x of roofDormerAxes){
+     const left=x-dormerHoleHalfWidth,right=x+dormerHoleHalfWidth;
+     slopePanel(cursor,left,0,1,sign,first,false);
+     slopePanel(left,right,0,roofOpeningT0,sign);
+     slopePanel(left,right,roofOpeningT1,1,sign);
+     cursor=right;first=false;
+   }
+   slopePanel(cursor,b,0,1,sign,false,true);
+ }
+ // Roof opening coordinates are derived from the same dormer axes and slope;
+ // no manually positioned second mesh is allowed to cover a window. 
  faceRoof([b,e,d],[b,e,c],[bb,shoulder,cc],[bb,shoulder,dd]);
  faceRoof([a,e,c],[a,e,d],[aa,shoulder,dd],[aa,shoulder,cc]);
  faceRoof([aa,shoulder,dd],[bb,shoulder,dd],[bb-4,ridge,0],[aa+4,ridge,0]);
@@ -267,9 +297,19 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    if(Math.abs(xx)<6.2)continue; // cupola + portico occupy the central roof zone
    for(const sign of [-1,1]){
      const dz=sign*(11.5-1.63),dy=14.05;
-     addBox('window',xx,dy,dz,1.42,2.2,.83);
-     addBox('glass',xx,dy,dz+sign*.45,1.12,1.62,.035);
-     for(const sx of [-1,1])addBox('trim',xx+sx*.64,dy,dz+sign*.55,.17,1.88,.23);
+     // Freestanding stone frame with EMPTY centre: old model contained a solid
+     // 1.42×2.20×0.83-m stone box directly behind the glass!
+     // The hole in the roof behind this opening is cut by slopePanel().
+     for(const side of [-1,1]){
+       addBox('window',xx+side*.635,dy,dz,.16,2.20,.87);
+       addBox('trim',xx+side*.64,dy,dz+sign*.48,.17,1.90,.24);
+     }
+     addBox('window',xx,dy+1.04,dz,1.42,.15,.88);
+     addBox('window',xx,dy-.98,dz,1.42,.24,.90);
+     addBox('glass',xx,dy,dz+sign*.47,1.12,1.62,.035);
+     // Two real glazing subdivisions; centred in front of the opening.
+     addBox('sash',xx,dy,dz+sign*.51,.055,1.57,.065);
+     addBox('sash',xx,dy+.12,dz+sign*.51,1.10,.055,.065);
      addBox('trim',xx,dy+1.13,dz+sign*.40,1.70,.20,.88);
      const roofW=new THREE.ConeGeometry(1.19,1.30,4);roofW.rotateY(Math.PI/4);
      const dorm=mesh(roofW,'bronze','Schiefer_Dachgaube');dorm.position.set(xx,dy+1.86,dz);
@@ -338,6 +378,8 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    interiorCollision:collisionWalls,entranceDoors:doors,
    instancedElements:[...batch.values()].reduce((s,a)=>s+a.length,0),instancedDrawcalls:batch.size,
    planAxes:{frontDoors:FRONT_DOORS,frontWindows:FRONT_WINDOW_AXES,rearWindows:REAR_WINDOW_AXES},
-   validations:{roomCountEG:ROOMDATA.eg.length,roomCountOG:ROOMDATA.og.length,directMeshes}
+   validations:{roomCountEG:ROOMDATA.eg.length,roomCountOG:ROOMDATA.og.length,directMeshes,
+     roofDormersPerSide:roofDormerAxes.length,roofPlaneCutouts:roofDormerAxes.length*2,
+     roofOpeningSlope:[roofOpeningT0,roofOpeningT1],dormerGlassBackedBySolidStone:false}
  };
 }
