@@ -1,26 +1,23 @@
-# CHÂTEAU GRAND – ROISSY V3.5 – GESAMTABGLEICH
+# CHÂTEAU GRAND — ROISSY V3.6 — VESTIBÜL & KONSTRUKTIONSKORREKTUREN
 
-**Vollständiges spielbares GitHub-Pages-Projekt.** Ausgangsbasis ist der geprüfte Stand V3.4. Historischer Kernbau: ca. 54 × 23 m, Planvorlage von Le Rouge (1776); die Maßwerte sind aus einer gedruckten Skala abgeleitet, **keine zentimetergenaue historische Vermessung**.
+Vollständiges Browser-Spiel auf der Three.js/MaxGame-Basis. Die historische Roissy-Raumfolge bleibt im EG und 1. OG erhalten (18/21 Zonen), einschließlich der zweigeschossigen Salonöffnung und der begehbaren 36-stufigen Haupttreppe.
 
-## Überarbeiteter Gesamtstand
+## Diesmal gezielt verbessert
 
-- **Erdgeschoss / 1. Obergeschoss:** Planregister mit 18 EG-Räumen und 21 OG-Einträgen (20 begehbare Bereiche plus ein absichtlicher Salon-Luftraum) erhalten. Zusätzlich überprüft der Modellstart die Überlappungsfreiheit der Raumflächen.
-- **Innenwände / Durchgänge:** Raumachsen bleiben erhalten. Die Navigation prüft tatsächliche Kollisionsgrenzen und Türdurchgänge. Ein separater Raster-Reachability-Test misst die Erreichbarkeit aller Räume ohne Teleportieren.
-- **Außentreppe:** Alle sieben sichtbaren Steinhöhen stimmen exakt mit der begehbaren Stufensteuerung überein (keine unsichtbare Rampe mehr).
-- **Haupttreppe / Galerie:** 36 Tritte und die zugehörige Laufhöhenberechnung sind synchronisiert; beide Treppenläufe und der Galerieabschluss aus V3.4 bleiben erhalten.
-- **Fenster:** Beidseitig transparentes Material, echte Außenwandöffnungen. Beim Aufbau wird jede Fensterreihe auf Überschneidungen und Außenkanten geprüft.
-- **Dach:** Dachwalme erhalten neue exakt an den Schnittlinien platzierte Zink-/Metallabschlussprofile und einen durchgehenden First, statt frei schwebender Balken. Die 14 vorhandenen Dachgaubenöffnungen bleiben erhalten.
-- **Außenanschlüsse:** Isolierte seitliche Treppenstufen ohne zugehörige Tür wurden entfernt. Sie waren konstruktiv unlogisch und führten gegen eine Fensterbrüstung. Die historische Position der seitlichen Zugänge muss vor dem Neuanlegen anhand einer Quelle vermessen werden.
-- **Portikus:** Die vorhandenen MaxGame-3D-Säulen und die drei automatischen Türen bleiben erhalten. Der Portikus ist ein eigener kreativer Schlosszusatz, kein historischer Nachweis für Roissy.
+- **Eingangshalle:** Maßstäblicher Naturstein-Plattenboden mit 3 PBR-Bildmaps (Farbe, Normale, Rauheit), matt statt spiegelglatt; umlaufendes, bodenbündiges Steinband und Wand-Sockelleisten, an Türöffnungen unterbrochen. Die Bilder sind aus dem bereits vorhandenen MaxGame-Kalksteinmaterial generiert.
+- **Portikus/1. Obergeschoss:** Der originale MaxGame-Dreiecksgiebel ragte in V3.5 um mehr als einen Meter hinter die äußere Fassade. Er wurde als ganze importierte Baugruppe nach außen gerückt; eine Maßprüfung sichert die rückwärtige Giebelkante ab.
+- **Außenecken:** Steinquader an Gebäudeecken werden nur noch an der Außenfläche erzeugt, nicht mehr halb in den Eckzimmern.
+- **Eingangshalle:** Ein dezent warmer, nicht schattenwerfender Lichtfüller verbessert die Lesbarkeit des Steinmaterials, ohne die Mobile-Schattenkarte zu belasten.
+- **Bestand:** Außenhülle (54×23 m), Roissy-Raumfolge, originale Herrenhaus-Säulen, drei automatische Türen, durchsichtige Fenster und Rundgang erhalten.
 
 ## Installation
 
-ZIP **ohne übergeordneten Ordner** entpacken. Sämtliche Dateien im Stammverzeichnis von `Chateau-Grand-2027` ersetzen, Commit → Push. Danach die Spieladresse mit `?v=roissy35` öffnen. Das Versionsetikett lautet **ROISSY · V3.5**.
+Archiv ohne zusätzlichen Projektordner entpacken, Inhalt direkt in das GitHub-Repository `Chateau-Grand-2027` übertragen. Überschreibe die Dateien, Commit → Push. Adresse mit `?v=roissy36` öffnen. Anzeige oben rechts **ROISSY · V3.6**.
 
-## Qualitätsgrenzen
+## Historische Verlässlichkeit
 
-Der historische Grundriss ist im Kern maßstäblich rekonstruiert, jedoch nicht zentimetergenau belegt. Vor allem Fassadenhöhen, einige Wandstärken, die künstlerische Kuppel und der MaxGame-Portikus sind derzeit nicht historisch gesichert. Ein echter iPhone-Safari-Livetest ist hier aufgrund der gesperrten lokalen Browserumgebung nicht möglich. **V3.5 ist ein nachweisbar weiterentwickelter Konstruktionsstand, kein Versprechen von 100 % fotorealistischer oder bauarchäologischer Perfektion.**
+Die Fenster- und Raummaße sind aus einer publizierten Le-Rouge-Zeichnung (1776) abgeleitete Näherungswerte; die heutige Portikus-Gestaltung und Kuppel sind kreative Weiterentwicklungen. Der neue Natursteinboden ist **historisch plausibel, nicht als Originalbelag nachgewiesen**. Es wird keine exakte bauarchäologische Rekonstruktion behauptet.
 
-## Reproduzierbare Tests
+## Prüfung
 
-Im Projektroot: `node test-model.mjs` und `node test-building-qa.mjs`. Der zweite Test führt einen 25-cm-Rastertest für alle erreichbaren Zimmer aus und kontrolliert sieben Außentreppenstufen. Er beweist keine visuelle iPhone-Grafikqualität.
+`node test-model.mjs`, `node test-building-qa.mjs`, `node test-v36-vestibule.mjs` ausführen. JavaScript-Syntax, begehbare Höhen, Projektstruktur und Archiv zusätzlich prüfen. **Ein echter Safari-Grafiktest ist hier nicht erfolgt.**

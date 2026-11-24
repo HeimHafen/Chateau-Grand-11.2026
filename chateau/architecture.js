@@ -1,5 +1,5 @@
 /**
- * CHÂTEAU GRAND V3.5 – model-wide construction audit and refinements.
+ * CHÂTEAU GRAND V3.6 – Roissy premium architectural connections and vestibule.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * The classical MaxGame portico and small cupola are creative additions, not historical evidence.
@@ -108,8 +108,14 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  facade('z',HALF_W,-HALF_D,HALF_D,SIDE_WINDOW_AXES,false);
  facade('z',-HALF_W,-HALF_D,HALF_D,SIDE_WINDOW_AXES,false);
  // Corner quoins and aligned central masonry piers, independent of windows.
- for(const x of [-26.8,26.8])for(const z of [-11.3,11.3])
-   for(let i=0;i<14;i++)addBox(i%2?'window':'trim',x,EG+.29+i*.77,z,1.00,.49,.98);
+ // All rusticated quoins project OUTWARD only. Earlier x=26.8/z=11.3
+ // cubes protruded into the corner rooms and looked suspended indoors.
+ for(const signX of [-1,1])for(const signZ of [-1,1])
+   for(let i=0;i<14;i++){
+     const lateral=i%2? .56:.44;
+     addBox(i%2?'window':'trim',signX*(HALF_W+.18),EG+.28+i*.77,
+       signZ*(HALF_D+.18),lateral,.47,lateral);
+   }
  for(const frontZ of [-11.56,11.56])for(const x of [-22.3,-13.22,-6.72,6.72,14.05,20.5]){
    // Pilaster occupies room partition axis, not the window's glazed opening.
    addBox('window',x,(EG+CORNICE)/2,frontZ,.46,CORNICE-EG-.42,.27);
@@ -134,6 +140,61 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    }
  }
  addSlab(EG-.095,[]);
+ // V3.6: architectural finish in the verified Vestibule footprint, without
+ // covering doorways, step treads or historic partitions. This is a plausible
+ // period limestone finish, NOT evidence of the original Roissy paving.
+ const FLOOR_MAP_PREFIX='./assets/interior/roissy_vestibule_limestone_';
+ const tileLoader=new THREE.TextureLoader();
+ function floorTexture(file,isColor=false){
+   if(typeof document==='undefined')return null; // headless geometry/QA tests
+   const t=tileLoader.load(FLOOR_MAP_PREFIX+file+'.jpg');
+   if(isColor)t.colorSpace=THREE.SRGBColorSpace;
+   t.anisotropy=8;
+   t.wrapS=t.wrapT=THREE.ClampToEdgeWrapping;
+   return t;
+ }
+ const vestibulePBR=new THREE.MeshStandardMaterial({
+   name:'Roissy_Vestibule_Kalkstein_Matt_Geschliffen',
+   map:floorTexture('albedo',true),normalMap:floorTexture('normal'),
+   roughnessMap:floorTexture('roughness'),roughness:.94,metalness:0,
+   normalScale:new THREE.Vector2(.18,.18),color:0xf5efe6
+ });
+ const vestibuleW=12.35,vestibuleD=12.26,vestibuleZ=4.51;
+ const centralFloor=new THREE.Mesh(new THREE.PlaneGeometry(vestibuleW,vestibuleD),vestibulePBR);
+ centralFloor.rotation.x=-Math.PI/2;
+ centralFloor.position.set(0,EG+.008,vestibuleZ);
+ centralFloor.receiveShadow=true;centralFloor.name='Roissy_Vestibule_Natursteinboden_Grossformat';
+ layers.eg.add(centralFloor);directMeshes++;
+ // A restrained inset frame on the stone plane, flush with the walking surface.
+ // Door thresholds remain open; these borders are 7mm thick, not collision walls.
+ const vestibuleEdge=new THREE.MeshStandardMaterial({color:0x948572,roughness:.91,metalness:0});
+ function floorInlay(x,z,w,d,mat=vestibuleEdge){
+   const obj=new THREE.Mesh(new THREE.BoxGeometry(w,.006,d),mat);
+   obj.position.set(x,EG+.013,z);obj.receiveShadow=true;obj.castShadow=false;
+   obj.name='Roissy_Vestibule_Eingelassener_Steinfries';
+   layers.eg.add(obj);directMeshes++;
+ }
+ for(const sign of [-1,1]){
+   floorInlay(sign*5.91,vestibuleZ,.055,vestibuleD-.18);
+   floorInlay(sign*5.58,vestibuleZ,.022,vestibuleD-.75);
+ }
+ for(const z of [vestibuleZ-5.89,vestibuleZ+5.89]){
+   floorInlay(0,z,11.89,.055);
+ }
+ // Architectural skirting along the actual walls, split around the two side
+ // doors. No bar across any opening or inside the walkable stair corridor.
+ const stWallX=6.53;
+ for(const sign of [-1,1]){
+   for(const [a,b] of [[-1.36,4.30],[6.27,10.52]]){
+     addBox('trim',sign*stWallX,EG+.125,(a+b)/2,.085,.25,b-a,'eg');
+     addBox('window',sign*stWallX,EG+.266,(a+b)/2,.11,.041,b-a,'eg');
+   }
+ }
+ // A very shallow, properly restrained wall cornice; the upper floor remains
+ // visible and no arch/roof structure protrudes into this room.
+ for(const sign of [-1,1]){
+   addBox('trim',sign*6.49,OG-.40,vestibuleZ,.12,.21,12.48,'eg');
+ }
  // The Salon du Rez-de-Chaussée stays double height; the west Grand Escalier has its own void.
  const salonVoid=[-6.70,6.70,-11.10,-2.32],stairVoid=[-13.18,-6.77,-2.10,10.80];
  addSlab(OG-.095,[salonVoid,stairVoid]);
@@ -298,7 +359,13 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  // Original Herrenhaus-/MaxGame-Portikus; uniformly scaled so columns remain ROUND.
  donor.updateMatrixWorld(true);
  const porch=new THREE.Group();porch.name='ORIGINAL_MAXGAME_PORTIKUS_ROISSY_MASSTAB';
- porch.scale.setScalar(.75);porch.position.set(0,EG-.75*.75,14.88-18.10*.75);root.add(porch);
+ // V3.6: original MaxGame Giebel occupies z=[11.65,19.43] donor metres.
+ // The previous offset put its back edge at z=10.07 (1.4m INSIDE the upper vestibule).
+ // Place the entire imported portico outside the 54x23m historical wall plane.
+ // Exact historic Roissy facade never had this donor portico: design addition only.
+ porch.scale.setScalar(.75);
+ porch.position.set(0,EG-.75*.75,3.15);
+ root.add(porch);
  function donorPart(sourceName,material,target=porch){
     const o=donor.getObjectByName(sourceName);if(!o||!o.isMesh)return null;
     const clone=o.clone(false);o.matrixWorld.decompose(clone.position,clone.quaternion,clone.scale);
@@ -314,6 +381,14 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    donorPart(foot[i],mats.trim);donorPart(cap[i],mats.trim);
  }
  if(porch.children.length<17)throw Error('MaxGame-Portikus konnte nicht geladen werden.');
+ const originalPediment=donor.getObjectByName('Giebel');
+ if(originalPediment){
+   const box=new THREE.Box3().setFromObject(originalPediment);
+   const backOfPediment=box.min.z*porch.scale.z+porch.position.z;
+   // The inside edge of the front wall is at 11.27m, exterior at 11.73m.
+   if(backOfPediment<HALF_D+.20)
+     throw Error('Portikusgiebel dringt wieder in das obere Vestibül ein: z='+backOfPediment.toFixed(3));
+ }
  // Mansard roof: exact 54×23 perimeter, slight breaks at two end pavilions.
  function faceRoof(p,q,r,s){const geo=new THREE.BufferGeometry();const arr=[...p,...q,...r,...p,...r,...s];geo.setAttribute('position',new THREE.Float32BufferAttribute(arr,3));geo.computeVertexNormals();return mesh(geo,'bronze','Mansard_Dachhaut');}
  const e=CORNICE+.16,shoulder=15.38,ridge=17.10, inset=2.55;
@@ -493,6 +568,8 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      floatingRoofDecor:0,orphanSideStairs:0,roofHipAndRidgeCaps:9,salonUpperDoorsIntoVoid:0,ceilingUndersides:true,
      roissyRoomOverlapCount:0,facadeOpeningsChecked:true,perronNavigationUsesStoneStepHeights:true,stairRailAnchoredToTreads:true,stairGeometrySharesNavigationConfig:true,
      salonGalleryGuardedWidth:4.62,stairRisersPerFlight:RUN,
+     donorPedimentClearOfUpperVestibule:true,externalCornerQuoinsOnly:true,
+     vestibuleNaturalStonePBR:true,vestibuleFloorSize:[vestibuleW,vestibuleD],
      roofOpeningSlope:[roofOpeningT0,roofOpeningT1],dormerGlassBackedBySolidStone:false}
  };
 }

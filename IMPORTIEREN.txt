@@ -1,3 +1,3 @@
-ROISSY V3.5 – GESAMTABGLEICH
-
-ZIP entpacken, Inhalte DIREKT in Chateau-Grand-2027 (GitHub Root) kopieren. Keine zusätzliche Projektordner-Ebene. Commit und Push. Aufrufen: ?v=roissy35, Anzeige: ROISSY · V3.5.
+CHÂTEAU GRAND ROISSY V3.6 – VESTIBÜL UND BAUANSCHLÜSSE
+ZIP ohne Oberordner entpacken; Dateien direkt ins Repository-Root. Commit → Push.
+Spieladresse anschließend mit ?v=roissy36 öffnen. Anzeige: ROISSY · V3.6

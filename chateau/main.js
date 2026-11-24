@@ -3,8 +3,8 @@ import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from '../wohnzimmer/sky-atmosphere.js';
-import {buildChateau} from './architecture.js?v=roissy35';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy35';
+import {buildChateau} from './architecture.js?v=roissy36';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy36';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -34,6 +34,9 @@ async function run(){
   // Three.js has no automatic bounced daylight indoors. A restrained fill
   // keeps underlit stone legible without adding expensive mobile point lights.
   scene.add(new THREE.AmbientLight(0xffe9d0,.24));
+  // A single non-shadow local fill brings the real PBR limestone floor out of darkness.
+  const hallFill=new THREE.PointLight(0xffeccd,1.25,24,1.5);
+  hallFill.position.set(0,4.85,4.45);hallFill.castShadow=false;scene.add(hallFill);
   const sun=new THREE.DirectionalLight(0xffe8ca,2.05);
   sun.position.set(-135,210,168);sun.castShadow=true;
   const s=mobile?1024:2048;sun.shadow.mapSize.set(s,s);
@@ -55,8 +58,8 @@ async function run(){
   glass.needsUpdate=true;
   // Verify that we really used donor assets, not a recreated imitation.
   if(chateau.originalPortico.children.length<17)throw Error('Originalportikus aus MaxGame wurde unvollständig übernommen.');
-  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'3.5',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.5';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'3.6',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.6';
   start.disabled=false;start.textContent='Château erkunden';
   status.textContent='54 × 23 Meter · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
   resize();view('angle');
