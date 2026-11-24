@@ -1,0 +1,10 @@
+{
+  "facadeWindows": 73,
+  "roofWindows": 20,
+  "totalWindows": 93,
+  "clearPaneRays": 146,
+  "blockedRays": 0,
+  "failures": [],
+  "transparent": true,
+  "doorCount": 3
+}

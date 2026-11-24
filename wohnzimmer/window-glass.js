@@ -2,24 +2,26 @@
 export function createRealisticExteriorGlass(THREE, renderer) {
   const glass = new THREE.MeshPhysicalMaterial({
     name: 'Weisses_Haus_Aussenfenster_Realglas',
-    color: 0xb2b9ad,
-    roughness: 0.16,
+    color: 0xdfe6eb,
+    roughness: 0.08,
     metalness: 0,
     ior: 1.52,
-    clearcoat: 0.32,
-    clearcoatRoughness: 0.13,
-    envMapIntensity: 1.2,
+    clearcoat: 0.38,
+    clearcoatRoughness: 0.08,
+    envMapIntensity: 1.0,
+    transmission: 0.96,
+    thickness: 0.015,
     side: THREE.DoubleSide,
     depthWrite: false,
     transparent: true,
-    opacity: .26
+    opacity: .16
   });
   // Avoid hard opaque window-shaped shadows in the interior.
   glass.userData.isExteriorGlass = true;
 
   // Tiny variations in surface smoothness and tint reduce identical-looking
   // panes. Everything stays subtle so the glass does not look dirty or frosted.
-  glass.customProgramCacheKey = () => 'white-house-realglass-optical-v1';
+  glass.customProgramCacheKey = () => 'roissy-realglass-optical-v2';
   glass.onBeforeCompile = shader => {
     shader.vertexShader = `varying vec3 whGlassPosition;\n` + shader.vertexShader;
     shader.vertexShader = shader.vertexShader.replace(
@@ -41,6 +43,10 @@ export function createRealisticExteriorGlass(THREE, renderer) {
        roughnessFactor = clamp(roughnessFactor + glassMicro*0.018, 0.068, 0.19);`
     );
   };
+
+  // In headless QA there is no DOM/image loader; keep the material functional
+  // without the optional environment reflection.
+  if (typeof document === 'undefined') return glass;
 
   // One LDR environment map gets PMREM-filtered on load. The map is a purpose-
   // generated soft photographic-style sky/grounds panorama, not a photo of the

@@ -2,8 +2,8 @@ import * as THREE from '../vendor/three/build/three.module.js';
 import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from '../wohnzimmer/sky-atmosphere.js';
-import {buildChateau} from './architecture.js?v=roissy320';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy320';
+import {buildChateau} from './architecture.js?v=roissy324';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy324';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -29,7 +29,7 @@ async function run(){
   camera=new THREE.PerspectiveCamera(61,1,.24,850);camera.rotation.order='YXZ';
   atmospheric=buildSky(THREE,scene,camera);
   scene.add(new THREE.HemisphereLight(0xcce1f1,0x9f8c77,1.20));
-  // V3.20 uses only global daylight/ambient illumination. No added interior
+  // V3.24 uses only global daylight/ambient illumination. No added interior
   // point lights are created so the material judgement is not falsified by helper lighting.
   scene.add(new THREE.AmbientLight(0xffe9d0,.20));
   const sun=new THREE.DirectionalLight(0xffe8ca,2.05);
@@ -46,12 +46,12 @@ async function run(){
   for(const floor of ['eg','og'])chateau.historicalLayers[floor].traverse(obj=>{
     if(obj.userData.floorPlanLabel)obj.visible=false;
   });
-  // Low-absorption glass allows viewing out of rooms in both directions.
-  glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.18;glass.depthWrite=false;
+  // Clear, low-iron glazing keeps the whole facade readable and truly transparent.
+  glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.20',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.20';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.24',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.24';
   start.disabled=false;start.textContent='Château erkunden';
   status.textContent='54 × 28,85 Meter (Rekonstruktionsmaß) · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
   resize();view('angle');
@@ -141,7 +141,7 @@ function setWalk(entry=null){
   document.getElementById('walk').classList.add('selected');
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('selected'));
   hint.textContent=activeWalkingFloor
-    ? 'Links ziehen: gehen · rechts umsehen · zur Treppe laufen für Geschosswechsel'
+    ? 'Links ziehen: gehen · rechts umsehen · Türen öffnen automatisch · zur Treppe laufen für Geschosswechsel'
     : 'Links ziehen: zur Treppe gehen · Eichentüren öffnen automatisch · rechts umsehen';
   showWalkLocation();
 }
@@ -201,7 +201,7 @@ function frame(ms){
     const dz=(-Math.cos(player.yaw)*f-Math.sin(player.yaw)*st)*speed;
     // Real staircase heights (7 outside steps + 36 risers in two U-shaped flights),
     // real masonry collision and genuine oak doors. Never teleport on a threshold.
-    const doors=historicalChateau?.entranceDoors||[];
+    const doors=[...(historicalChateau?.entranceDoors||[]),...(historicalChateau?.interiorDoors||[])];
     for(const d of doors)d.door.update(dt,player.x,player.z,player.footY);
     let candidate=candidateStep(player,player.x+dx,player.z,historicalChateau,doors);
     if(candidate){player.x=candidate.x;player.footY=candidate.footY;}

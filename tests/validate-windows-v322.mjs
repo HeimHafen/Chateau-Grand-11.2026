@@ -1,0 +1,15 @@
+import * as THREE from '../vendor/three/build/three.module.js';
+import {buildChateau} from '../chateau/architecture.js';
+import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
+const mat=new THREE.MeshStandardMaterial(),mats=Object.fromEntries(['facadeWall','dressedStone','trim','windowStone','shade','paintedSash','roof','porticoPaving','columnFinish','brass'].map(k=>[k,mat]));
+const fakeRenderer={};
+const glass=createRealisticExteriorGlass(THREE,fakeRenderer);
+const scene=new THREE.Scene();
+const a=buildChateau(THREE,scene,null,mats,glass);
+const check=(v,s)=>{if(!v)throw Error(s);};
+check(glass.transparent===true,'glass not transparent');
+check(glass.opacity<=0.16,'glass too opaque');
+let glassMeshes=0,sashMeshes=0,windowMeshes=0;
+scene.traverse(o=>{if(!o.isMesh)return; if(o.material===glass)glassMeshes++; if(/sash/i.test(o.name)||/Sprosse/i.test(o.name))sashMeshes++; if(/fenster|archivolte|Tympanon/i.test(o.name))windowMeshes++;});
+check(glassMeshes>10,'too few glass meshes');
+console.log(JSON.stringify({version:'3.22',glassTransparent:glass.transparent,glassOpacity:glass.opacity,glassMeshes,sashMeshes,windowMeshes,drawBatches:a.instancedDrawcalls},null,2));
