@@ -3,8 +3,8 @@ import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from '../wohnzimmer/sky-atmosphere.js';
-import {buildChateau} from './architecture.js?v=roissy32';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy32';
+import {buildChateau} from './architecture.js?v=roissy33';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy33';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -24,13 +24,16 @@ async function run(){
   renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',alpha:false});
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=.87;
+  renderer.toneMappingExposure=.96;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   renderer.shadowMap.autoUpdate=false;
   scene=new THREE.Scene();scene.background=new THREE.Color(0x8293a4);scene.fog=new THREE.FogExp2(0x8293a4,.00048);
   camera=new THREE.PerspectiveCamera(61,1,.08,1600);camera.rotation.order='YXZ';
   atmospheric=buildSky(THREE,scene,camera);
-  scene.add(new THREE.HemisphereLight(0xcce1f1,0x807262,1.13));
+  scene.add(new THREE.HemisphereLight(0xcce1f1,0x9f8c77,1.20));
+  // Three.js has no automatic bounced daylight indoors. A restrained fill
+  // keeps underlit stone legible without adding expensive mobile point lights.
+  scene.add(new THREE.AmbientLight(0xffe9d0,.24));
   const sun=new THREE.DirectionalLight(0xffe8ca,2.05);
   sun.position.set(-135,210,168);sun.castShadow=true;
   const s=mobile?1024:2048;sun.shadow.mapSize.set(s,s);
@@ -52,8 +55,8 @@ async function run(){
   glass.needsUpdate=true;
   // Verify that we really used donor assets, not a recreated imitation.
   if(chateau.originalPortico.children.length<17)throw Error('Originalportikus aus MaxGame wurde unvollständig übernommen.');
-  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'3.2',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length};
-  document.getElementById('version').textContent='ROISSY · V3.1.1';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'3.3',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length};
+  document.getElementById('version').textContent='ROISSY · V3.3';
   start.disabled=false;start.textContent='Château erkunden';
   status.textContent='54 × 23 Meter · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
   resize();view('angle');

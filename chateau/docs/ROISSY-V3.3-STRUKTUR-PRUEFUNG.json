@@ -1,0 +1,37 @@
+{
+  "version": "3.3",
+  "base": "3.2",
+  "sourceScreenshotVersion": "3.1.1",
+  "scope": [
+    "floating roof ornament",
+    "interior ceiling underside",
+    "salon void openings",
+    "gallery railing",
+    "version label"
+  ],
+  "architecturalMeasures": {
+    "widthM": 54,
+    "depthM": 23,
+    "groundFloorZones": 18,
+    "firstFloorZones": 21,
+    "accuracy": "estimated from historic plan, not centimetre-exact"
+  },
+  "geometryFixes": {
+    "floatingRoofStoneBeamsDeleted": 4,
+    "salonFirstFloorVoidDoorwaysClosed": 2,
+    "ceilingUndersideInstalled": true,
+    "salonBalustradeAnchored": true
+  },
+  "tests": {
+    "syntax": "passed",
+    "nodeThreeGeometryBuild": "passed",
+    "entranceWalkway": "passed with automatic door opening",
+    "staircaseToFirstFloor": "passed",
+    "headlessBrowser": "blocked by administrator, no rendered live screenshot"
+  },
+  "limitations": [
+    "Photos show V3.1.1, not V3.3",
+    "Safari/mobile performance not tested",
+    "Entire building not certified photorealistic or millimetre-accurate"
+  ]
+}

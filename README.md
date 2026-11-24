@@ -1,32 +1,31 @@
-# CHÂTEAU GRAND – ROISSY V3.2 – DACHGAUBEN & ECHTE FENSTERÖFFNUNGEN
+# CHÂTEAU GRAND – ROISSY V3.3 – BAUFEHLERKORREKTUR
 
-**Komplettes, auf V3.1.1 basierendes GitHub-Pages-Projekt.** In V3.2 wurde gezielt die Geometrie der Dachgauben überarbeitet, weil die Schiefer-Dachhaut und massive Steinquader zuvor direkt hinter den Gaubenfenstern lagen.
+Dies ist das vollständige, direkt in GitHub Pages einspielbare Projekt, aufgebaut auf V3.2.
 
-## Was sich geändert hat
+## Auf den iPhone-Bildern überprüfte Problemstellen
 
-- **14 echte Dachöffnungen:** sieben Fensterachsen auf der vorderen, sieben auf der hinteren Dachschräge. Die Schieferflächen sind an der betreffenden Stelle in einzelne Dreiecksflächen aufgeteilt; der Fensterdurchblick wird nicht länger durch ein durchgehendes Dachpolygon versperrt.
-- **Hohle Gaubenrahmen statt Steinblöcke:** seitliche Wangen, Sturz und Sohlbank umgeben die Glasscheibe. Die früher vorhandene massive Steinrückwand wurde entfernt.
-- **Achsengenaue Lage:** Die Dachöffnungen sind in Weltkoordinaten an derselben X-Achse wie die Gauben ausgerichtet. Der bisher mögliche seitliche Versatz zum Dachrand ist beseitigt.
-- **Fensterflügel:** transparente Scheiben und schlanke Sprossen; die vorhandenen MaxGame-Glasmaterialien werden weiterverwendet.
-- **Erhalten:** die historische Grundrisskonfiguration, 54 × 23 m Maßannahme, EG (18 Raumzonen), 1. OG (21 Raumzonen), offener Salon, Haupttreppe, automatische Eingangstüren, Terrain und gesamtes andere äußere Modell.
+- **Vier schwebende Steinleisten über dem Dach:** Entfernt; waren Zierquader ohne Verbindung zur Hülle (in V3.2 noch vorhanden).
+- **Schwarze Deckenflächen:** EG-/OG-Decken erhalten getrennte, hellere Kalkstein-Unterseiten. Der Salon und das Treppenhaus behalten ihre echten Lufträume.
+- **OG-Türen in den offenen Salon:** Zwei bisher frei in den Salon-Luftraum führende Obergeschossöffnungen geschlossen. Keine Türen mehr ohne Boden dahinter.
+- **Galerie am Salon:** Geländer auf den tragenden Bodenrand versetzt; obere und mittlere Reling ergänzt.
+- **3D-Versionslabel:** V3.2 zeigte im Startcode nach dem Laden irrtümlich weiterhin „V3.1.1“. In V3.3 korrigiert.
+- **Innenraum-Aufhellung:** Dezente Umgebungsaufhellung, ohne die Dachmaterialien auszutauschen.
 
-Die große Portikus-Konstruktion und die Kuppel bleiben gestalterische Erweiterungen und sind **keine nachgewiesenen Originalbauteile** von Château de Roissy.
+## Absichtlich unverändert
 
-## Einspielen in Working Copy / GitHub Pages
+Historischer Roissy-Grundriss, ca. 54 × 23 m, 18 EG-Raumzonen, 21 OG-Raumzonen, seitliches Haupttreppenhaus, Salon-Luftraum, Fenster- und Türachsen, die beweglichen MaxGame-Eingangstüren, Kuppel sowie die 14 Dachgaubenöffnungen aus V3.2.
 
-1. ZIP entpacken. Alle Dateien **direkt** ins Root-Verzeichnis des vorhandenen Repositories `Chateau-Grand-2027` kopieren; **keinen zusätzlichen Oberordner** anlegen.
-2. Vorhandene Dateien ersetzen, besonders `index.html`, `chateau/architecture.js`, `chateau/main.js` und `chateau/roissy-config.js`.
-3. **Commit → Push**, anschließend deine GitHub-Pages-Adresse mit `?v=roissy32` laden.
-4. Oben rechts soll **ROISSY · V3.2** erscheinen. Gauben frontal und von der Dachseite prüfen; Rundgang im EG/1. OG weiterhin testen.
+## Installation über Working Copy
 
-## Technische Prüfung
+Das ZIP entpacken und den **Inhalt direkt** in die Repository-Wurzel `Chateau-Grand-2027` kopieren – keinen V3.3-Ordner hochladen. Bestehende Dateien ersetzen, **Commit → Push** und die GitHub-Pages-URL mit `?v=roissy33` öffnen. Oben rechts muss **ROISSY · V3.3** stehen.
 
-- `node --check` für alle 13 direkt oder indirekt verwendeten lokalen JavaScript-Module: **bestanden**.
-- 14 Dachöffnungen rechnerisch auf ihre Lage **innerhalb des realen Dachrands** und auf die Lage der Fensterachsen geprüft: **bestanden**.
-- Referenziertes MaxGame-Originalmodell mit den erforderlichen Portikus-Teilen vorhanden.
-- Alle für die Steuerung nötigen HTML-Knoten, die in V3.1.1 ergänzt wurden, bleiben enthalten.
-- Die ausführlichen Prüfwerte stehen unter `chateau/docs/ROISSY-V3.2-GAUBEN-PRUEFUNG.json`.
+## Prüfniveau
 
-**Einschränkung:** Ein echter lokaler Browser-/iPhone-Safari-Livetest konnte nicht abgeschlossen werden, weil die Testumgebung den lokalen Browserzugriff blockiert (`ERR_BLOCKED_BY_ADMINISTRATOR`). Deshalb ist die sichtbare Darstellung und Performance auf dem iPhone nicht abschließend bestätigt. Es wurde keine angebliche Live-Vorschau gerendert.
+- JavaScript-Syntax, Architekturgeometrie (mit dem beigelegten Modellaufbau-Test) und ZIP-Struktur werden technisch geprüft.
+- Die Screenshots in der Unterhaltung zeigen **V3.1.1**, keine Liveansichten von V3.3.
+- Eine vollständige Darstellung direkt in iPhone Safari kann nur im veröffentlichten Spiel bestätigt werden; diese Version beansprucht keine nachgewiesene historische Zentimetergenauigkeit oder perfekte Grafik.
+- Die schwebenden Dachquader und die salonseitigen OG-Portale sind auf Codeebene beseitigt; nicht jedes mögliche visuelle Problem ist damit ausgeschlossen.
 
-**Historische Genauigkeit:** Die lichte Raumgeometrie ist weiterhin eine Näherung aus Le Rouges Zeichnung von 1776; sie ist keine zentimetergenaue Bauaufnahme. Die V3.2-Änderungen betreffen ausschließlich die bewusst ergänzte Dachgeometrie.
+## Historische Vorlage
+
+Le Rouge 1776 (EG / 1. OG), Abmessungen nach Zeichnungsmaßstab näherungsweise rekonstruierter Hauptbau. Der Portikus und die Kuppel sind gestalterische Bestandteile des Spiels, keine historisch bestätigten Originalteile von Roissy.

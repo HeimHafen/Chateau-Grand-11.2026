@@ -1,10 +1,6 @@
-CHÂTEAU GRAND – ROISSY V3.2
+CHÂTEAU ROISSY V3.3 – DACH-, DECKEN- UND SALON-ANSCHLÜSSE
 
-ZIP ENTPACKEN – ALLE DATEIEN DIREKT IN DAS ROOT-VERZEICHNIS
-VON Chateau-Grand-2027 KOPIEREN. KEINEN EXTRA V3.2-ORDNER ANLEGEN.
-Alte Dateien ersetzen; Working Copy: Commit → Push.
-Nach dem Deploy Spieladresse mit ?v=roissy32 öffnen.
-Versionsanzeige: ROISSY · V3.2
-
-Einzelner Fokus: Gaubenfenster + tatsächliche Öffnungen in der Dachfläche.
-Historischer Grundriss, Innenwände, Türen und Treppen bleiben erhalten.
+ZIP entpacken. ALLE DATEIEN DIREKT in die Wurzel deines Repositories Chateau-Grand-2027 einfügen; nicht in einen neuen Ordner.
+index.html, chateau/ und alle übrigen Projektdateien ersetzen.
+Working Copy: Commit → Push. Im Browser ?v=roissy33 öffnen.
+Oben rechts muss stehen: ROISSY · V3.3

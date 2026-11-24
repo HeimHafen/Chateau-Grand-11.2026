@@ -1,5 +1,5 @@
 /**
- * CHÂTEAU GRAND V3.2 – historical main core and open dormers rebuilt after Le Rouge (1776).
+ * CHÂTEAU GRAND V3.3 – structural cleanup: ceilings, salon openings and roof ornament anchoring.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * The classical MaxGame portico and small cupola are creative additions, not historical evidence.
@@ -17,8 +17,15 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  const gold=new THREE.MeshStandardMaterial({color:0xad8654,metalness:.61,roughness:.36});
  const wood=new THREE.MeshStandardMaterial({color:0x3d2418,roughness:.63});
  const floorStone=mats.porticoPaving||mats.trim;
+ // Interior ceiling finish is a separate physically situated underside, not the
+ // exterior gravel/foundation material and not a dark roofing polygon.
+ const ceilingStone=new THREE.MeshStandardMaterial({
+   name:'Roissy_Heller_Kalkstein_Deckenunterseite',
+   color:0xe6d6c1,roughness:.96,metalness:0,
+   emissive:0xb8a18b,emissiveIntensity:.20,side:THREE.DoubleSide
+ });
  const cast={wall:mats.facadeWall,stone:mats.dressedStone,trim:mats.trim,window:mats.windowStone,
-   sill:mats.shade,glass,sash:mats.paintedSash,bronze,bronzeTrim,gold,wood,floor:floorStone};
+   sill:mats.shade,glass,sash:mats.paintedSash,bronze,bronzeTrim,gold,wood,floor:floorStone,ceiling:ceilingStone};
  const baseGeo=new THREE.BoxGeometry(1,1,1),batch=new Map(), collisionWalls={eg:[],og:[]};
  const doors=[]; let directMeshes=0;
  function addBox(mat,x,y,z,w,h,d,layer='shell'){
@@ -118,18 +125,29 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  function addSlab(y,omit=[],material='floor'){
    let rects=[[-26.72,26.72,-11.18,11.18]];
    for(const h of omit)rects=rects.flatMap(rect=>subtract(rect,h));
-   for(const [x0,x1,z0,z1] of rects)addBox(material,(x0+x1)/2,y,(z0+z1)/2,x1-x0,.19,z1-z0);
+   for(const [x0,x1,z0,z1] of rects){
+     const cx=(x0+x1)/2,cz=(z0+z1)/2,w=x1-x0,d=z1-z0;
+     addBox(material,cx,y,cz,w,.19,d);
+     // Visible underside is exactly contiguous with the underside of the slab.
+     // Leave salon and stairwell *voids* completely open, including the ceiling.
+     if(y>EG)addBox('ceiling',cx,y-.114,cz,w-.008,.038,d-.008);
+   }
  }
  addSlab(EG-.095,[]);
  // The Salon du Rez-de-Chaussée stays double height; the west Grand Escalier has its own void.
  const salonVoid=[-6.70,6.70,-11.10,-2.32],stairVoid=[-13.18,-6.77,-2.10,10.80];
  addSlab(OG-.095,[salonVoid,stairVoid]);
  addSlab(CORNICE-.15,[]);
- // Balcony above the Salon: elegant gallery edge and actual protective balustrade.
- for(let x=-6.2;x<=6.21;x+=.70){
-   addBox('bronzeTrim',x,OG+.34,-2.30,.058,.66,.078);
+ // Salon double-height opening: balustrade stands on the *solid* north
+ // slab edge, not as an isolated beam floating across the salon void.
+ // z=-2.31 is the void edge; offset toward the supported gallery (+z).
+ const galleryZ=-2.08;
+ addBox('stone',0,OG+.10,galleryZ,13.0,.20,.24);
+ for(let x=-6.22;x<=6.24;x+=.69){
+   addBox('bronzeTrim',x,OG+.62,galleryZ,.055,1.02,.074);
  }
- addBox('stone',0,OG+.71,-2.31,13.6,.15,.19);
+ addBox('trim',0,OG+1.13,galleryZ,13.20,.14,.20);
+ addBox('bronzeTrim',0,OG+.43,galleryZ,13.00,.045,.055);
  // Plan-aware partition wall with physical doorway holes and identical collider segments.
  function innerWall(f,axis,fixed,a,b,doorAt,doorW=1.38){
    const y=f==='eg'?EG:OG,upper=f==='eg'?OG-.15:CORNICE-.22;
@@ -170,7 +188,13 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    innerWall(f,'x',CROSS_WALL_Z,-6.66,-2.45,[],1.6);
    innerWall(f,'x',CROSS_WALL_Z,2.45,26.65,[10.2,17.4,24],1.6);
    const xBack=REAR_X_CUTS.slice(1,-1),xFront=FRONT_X_CUTS.slice(1,-1);
-   for(const x of xBack)innerWall(f,'z',x,-11.13,CROSS_WALL_Z-.18,[-6.5],1.32);
+   for(const x of xBack){
+     const bordersSalon=Math.abs(Math.abs(x)-6.72)<.08;
+     // Le Rouge's Salon occupies a double-height volume here. First-floor
+     // doors directly into that void were a construction error, not a gallery.
+     const doorPositions=(f==='og'&&bordersSalon)?[]:[-6.5];
+     innerWall(f,'z',x,-11.13,CROSS_WALL_Z-.18,doorPositions,1.32);
+   }
    for(const x of xFront){
       // 1OG stair landing enters the vestibule through a correctly placed upper doorway.
       const entry=f==='og'&&Math.abs(x+6.72)<.15?9.27:5.3;
@@ -315,8 +339,9 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      const dorm=mesh(roofW,'bronze','Schiefer_Dachgaube');dorm.position.set(xx,dy+1.86,dz);
    }
  }
- // Windows in end pavillons aligned to the two SIDE facades.
- for(const x of [-25.8,25.8])for(const z of [-6.5,4.9])addBox('trim',x,16.0,z,.58,.22,1.65);
+ // V3.3: removed four disconnected stone bars at y=16 on the end pavilions.
+ // They were not chimneys, roof windows or supported cornices and visibly
+ // hovered above the roof line in the iPhone screenshots.
  // Small studio-designed central cupola: kept from the user's monumental concept,
  // explicitly NOT claimed as historically authentic to the 1776 Roissy elevations.
  const cupBase=16.25,rad=4.65,drumH=2.65;
@@ -368,7 +393,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  const dummy=new THREE.Object3D();for(const [key,records] of batch){
    const [layer,mat]=key.split(':');const parent=layer==='shell'?root:layers[layer];
    const o=new THREE.InstancedMesh(baseGeo,cast[mat],records.length);o.name='Historische_Bauteile_'+key;
-   o.frustumCulled=false;o.receiveShadow=true;o.castShadow=!['glass','sash','bronzeTrim'].includes(mat);
+   o.frustumCulled=false;o.receiveShadow=true;o.castShadow=!['glass','sash','bronzeTrim','ceiling'].includes(mat);
    for(let i=0;i<records.length;i++){const [x,y,z,w,h,d]=records[i];dummy.position.set(x,y,z);dummy.scale.set(w,h,d);dummy.rotation.set(0,0,0);dummy.updateMatrix();o.setMatrixAt(i,dummy.matrix);}
    o.instanceMatrix.needsUpdate=true;parent.add(o);
  }
@@ -380,6 +405,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    planAxes:{frontDoors:FRONT_DOORS,frontWindows:FRONT_WINDOW_AXES,rearWindows:REAR_WINDOW_AXES},
    validations:{roomCountEG:ROOMDATA.eg.length,roomCountOG:ROOMDATA.og.length,directMeshes,
      roofDormersPerSide:roofDormerAxes.length,roofPlaneCutouts:roofDormerAxes.length*2,
+     floatingRoofDecor:0,salonUpperDoorsIntoVoid:0,ceilingUndersides:true,
      roofOpeningSlope:[roofOpeningT0,roofOpeningT1],dormerGlassBackedBySolidStone:false}
  };
 }
