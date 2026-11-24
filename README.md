@@ -1,33 +1,30 @@
-# CHÂTEAU GRAND ROISSY – V3.12
+# CHÂTEAU GRAND ROISSY V3.13 – Historische Außenarchitektur
 
-Vollständiges Austauschpaket, basierend auf V3.11. Referenz: `chateau/docs/CHATEAU-DE-ROISSY-REFERENZ-HOCHAUFLOESEND.jpg` (Le Rouge, 1776).
+Komplettes Austauschpaket auf Basis V3.12. Aktive Laufzeit: index.html, chateau/main.js, chateau/architecture.js, chateau/roissy-config.js, chateau/navigation.js.
 
-## Änderungen
-- 38 cm hohe Lücke zwischen Sockel und Fassadenmauerwerk geschlossen; Türstürze und Geschossfugen in den Innenwänden geschlossen.
-- Vestibül: vier freistehende Kalksteinsäulen pro Geschoss in zwei Reihen, mit Sockeln, Kapitellen, durchgehenden Deckenträgern und Kollisionskörpern. Positionen aus der sichtbaren Stützenordnung angenähert. Natursteinfläche an tatsächliche Wandinnenflächen angepasst (13,19 × 13,278 m), zweifacher umlaufender Steinfries. Sockelprofile aus realen Wandsegmenten abgeleitet, statt pauschaler Abstände.
-- Salon: vollständig eingefasster Portalsturz, durchgehender Brüstungsabschluss, engmaschiges Schmiedeeisengeländer mit Holzhandlauf und Kollision.
-- Grand Escalier: 36 Stufen erhalten; Innenkanten beider Treppenläufe mit Geländern versehen, Zwischenpodest mit zusätzlichen Stäben gesichert, neue tragende Geschossfläche vor der Treppe im OG, westliche Tür ins echte Podest verlegt. Kollisionsprüfung nutzt reale obere Geschossflächen statt pauschaler Freigabe über dem Treppenloch.
-- Fenster: umlaufende Rahmen, innenliegende Steinlaibungen und Fensterbänke. Achsen der V3.11 bleiben erhalten.
+## Quellen
+- Le Rouge, 1776, drittes Heft, Tafel 10 (Grundrisse), Tafel 12 (Hof- und Parkfassade): https://agorha.inha.fr/ark:/54721/3e0c51c5-191f-4850-b43f-0c00e44b3fd5
+- Historische Fassaden: https://commons.wikimedia.org/wiki/File:Roissy-en-France_-_Chateau_de_Roissy_-_Facades_principales.jpg
+- Archäologischer Kontext: https://actu-culture.com/archeologie/chambord-revelations-de-larcheologie-7-7-roissy-metamorphose-dun-chateau-dile-de-france/
+- Grundriss: https://www.rijksmuseum.nl/nl/collectie/object/Plattegronden-van-de-begane-grond-en-eerste-verdieping-van-het-kasteel-Roissy--5df618ecbc2ebfe72eff689a21d509b4
 
-## Nachgewiesene technische Prüfung
-Alle folgenden Node-Tests wurden erfolgreich ausgeführt:
-```
-node tests/validate-v312-real-asset.mjs
-node tests/validate-stair-v310.mjs
-node tests/audit-plan-walls-v311.mjs
-node test-building-qa.mjs
-node test-model.mjs
-node test-v36-vestibule.mjs
-node test-v37-openings.mjs
-node test-v38-partitions-fenestration.mjs
-node test-v39-ceiling-shell.mjs
-```
-Die erste Prüfung lädt tatsächlich die originale GLB-Datei (25 Portikusbauteile), nicht nur Ersatzgeometrie. 18 EG- und 20 OG-Raumzonen im Raster erreichbar, 45 Innentüröffnungen und 53 Fensterpositionen frei, 56 Wandanschlüsse kontrolliert. 1020 Schritte auf der Haupttreppe hinauf und hinab; 195 zusätzliche Schritte durch den neuen OG-Verbindungsweg. Ein Salonluftraum bleibt absichtlich unbegehbar.
+## Umsetzung
+- Zwei echte Hofpavillons (5,05 m Vorsprung), flacher parkseitiger Mittelrisalit (0,80 m Vorsprung). 12 reale Fassadenabschnitte, Bodenplatten und Kollisionen an neuer Hülle; alte Außenwände in den Erweiterungen entfernt.
+- 13 Hauptachsen pro Hof- und Parkfassade, Rundbogenfenster in Mittelzone, drei automatische Eichentüren mit Oberlicht, Pilaster, Eckquader und Gesimse.
+- Historische Dreiecksgiebel, modellierte stilisierte Reliefs, Mittelattika mit Fenstern, Schieferdach mit Gauben, sechs Schornsteine. Kuppel und White-House-Portikus aus aktivem Modell entfernt.
+- Hofterrasse mit sieben Stufen, Hof- und Parkansicht im Menü.
+- Bestehende Innenstruktur, Treppenanlage und Vestibülboden erhalten; Trennwände der Seitenflügel bis zur neuen Außenwand verlängert.
 
-## Noch nicht abgeschlossen
-Die historische Außenkontur ist gestaffelt, während der bestehende Hauptbau weiterhin eine vereinfachte rechteckige Hülle von 54 × 23 m besitzt. Die tatsächliche historische Wand- und Raumgeometrie, Fassadenstaffelung, sekundären Treppen und exakten Höhen sind nicht vollständig rekonstruiert. Der MaxGame-Portikus und die Kuppel sind kreative Ergänzungen. Die Säulen- und Bodendetails sind historisch plausible Interpretationen, kein Originalaufmaß. Visuelle WebGL-/Safari-Freigabe fehlt: Chromium-Navigation im Testsystem wurde mit ERR_BLOCKED_BY_ADMINISTRATOR abgewiesen. Alte Vorschau.jpg ist eine Bestandsreferenz und zeigt NICHT V3.12. Die automatisierten Prüfungen ersetzen keinen visuellen Rundgang.
+## Tests, erfolgreich ausgeführt
+- `node tests/validate-exterior-v313.mjs` (12 Fassadenabschnitte, 13+13 Achsen, 260 Schritte durch Eingang ohne Türsimulationskörper, neue Flügel begehbar, endliche Mesh-Transformationen)
+- `node test-v313-openings.mjs` (73 modellierte Fensterpositionen und 45 Innentüren gegen Trennwände und Türöffnungen geprüft; keine festgestellten Konflikte)
+- `node test-building-qa.mjs` (38 historische Raumzonen erreichbar, sieben Außenstufen)
+- `node tests/validate-stair-v310.mjs` (1020 Laufwegproben auf Haupttreppe)
+- `node tests/audit-plan-walls-v311.mjs` (56 Mauerwerksanschlüsse)
+- Node Syntaxchecks aller aktiven Module. Alte versionsspezifische Tests sind Archivmaterial und erwarten teilweise die alte rechteckige Hülle bzw. den entfernten Portikus.
 
-## Installation / Working Copy
-1. ZIP entpacken, gesamten Inhalt direkt ins Stammverzeichnis des bestehenden Repositorys übertragen und Dateien ersetzen.
-2. Commit und Push. GitHub-Pages-Adresse mit `?v=roissy312` neu laden.
-3. Oben rechts muss `ROISSY · V3.12` erscheinen.
+## Grenzen
+Keine visuelle WebGL-Freigabe: lokaler Chromium-Aufruf scheiterte an ERR_BLOCKED_BY_ADMINISTRATOR. Safari/iPhone nicht getestet. Die historischen Aufrisse und die sichtbare Grundrissstaffelung sind Referenz, jedoch keine lückenlose Vermessung. Um die begehbare Innenstruktur zu erhalten, wurde der alte 54 × 23 m Kern erweitert (54 × 28,85 m neue angenäherte Hauptabmessungen). Das ist keine nachgewiesene historische Gesamttiefe. Fensterachsen wurden zur Konfliktfreiheit mit bestehenden Trennwänden angepasst. Die Giebelreliefs, Materialien, Höhen, Seitenfenster und Dachdetails sind interpretierte Rekonstruktionen. Nebengebäude, Nebentreppen und genaue Raumabmessungen der Flügel sind noch nicht rekonstruiert. Dachübergänge und alle visuellen Materialdetails müssen noch im Live-Browser überprüft werden. Alte Vorschau.jpg zeigt nicht den neuen Stand.
+
+## Installation
+ZIP entpacken, Inhalt direkt im vorhandenen Repository ersetzen, Commit/Push. GitHub Pages mit `?v=roissy313` laden. Oben rechts muss ROISSY · V3.13 erscheinen. Hof/Park auswählen, für freien Rundgang Erkunden wählen.

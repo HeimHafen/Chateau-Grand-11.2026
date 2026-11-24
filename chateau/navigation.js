@@ -1,14 +1,14 @@
 /** Château Grand V3.4 – walkable ground floor and Premier Étage, shared plan metres. */
-import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR,PERRON} from './roissy-config.js?v=roissy312';
+import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR,PERRON,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy313';
 export const EG_Y=EG,OG_Y=OG,EYE_Y=1.69;
 export const WALK_RADIUS=.30;
 const H=(OG-EG)*.5;
 const between=(x,a,b)=>x>=a&&x<=b;
-const inside=(x,z)=>between(x,-HALF_W+.35,HALF_W-.35)&&between(z,-HALF_D+.34,HALF_D-.34);
+const inside=(x,z)=>between(x,-HALF_W+.35,HALF_W-.35)&&between(z,rearAt(x)+.34,frontAt(x)-.34);
 const onSteps=(x,z)=>Math.abs(x)<PERRON.width/2-.10&&
   between(z,PERRON.firstCentreZ-PERRON.treadDepth*.5,
     PERRON.firstCentreZ+(PERRON.steps-.5)*PERRON.treadDepth);
-const terrace=(x,z)=>Math.abs(x)<7.35&&between(z,HALF_D-.75,PERRON.terraceEndZ);
+const terrace=(x,z)=>Math.abs(x)<EXTERIOR.terraceHalf&&between(z,HALF_D-.75,PERRON.terraceEndZ);
 const S=GRAND_STAIR, STEPS=S.stepsPerFlight;
 const stepDepth=f=>f.length/STEPS;
 const first=(x,z)=>between(x,S.first.x-S.first.width/2+.04,S.first.x+S.first.width/2-.04)&&
@@ -43,7 +43,7 @@ export function surfaceHeight(x,z,prev=0){
       Math.floor((z-(PERRON.firstCentreZ-PERRON.treadDepth*.5))/PERRON.treadDepth)));
     return PERRON.landingHeight*(PERRON.steps-i)/PERRON.steps;
   }
-  if(terrace(x,z))return EG;
+  if(terrace(x,z)&&(!inside(x,z)||prev<(EG+OG)/2))return EG;
   if(!inside(x,z))return 0;
   const on=stairHeight(x,z,prev);
   if(on!==null)return on;
@@ -53,17 +53,19 @@ const near=(x,centers,width)=>centers.some(c=>Math.abs(x-c)<width/2-WALK_RADIUS*
 function touches(x,z,w,r=WALK_RADIUS){return x+r>w.x0&&x-r<w.x1&&z+r>w.z0&&z-r<w.z1;}
 export function collidesAt(x,z,foot,architecture,doors=[]){
   const r=WALK_RADIUS,og=foot>(EG+OG)/2+.18;
-  if(between(x,-HALF_W-r,HALF_W+r)&&Math.abs(z-HALF_D)<.23+r){
-     if(og||!near(x,FRONT_DOORS,1.52))return true;
+  for(const s of FACADE_SEGMENTS){
+    const along=s.axis==='x'?x:z,across=s.axis==='x'?z:x;
+    if(between(along,s.a-r,s.b+r)&&Math.abs(across-s.fixed)<.23+r){
+      if(!s.entrance||og||!near(x,FRONT_DOORS,1.52))return true;
+    }
   }
-  if(between(x,-HALF_W-r,HALF_W+r)&&Math.abs(z+HALF_D)<.23+r)return true;
-  if(between(z,-HALF_D-r,HALF_D+r)&&(Math.abs(x-HALF_W)<.23+r||Math.abs(x+HALF_W)<.23+r))return true;
+  if(Math.abs(z-PERRON.terraceEndZ)<r+.17&&Math.abs(x)>PERRON.width/2-r&&Math.abs(x)<EXTERIOR.terraceHalf+r&&foot>.5)return true;
   for(const d of doors){if(d.door.blocks(x,z,r,foot))return true;}
   if(inside(x,z)&&architecture?.interiorCollision){
     for(const w of architecture.interiorCollision[og?'og':'eg']||[]){if(touches(x,z,w))return true;}
     // No walkable floor over the double-height Salon or stairwell except on the U flights.
     if(og){
-      if(between(x,-6.65,6.65)&&between(z,-11.1,-2.34))return true;
+      if(between(x,-6.65,6.65)&&between(z,EXTERIOR.parkBack+.34,-2.34))return true;
       const rect=(q)=>between(x,q.x-q.width/2,q.x+q.width/2)&&between(z,q.z-q.depth/2,q.z+q.depth/2);
       const solidDeck=architecture.upperDeckRectangles?.some(([x0,x1,z0,z1])=>between(x,x0,x1)&&between(z,z0,z1));
       if(architecture.upperDeckRectangles&&!solidDeck&&!second(x,z)&&!rect(S.upperLanding)&&!rect(S.passage))return true;

@@ -1,3 +1,1 @@
-CHÂTEAU GRAND 2027 · ROISSY V3.12
-Spiel über index.html / GitHub Pages öffnen.
-Installation und Prüfgrenzen siehe README.md.
+V3.13 – historische Hof- und Parkfassade. ZIP-Inhalt in Repository-Stammverzeichnis kopieren. Commit & Push. GitHub Pages mit ?v=roissy313 öffnen.

@@ -1,10 +1,9 @@
 import * as THREE from '../vendor/three/build/three.module.js';
-import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from '../wohnzimmer/sky-atmosphere.js';
-import {buildChateau} from './architecture.js?v=roissy312';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy312';
+import {buildChateau} from './architecture.js?v=roissy313';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy313';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -46,9 +45,7 @@ async function run(){
   const mats=createExteriorMaterialLibrary(THREE);
   const glass=createRealisticExteriorGlass(THREE,renderer);
   buildLandscape(mats);
-  const loader=new GLTFLoader();
-  const {scene:donor}=await loader.loadAsync('./assets/white-house-structure.glb');
-  const chateau=buildChateau(THREE,scene,donor,mats,glass);
+  const chateau=buildChateau(THREE,scene,null,mats,glass);
   historicalChateau=chateau;
   for(const floor of ['eg','og'])chateau.historicalLayers[floor].traverse(obj=>{
     if(obj.userData.floorPlanLabel)obj.visible=false;
@@ -56,12 +53,11 @@ async function run(){
   // Low-absorption glass allows viewing out of rooms in both directions.
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.18;glass.depthWrite=false;
   glass.needsUpdate=true;
-  // Verify that we really used donor assets, not a recreated imitation.
-  if(chateau.originalPortico.children.length<17)throw Error('Originalportikus aus MaxGame wurde unvollständig übernommen.');
-  window.__CHATEAU_MAXGAME={engine:'Three.js',donorAsset:'assets/white-house-structure.glb',porticoChildren:chateau.originalPortico.children.length,scene,version:'3.12',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.12';
+  // Expose the actual reconstruction and construction diagnostics for testing.
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.13',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.13';
   start.disabled=false;start.textContent='Château erkunden';
-  status.textContent='54 × 23 Meter · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
+  status.textContent='54 × 28,85 Meter (Rekonstruktionsmaß) · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
   resize();view('angle');
   start.addEventListener('click',()=>{splash.hidden=true;renderer.shadowMap.needsUpdate=true;setWalk();}, {once:true});
   requestAnimationFrame(frame);
@@ -112,7 +108,8 @@ function view(which){
   document.body.classList.remove('walking');
   floorChoice=which==='eg'||which==='og'?which:null;
   const views={
-    front:{theta:0,phi:.11,d:118,target:[0,10.5,0]},
+    front:{theta:0,phi:.06,d:92,target:[0,9.0,1]},
+    park:{theta:Math.PI,phi:.06,d:92,target:[0,9.0,0]},
     angle:{theta:.46,phi:.38,d:99,target:[0,10.5,0]},
     above:{theta:.45,phi:1.16,d:89,target:[0,8,0]},
     entrance:{theta:0,phi:.08,d:39,target:[0,5,12]},

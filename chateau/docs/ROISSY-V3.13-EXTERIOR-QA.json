@@ -1,0 +1,16 @@
+{
+  "version": "3.13",
+  "meshObjects": 438,
+  "courtBays": 13,
+  "parkBays": 13,
+  "facadeSegments": 12,
+  "entrySamples": 260,
+  "wingFloorsAndCollision": true,
+  "noLegacyPortico": true,
+  "dimensions": {
+    "width": 54,
+    "depth": 28.85,
+    "height": 18.46,
+    "calibration": "approximate; existing core preserved and extended to represent historical setbacks"
+  }
+}

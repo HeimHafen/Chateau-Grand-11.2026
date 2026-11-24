@@ -344,8 +344,8 @@ export const OG=PLAN.dimensions.firstFloor;
 export const CORNICE=PLAN.dimensions.cornice;
 export const ROOMDATA=PLAN.rooms;
 export const FRONT_DOORS=[-3.6,0,3.6];
-export const REAR_WINDOW_AXES=[-24.4,-19.1,-15.6,-10.2,-3.4,0,3.4,10.2,16.1,23.4];
-export const FRONT_WINDOW_AXES=[-24.2,-19.5,-16.1,-10.2,-3.6,0,3.6,10.2,17.4,23.6];
+export const REAR_WINDOW_AXES=[-24.4,-19.5,-15.9,-10.6,-8.0,-3.6,0,3.6,8.6,11.5,16.5,21.7,24.6];
+export const FRONT_WINDOW_AXES=[-24.2,-20.4,-15.8,-11.8,-8.6,-3.6,0,3.6,8.6,11.8,16.2,21.7,24.6];
 // V3.8 side elevation: preserve four vertically aligned bays but move them
 // clear of BOTH floors' internal partition intersections at the outer walls.
 // Positions are reconstruction coordinates (NOT verified original dimensions).
@@ -420,7 +420,28 @@ export const GRAND_STAIR=Object.freeze({
 // V3.5: the seven outside stone treads and walking support use one shared
 // geometry definition. Historic original front-perron dimensions not verified.
 export const PERRON=Object.freeze({
-  steps:7, firstCentreZ:17.40, treadDepth:.41, stoneTreadThickness:.15,
+  steps:7, firstCentreZ:14.80, treadDepth:.41, stoneTreadThickness:.15,
   width:12.72, groundHeight:0, landingHeight:EG,
-  terraceEndZ:17.43
+  terraceEndZ:14.85
 });
+
+// Le Rouge, 1776, plates 10/12: stepped court footprint, central park projection.
+// Original 23m depth was the old rectangular core; extensions retain its interior.
+export const EXTERIOR=Object.freeze({wingX:18.05,wingFront:16.55,parkX:6.70,parkBack:-12.30,terraceHalf:17.82});
+export const frontAt=x=>Math.abs(x)>=EXTERIOR.wingX?EXTERIOR.wingFront:HALF_D;
+export const rearAt=x=>Math.abs(x)<=EXTERIOR.parkX?EXTERIOR.parkBack:-HALF_D;
+// Boundary axes, outward normals and actual window bays, used by geometry and navigation.
+const X=EXTERIOR;
+export const FACADE_SEGMENTS=Object.freeze([
+ {id:'court-west',axis:'x',fixed:X.wingFront,a:-HALF_W,b:-X.wingX,normal:1,windows:FRONT_WINDOW_AXES.slice(0,2)},
+ {id:'court-west-return',axis:'z',fixed:-X.wingX,a:HALF_D,b:X.wingFront,normal:1,windows:[14.05]},
+ {id:'court-main',axis:'x',fixed:HALF_D,a:-X.wingX,b:X.wingX,normal:1,windows:FRONT_WINDOW_AXES.slice(2,-2),entrance:true},
+ {id:'court-east-return',axis:'z',fixed:X.wingX,a:HALF_D,b:X.wingFront,normal:-1,windows:[14.05]},
+ {id:'court-east',axis:'x',fixed:X.wingFront,a:X.wingX,b:HALF_W,normal:1,windows:FRONT_WINDOW_AXES.slice(-2)},
+ {id:'park-west',axis:'x',fixed:-HALF_D,a:-HALF_W,b:-X.parkX,normal:-1,windows:REAR_WINDOW_AXES.slice(0,5)},
+ {id:'park-west-return',axis:'z',fixed:-X.parkX,a:X.parkBack,b:-HALF_D,normal:-1,windows:[]},
+ {id:'park-center',axis:'x',fixed:X.parkBack,a:-X.parkX,b:X.parkX,normal:-1,windows:REAR_WINDOW_AXES.slice(5,8)},
+ {id:'park-east-return',axis:'z',fixed:X.parkX,a:X.parkBack,b:-HALF_D,normal:1,windows:[]},
+ {id:'park-east',axis:'x',fixed:-HALF_D,a:X.parkX,b:HALF_W,normal:-1,windows:REAR_WINDOW_AXES.slice(8)},
+ ...[-1,1].map(n=>({id:n<0?'west':'east',axis:'z',fixed:n*HALF_W,a:-HALF_D,b:X.wingFront,normal:n,windows:[...SIDE_WINDOW_AXES,14.05]}))
+]);
