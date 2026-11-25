@@ -32,13 +32,24 @@ export function addRoissyPortal(THREE, parent, mats, glass, x, wallZ, width, hei
    for(const s of [-1,1]){const pts=[];for(let j=0;j<=25;j++){const t=j/25,ang=t*Math.PI*1.7,rr=fanR*.115*(1-t*.82);pts.push([s*(fanR*.45+rr*Math.cos(ang)),spring+fanR*.29+rr*Math.sin(ang),z]);}line(root,iron,pts,.010);}
  }
  // Fixed rebates on the outside of the inward-opening doors, and a shallow sill.
- for(const side of [-1,1])box(root,oak,side*(r-.077),spring/2,.075,.036,spring,.022);
- box(root,oak,0,spring-.066,.075,width-.154,.076,.022);
+ for(const side of [-1,1])box(root,oak,side*(r-.104),spring/2,.075,.092,spring,.022);
+ box(root,oak,0,spring-.066,.075,width-.124,.076,.022);
  box(root,edge,0,.009,0,width-.124,.018,.16);
- const leafWidth=r-.073, leafH=spring-.093, base=.020, leaves=[];
+ const leafWidth=r-.150, leafH=spring-.105, base=.020, leaves=[];
  for(const side of [-1,1]){
-   const hinge=new THREE.Group();hinge.name='Roissy_Eichenfluegel';hinge.position.x=side*(r-.065);root.add(hinge);leaves.push({hinge,side});
+   const hinge=new THREE.Group();hinge.name='Roissy_Eichenfluegel';hinge.position.x=side*(r-.142);root.add(hinge);leaves.push({hinge,side});
    const cx=-side*leafWidth/2, stile=Math.min(.132,leafWidth*.21), iw=leafWidth-2*stile;
+   // Three real pin axes with fixed and rotating knuckles, in the existing
+   // reveal. Offset avoids the old leaf/jamb interference during opening.
+   for(const y of [.25,base+leafH*.5,base+leafH-.25]){
+     add(hinge,brass,new THREE.CylinderGeometry(.014,.014,.040,12),0,y,0);
+     for(const dy of [-.032,.032]){
+       add(root,brass,new THREE.CylinderGeometry(.014,.014,.024,12),hinge.position.x,y+dy,0);
+       box(root,brass,hinge.position.x+side*.040,y+dy,0,.080,.026,.008);
+     }
+     box(hinge,brass,-side*.038,y,0,.076,.03,.008);
+   }
+
    box(hinge,edge,-side*(leafWidth+.004),base+leafH/2-.0025,side*.001,.0088,leafH+.005,.035);
    box(hinge,edge,cx,base-.0025,0,leafWidth,.005,.035);
    const bottom=base+.16, split=base+leafH*.38, top=base+leafH-.16;
@@ -79,6 +90,8 @@ export function addRoissyPortal(THREE, parent, mats, glass, x, wallZ, width, hei
  let angle=0,open=false;
  return {root,leaves,width,height,spring,update(dt,px,pz,py=0){
    open=Math.abs(py-level)<1&&Math.abs(px-x)<(open?1.6:1.25)&&Math.abs(pz-root.position.z)<(open?6.35:5.7);
-   const target=open?Math.PI/2:0;const next=angle+THREE.MathUtils.clamp(target-angle,-dt*1.9,dt*2.2);if(next===angle)return false;angle=next;for(const {hinge,side} of leaves)hinge.rotation.y=-side*angle;return true;
+   const target=open?Math.PI/2:0;let next=angle+THREE.MathUtils.clamp(target-angle,-dt*1.9,dt*2.2);
+   if(next<angle&&Math.abs(py-level)<1&&leaves.some(({hinge,side})=>{const dx=px-x-hinge.position.x,dz=pz-root.position.z,ux=-side*Math.cos(next),uz=-Math.sin(next),along=THREE.MathUtils.clamp(dx*ux+dz*uz,0,leafWidth);return Math.hypot(dx-along*ux,dz-along*uz)<.45;}))next=angle;
+   if(next===angle)return false;angle=next;for(const {hinge,side} of leaves)hinge.rotation.y=-side*angle;return true;
  },blocks(px,pz,radius,py=0){if(Math.abs(py-level)>1)return false;return leaves.some(({hinge,side})=>{const dx=px-x-hinge.position.x,dz=pz-root.position.z,ux=-side*Math.cos(angle),uz=-Math.sin(angle),along=THREE.MathUtils.clamp(dx*ux+dz*uz,0,leafWidth);return Math.hypot(dx-along*ux,dz-along*uz)<radius+.15;});}};
 }

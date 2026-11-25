@@ -1,0 +1,42 @@
+{
+  "version": "3.37",
+  "rooms": [
+    {
+      "name": "Salon",
+      "style": "Sonnenrosette und Lorbeer",
+      "rosetteDiameter": 2.44,
+      "leaves": 88
+    },
+    {
+      "name": "Chambre de parade",
+      "style": "Akanthusrosette und Palmetten",
+      "rosetteDiameter": 1.71,
+      "leaves": 64
+    },
+    {
+      "name": "Grand Cabinet d’Assemblée",
+      "style": "Lorbeerkranz und Längsgirlanden",
+      "rosetteDiameter": 1.28,
+      "leaves": 72
+    },
+    {
+      "name": "Salle à manger",
+      "style": "Blütenrosette und Blattgirlanden",
+      "rosetteDiameter": 1.42,
+      "leaves": 62
+    },
+    {
+      "name": "Cabinet de musique",
+      "style": "Kleine Blütenrosette und geschwungene Ranken",
+      "rosetteDiameter": 1.07,
+      "leaves": 60
+    }
+  ],
+  "vertices": 336024,
+  "rays": 25,
+  "leaves": 346,
+  "stems": 10,
+  "collars": 35,
+  "doorways": 43,
+  "staticOverlap": 0
+}
