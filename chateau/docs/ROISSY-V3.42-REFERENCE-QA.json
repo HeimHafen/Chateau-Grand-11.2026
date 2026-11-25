@@ -1,0 +1,34 @@
+{
+  "portalRays": 63,
+  "floorChecks": 66,
+  "finishRegions": {
+    "eg": 24,
+    "og": 24
+  },
+  "floorRects": 74,
+  "fixtures": {
+    "count": 6,
+    "fixtures": [
+      {
+        "name": "Roissy_Kristallleuchter_Gartenantichambre",
+        "x": -9.98,
+        "z": -5,
+        "ceiling": 6.5280000000000005,
+        "bottom": 5.413,
+        "radius": 0.52
+      },
+      {
+        "name": "Roissy_Kristallleuchter_GrandEscalier",
+        "x": -9.98,
+        "z": 3.65,
+        "ceiling": 11.86,
+        "bottom": 10.625,
+        "radius": 0.59
+      }
+    ],
+    "sconces": 4
+  },
+  "lighting": 2,
+  "interiorLabel": "Erdgeschoss · Vestibule",
+  "overlaps": 0
+}

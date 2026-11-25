@@ -1,0 +1,9 @@
+{
+  "portals": 3,
+  "leaves": 6,
+  "meshes": 51,
+  "triangles": 66841,
+  "entryExitSteps": 336,
+  "closedCollision": true,
+  "automaticOpeningAndClosing": true
+}

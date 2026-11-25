@@ -1,0 +1,12 @@
+{
+  "windows": 93,
+  "facade": 73,
+  "roof": 20,
+  "perimeterProfiles": 690,
+  "barProfiles": 1160,
+  "clearPaneRays": 1168,
+  "blockedRays": 0,
+  "sillRays": 73,
+  "hardwareVertices": 103368,
+  "failures": []
+}

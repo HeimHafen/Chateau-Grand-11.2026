@@ -1,10 +1,12 @@
 import * as THREE from '../vendor/three/build/three.module.js';
 import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
-import {buildSky} from '../wohnzimmer/sky-atmosphere.js';
-import {buildChateau} from './architecture.js?v=roissy341';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy341';
-import {planSectionY} from './roissy-config.js?v=roissy341';
+import {buildSky} from './daylight-v342.js';
+import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
+import {loadGardenMaple} from '../wohnzimmer/garden-maple.js';
+import {buildChateau} from './architecture.js?v=roissy342';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy342';
+import {planSectionY} from './roissy-config.js?v=roissy342';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -23,27 +25,39 @@ async function run(){
   renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',alpha:false});
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=.96;
+  renderer.toneMappingExposure=1.13;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   renderer.shadowMap.autoUpdate=false;
-  scene=new THREE.Scene();scene.background=new THREE.Color(0x8293a4);scene.fog=new THREE.FogExp2(0x8293a4,.00048);
+  scene=new THREE.Scene();scene.background=new THREE.Color(0xaac8e4);scene.fog=new THREE.FogExp2(0xc6d6df,.0009);
   camera=new THREE.PerspectiveCamera(61,1,.24,850);camera.rotation.order='YXZ';
   atmospheric=buildSky(THREE,scene,camera);
-  scene.add(new THREE.HemisphereLight(0xcce1f1,0x9f8c77,1.20));
-  // V3.41 uses only global daylight/ambient illumination. No added interior
-  // point lights are created so the material judgement is not falsified by helper lighting.
-  scene.add(new THREE.AmbientLight(0xffe9d0,.20));
-  const sun=new THREE.DirectionalLight(0xffe8ca,2.05);
-  sun.position.set(-135,210,168);sun.castShadow=true;
-  const s=2048;sun.shadow.mapSize.set(s,s);
-  Object.assign(sun.shadow.camera,{left:-70,right:70,top:70,bottom:-70,near:180,far:390});
-  sun.shadow.camera.updateProjectionMatrix();sun.shadow.bias=-.00035;sun.shadow.normalBias=.055;
+  scene.add(new THREE.HemisphereLight(0xe5efff,0xe4d7c2,1.45));
+  // Daylight-focused reference look; no camera-attached light.
+  scene.add(new THREE.AmbientLight(0xffffff,.32));
+  const sun=new THREE.DirectionalLight(0xffecd3,2.65);
+  sun.position.set(-72,95,-132);sun.castShadow=true;
+  const s=mobile?2048:4096;sun.shadow.mapSize.set(s,s);
+  Object.assign(sun.shadow.camera,{left:-36,right:36,top:36,bottom:-36,near:115,far:245});
+  sun.shadow.camera.updateProjectionMatrix();sun.shadow.bias=-.00035;sun.shadow.normalBias=.023;
   scene.add(sun);
   const mats=createExteriorMaterialLibrary(THREE);
   const glass=createRealisticExteriorGlass(THREE,renderer);
   buildLandscape(mats);
   const chateau=buildChateau(THREE,scene,null,mats,glass);
   historicalChateau=chateau;
+  // A low-intensity filtered environment provides believable reflection on oak,
+  // honed stone and metal without adding a screen-space reflection pass.
+  new THREE.TextureLoader().load('./assets/glass/v342_daylight_env.jpg',t=>{t.colorSpace=THREE.SRGBColorSpace;t.mapping=THREE.EquirectangularReflectionMapping;scene.environment=t;scene.environmentIntensity=.40;},undefined,()=>{});
+  // The reference contains lit chandeliers: use only two small stationary fills,
+  // no additional shadow passes. Fixtures are part of the actual 3D model.
+  for(const f of chateau.validations.interiorFinish.referenceFixtures.fixtures){const lamp=new THREE.PointLight(0xffe5ba,12,5,2);lamp.position.set(f.x,f.bottom+.28,f.z);scene.add(lamp);}
+  // Reuse the locally packaged maple model; keep trees outside the palace and
+  // all walkable paths. Shared geometry and materials via instancing.
+  loadGardenMaple(THREE,new GLTFLoader()).then(tree=>{
+    tree.updateMatrixWorld(true);const instances=[];
+    const sites=[[-31,-25],[-19,-37],[-3,-45],[13,-40],[29,-32],[-42,-10],[43,-13],[-38,22],[39,22],[-24,34],[25,36]];
+    tree.traverse(o=>{if(!o.isMesh)return;const g=o.geometry.clone();g.applyMatrix4(o.matrixWorld);const inst=new THREE.InstancedMesh(g,o.material,sites.length);inst.customDepthMaterial=o.customDepthMaterial;inst.castShadow=false;inst.receiveShadow=true;const dummy=new THREE.Object3D();for(let i=0;i<sites.length;i++){const [x,z]=sites[i];dummy.position.set(x,0,z);dummy.rotation.y=i*2.39;dummy.scale.setScalar(.57+(i%4)*.11);dummy.updateMatrix();inst.setMatrixAt(i,dummy.matrix);}inst.instanceMatrix.needsUpdate=true;scene.add(inst);instances.push(inst);});
+  }).catch(e=>console.warn('Parkbaum optional:',e));
   for(const floor of ['eg','og'])chateau.historicalLayers[floor].traverse(obj=>{
     if(obj.userData.floorPlanLabel)obj.visible=false;
   });
@@ -51,8 +65,8 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.41',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.41';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.42',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.42';
   start.disabled=false;start.textContent='Château erkunden';
   status.textContent='54 × 28,85 Meter (Rekonstruktionsmaß) · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
   resize();view('angle');
