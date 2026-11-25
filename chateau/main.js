@@ -1,13 +1,14 @@
+import {setupModelImport} from './model-import-v348.js?v=roissy348';
 import * as THREE from '../vendor/three/build/three.module.js';
 import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from './daylight-v342.js';
 import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {loadGardenMaple} from '../wohnzimmer/garden-maple.js';
-import {installStairReflection} from './stair-reflection-v344.js?v=roissy347';
-import {buildChateau} from './architecture.js?v=roissy347';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy347';
-import {planSectionY} from './roissy-config.js?v=roissy347';
+import {installStairReflection} from './stair-reflection-v344.js?v=roissy348';
+import {buildChateau} from './architecture.js?v=roissy348';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy348';
+import {planSectionY} from './roissy-config.js?v=roissy348';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -66,8 +67,9 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.47',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.47';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.48',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.48';
+  window.__CHATEAU_MAXGAME.importedFurniture=setupModelImport(THREE,chateau,scene,renderer);
   start.disabled=false;start.textContent='Château erkunden';
   status.textContent='54 × 28,85 Meter (Rekonstruktionsmaß) · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
   resize();view('angle');

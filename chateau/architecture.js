@@ -1,17 +1,17 @@
-import {installFurnishings} from './furnishings-v346.js?v=roissy347';
+import {installFurnishings} from './furnishings-v346.js?v=roissy348';
 /**
  * CHÂTEAU GRAND V3.46 – Historische Hof- und Parkfassade mit verfeinerten Raumboeden.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy347';
-import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy347';
-import {resolveStaticFaces} from './surface-cleanup.js?v=roissy347';
+import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy348';
+import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy348';
+import {resolveStaticFaces} from './surface-cleanup.js?v=roissy348';
 import {addPortalDoors,createOakFinish} from '../wohnzimmer/portal-doors-v2.js';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
-import {addRoissyPortal} from './portal-doors-v321.js?v=roissy347';
-import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy347';
+import {addRoissyPortal} from './portal-doors-v321.js?v=roissy348';
+import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy348';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_V345_GRAND_ESCALIER';scene.add(root);
