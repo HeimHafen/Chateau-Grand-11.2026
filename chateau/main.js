@@ -1,14 +1,13 @@
-import {setupModelImport} from './model-import-v348.js?v=roissy349';
+import {setupModelImport} from './model-import-v348.js?v=roissy350';
 import * as THREE from '../vendor/three/build/three.module.js';
-import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js?v=roissy349';
+import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js?v=roissy350';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from './daylight-v342.js';
 import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {loadGardenMaple} from '../wohnzimmer/garden-maple.js';
-import {installStairReflection} from './stair-reflection-v344.js?v=roissy349';
-import {buildChateau} from './architecture.js?v=roissy349';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy349';
-import {planSectionY} from './roissy-config.js?v=roissy349';
+import {buildChateau} from './architecture.js?v=roissy350';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy350';
+import {planSectionY} from './roissy-config.js?v=roissy350';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -20,7 +19,7 @@ let renderer,scene,camera,orbit={theta:.43,phi:.52,d:100,target:new THREE.Vector
 let player={x:0,y:EYE_Y,footY:0,z:31,yaw:0,pitch:0};
 let walkTouch=null,lookTouch=null,forward=0,strafe=0,lookPointer=null;
 let last=0;
-let atmospheric,stairReflection;
+let atmospheric;
 let floorChoice=null, activeWalkingFloor=null, historicalChateau=null, clippedMode=false;
 let lastLocation='';
 let sceneDoors=[],portalDoors=new Set(),shadowDirty=true,lastShadowRefresh=-Infinity;
@@ -74,7 +73,6 @@ async function run(){
   const chateau=buildChateau(THREE,scene,null,mats,glass);
   historicalChateau=chateau;
   sceneDoors=[...chateau.entranceDoors,...chateau.interiorDoors];portalDoors=new Set(chateau.entranceDoors);
-  if(new URLSearchParams(location.search).get('reflect')!=='0')stairReflection=installStairReflection(THREE,renderer,scene,chateau.front,mobile);
   // A low-intensity filtered environment provides believable reflection on oak,
   // honed stone and metal without adding a screen-space reflection pass.
   new THREE.TextureLoader().load('./assets/glass/v342_daylight_env.jpg',t=>{t.colorSpace=THREE.SRGBColorSpace;t.mapping=THREE.EquirectangularReflectionMapping;scene.environment=t;scene.environmentIntensity=.40;},undefined,()=>{});
@@ -94,8 +92,8 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.49',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.49';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.50',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.50';
   window.__CHATEAU_MAXGAME.importedFurniture=setupModelImport(THREE,chateau,scene,renderer);
   resize();view('angle');
   status.textContent='Architektur aufgebaut. Materialien und Texturen werden geladen …';
@@ -105,7 +103,7 @@ async function run(){
   status.textContent=missingAssets.length?`${missingAssets.length} Ressource(n) nicht geladen. Rundgang mit verfügbaren Materialien möglich.`:loaded?'54 × 28,85 m · EG und 1. OG · Eingang und Haupttreppe begehbar.':'Rundgang bereit · einige Texturen laden möglicherweise noch.';
   THREE.DefaultLoadingManager.onLoad=()=>{markShadowDirty();};
   window.__CHATEAU_MAXGAME.missingAssets=missingAssets;
-  window.__CHATEAU_MAXGAME.renderDiagnostics=()=>({pixelRatio:renderer.getPixelRatio(),qualityMode,qualityScale,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,textures:renderer.info.memory.textures});
+  window.__CHATEAU_MAXGAME.renderDiagnostics=()=>({pixelRatio:renderer.getPixelRatio(),qualityMode,qualityScale,reflectionMode:'physical-material-only',cameraNear:camera.near,cameraFar:camera.far,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,textures:renderer.info.memory.textures});
   start.addEventListener('click',()=>{splash.hidden=true;renderer.shadowMap.needsUpdate=true;setWalk();}, {once:true});
   initialized=true;scheduleFrame();
 }
@@ -203,7 +201,7 @@ function showWalkLocation(){
   if(!ui)return;
   if(mode!=='walk'){ui.hidden=true;return;}
   const label=describePlace(player.x,player.z,player.footY,historicalChateau);
-  if(label!==lastLocation){lastLocation=label;ui.textContent=label;}
+  if(label!==lastLocation){lastLocation=label;ui.textContent=label;hint.textContent=player.footY>=EG_Y-.14?'Links ziehen: gehen · rechts umsehen · Türen öffnen automatisch':'Links ziehen: gehen · rechts umsehen · Treppen und Türen begehbar';}
   ui.hidden=false;
 }
 for(const b of document.querySelectorAll('[data-view]'))b.addEventListener('click',()=>view(b.dataset.view));
@@ -227,7 +225,7 @@ canvas.addEventListener('pointermove',e=>{
     if(activePointers.size===1){orbit.theta-=dx*.0065;orbit.phi=THREE.MathUtils.clamp(orbit.phi+dy*.0055,-.09,1.34);}
     else if(activePointers.size===2){const pair=[...activePointers.values()];const dist=Math.hypot(pair[0].x-pair[1].x,pair[0].y-pair[1].y);if(window.__pinchDist){orbit.d=THREE.MathUtils.clamp(orbit.d*window.__pinchDist/Math.max(1,dist),30,650);}window.__pinchDist=dist;}
   }else{
-    if(e.pointerId===walkTouch){const vx=e.clientX-p.startX,vy=e.clientY-p.startY;strafe=THREE.MathUtils.clamp(vx/55,-1,1);forward=THREE.MathUtils.clamp(-vy/55,-1,1);const knob=document.getElementById('stickKnob');if(knob)knob.style.transform=`translate(${strafe*26}px, ${-forward*26}px)`;}
+    if(e.pointerId===walkTouch){const vx=e.clientX-p.startX,vy=e.clientY-p.startY;const len=Math.hypot(vx,vy),strength=THREE.MathUtils.clamp((len-6)/49,0,1);strafe=len?vx/len*strength:0;forward=len?-vy/len*strength:0;const knob=document.getElementById('stickKnob');if(knob)knob.style.transform=`translate(${strafe*26}px, ${-forward*26}px)`;}
     else if(e.pointerId===lookTouch||e.pointerType==='mouse'){player.yaw-=dx*.005;player.pitch=THREE.MathUtils.clamp(player.pitch-dy*.004,-1.25,1.25);}
   }
 });
@@ -244,9 +242,10 @@ function resize(){const w=innerWidth,h=innerHeight;renderer.setPixelRatio(pixelR
 addEventListener('resize',()=>{if(renderer)resize();});
 function frame(ms){
   frameHandle=0;if(contextLost||document.hidden)return;
-  const elapsed=last?ms-last:16.67;const dt=Math.min(.050,elapsed/1000);last=ms;monitorQuality(ms,elapsed);
-  const near=mode==='orbit'?Math.max(.5,orbit.d*.014):.24;
-  if(Math.abs(camera.near-near)>.001){camera.near=near;camera.updateProjectionMatrix();}
+  const elapsed=last?ms-last:16.67;const dt=Math.max(0,Math.min(.050,elapsed/1000));last=ms;monitorQuality(ms,elapsed);
+  const near=mode==='orbit'?Math.max(.5,orbit.d*.014):.16;
+  const far=mode==='orbit'?850:240;
+  if(Math.abs(camera.near-near)>.001||camera.far!==far){camera.near=near;camera.far=far;camera.updateProjectionMatrix();}
   if(mode==='orbit'){
     const p=orbit.phi,t=orbit.theta;
     const cp=Math.cos(p);camera.position.set(orbit.target.x+Math.sin(t)*orbit.d*cp,orbit.target.y+Math.sin(p)*orbit.d,orbit.target.z+Math.cos(t)*orbit.d*cp);
@@ -256,17 +255,21 @@ function frame(ms){
     let f=forward+(keys.has('w')||keys.has('arrowup')?1:0)-(keys.has('s')||keys.has('arrowdown')?1:0);
     let st=strafe+(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0);
     let mag=Math.max(1,Math.hypot(f,st));f/=mag;st/=mag;
-    const speed=dt*6.1;
+    const speed=dt*(activeWalkingFloor?2.75:4.2);
     const dx=(-Math.sin(player.yaw)*f+Math.cos(player.yaw)*st)*speed;
     const dz=(-Math.cos(player.yaw)*f-Math.sin(player.yaw)*st)*speed;
     // Real staircase heights (7 outside steps + 36 risers in two U-shaped flights),
     // real masonry collision and genuine oak doors. Never teleport on a threshold.
     const doors=sceneDoors;
     for(const d of doors)if(d.door.update(dt,player.x,player.z,player.footY)&&portalDoors.has(d))markShadowDirty();
-    let candidate=candidateStep(player,player.x+dx,player.z,historicalChateau,doors);
-    if(candidate){player.x=candidate.x;player.footY=candidate.footY;}
-    candidate=candidateStep(player,player.x,player.z+dz,historicalChateau,doors);
-    if(candidate){player.z=candidate.z;player.footY=candidate.footY;}
+    // Bound each collision query to a short step, even during a slow frame.
+    const substeps=Math.max(1,Math.ceil(Math.hypot(dx,dz)/.055));
+    for(let i=0;i<substeps;i++){
+      let candidate=candidateStep(player,player.x+dx/substeps,player.z,historicalChateau,doors);
+      if(candidate){player.x=candidate.x;player.footY=candidate.footY;}
+      candidate=candidateStep(player,player.x,player.z+dz/substeps,historicalChateau,doors);
+      if(candidate){player.z=candidate.z;player.footY=candidate.footY;}
+    }
     // Keep the eye-height human-sized; damp out the discrete stair risers.
     player.y=THREE.MathUtils.damp(player.y,player.footY+EYE_Y,11,dt);
     player.x=THREE.MathUtils.clamp(player.x,-85,85);
@@ -278,8 +281,6 @@ function frame(ms){
   }
   atmospheric.update();
   if(shadowDirty&&!clippedMode&&ms-lastShadowRefresh>(mobile?140:85)){renderer.shadowMap.needsUpdate=true;shadowDirty=false;lastShadowRefresh=ms;}
-  // Main scene owns the shadow refresh; reflection must not consume it first.
-  stairReflection?.update(camera,mode==='walk'&&!clippedMode&&qualityScale>=.75,ms);
   renderer.render(scene,camera);scheduleFrame();
 }
 run().catch(error=>{console.error(error);status.textContent='3D-Startfehler: '+(error.message||'Unbekannter Fehler');start.disabled=true;start.textContent='3D konnte nicht starten';});

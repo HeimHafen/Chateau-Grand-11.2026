@@ -1,17 +1,17 @@
-import {installFurnishings} from './furnishings-v346.js?v=roissy349';
+import {installFurnishings} from './furnishings-v346.js?v=roissy350';
 /**
  * CHÂTEAU GRAND V3.46 – Historische Hof- und Parkfassade mit verfeinerten Raumboeden.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy349';
-import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy349';
-import {resolveStaticFaces} from './surface-cleanup.js?v=roissy349';
+import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy350';
+import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy350';
+import {resolveStaticFaces} from './surface-cleanup.js?v=roissy350';
 import {addPortalDoors,createOakFinish} from '../wohnzimmer/portal-doors-v2.js';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
-import {addRoissyPortal} from './portal-doors-v321.js?v=roissy349';
-import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy349';
+import {addRoissyPortal} from './portal-doors-v321.js?v=roissy350';
+import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy350';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_V345_GRAND_ESCALIER';scene.add(root);
@@ -580,7 +580,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    name:'Roissy_Vestibule_Kalkstein_Matt_Geschliffen',
    map:floorTexture('albedo',true),normalMap:floorTexture('normal'),
    roughnessMap:floorTexture('roughness'),roughness:.65,metalness:0,
-   normalScale:new THREE.Vector2(.22,.22),color:0xf5efe6,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2
+   normalScale:new THREE.Vector2(.22,.22),color:0xf5efe6,polygonOffset:false
  });
  const hallLeft=FRONT_X_CUTS[3]+.155,hallRight=FRONT_X_CUTS[4]-.155;
  const hallBack=CROSS_WALL_Z+.155,hallFront=HALF_D-.23;
@@ -658,8 +658,8 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=16;
    if(color)t.colorSpace=THREE.SRGBColorSpace;return t;
  };
- const parquetBase={map:parquetTex('albedo',true),normalMap:parquetTex('normal'),roughnessMap:parquetTex('roughness'),polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2};
- const plankBase={map:oakTex('v342_oak_albedo',true),normalMap:oakTex('v342_oak_normal'),roughnessMap:oakTex('v342_oak_roughness'),polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2};
+ const parquetBase={map:parquetTex('albedo',true),normalMap:parquetTex('normal'),roughnessMap:parquetTex('roughness'),polygonOffset:false};
+ const plankBase={map:oakTex('v342_oak_albedo',true),normalMap:oakTex('v342_oak_normal'),roughnessMap:oakTex('v342_oak_roughness'),polygonOffset:false};
  const salonParquet=new THREE.MeshPhysicalMaterial({name:'Roissy_Parquet_Salon_V332',color:0xfff5e7,roughness:.46,clearcoat:.14,clearcoatRoughness:.40,reflectivity:.20,normalScale:new THREE.Vector2(.20,.20),...parquetBase});
  const diningParquet=salonParquet.clone();diningParquet.name='Roissy_Parquet_SalleAManger_V332';diningParquet.color.setHex(0xf8eedf);diningParquet.roughness=.49;diningParquet.clearcoat=.12;
  const cabinetParquet=salonParquet.clone();cabinetParquet.name='Roissy_Parquet_Cabinets_V332';cabinetParquet.color.setHex(0xf4e6d4);cabinetParquet.roughness=.52;cabinetParquet.clearcoat=.10;cabinetParquet.clearcoatRoughness=.47;
@@ -670,8 +670,8 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  const stairStone=vestibulePBR.clone();stairStone.name='Roissy_Kalkstein_GrandEscalier_V332';stairStone.color.setHex(0xf5ead6);stairStone.roughness=.43;stairStone.normalScale=new THREE.Vector2(.12,.12);stairStone.envMapIntensity=.78;
  // Reference: honed ivory marble, octagonal slabs with dark corner inserts.
  const polishedMaps=mapsFor('interior/v344_marble');
- Object.assign(stairStone,polishedMaps);stairStone.name='Roissy_Marmor_Oktagon_V344';stairStone.color.setHex(0xfffaf0);stairStone.roughness=.28;stairStone.normalScale.set(.15,.15);stairStone.envMapIntensity=1.05;
- const stairBorder=stairStone.clone();Object.assign(stairBorder,mapsFor('interior/v344_marble_border'));stairBorder.name='Roissy_Marmor_Dunkler_Randfries_V344';stairBorder.roughness=.32;
+ Object.assign(stairStone,polishedMaps);stairStone.name='Roissy_Marmor_Oktagon_V344';stairStone.color.setHex(0xfffaf0);stairStone.roughness=.39;stairStone.normalScale.set(.15,.15);stairStone.envMapIntensity=.70;
+ const stairBorder=stairStone.clone();Object.assign(stairBorder,mapsFor('interior/v344_marble_border'));stairBorder.name='Roissy_Marmor_Dunkler_Randfries_V344';stairBorder.roughness=.42;
  const borderFormal=privateOak.clone();borderFormal.name='Roissy_Randfries_Formal_V332';borderFormal.color.setHex(0xbb9972);borderFormal.roughness=.58; borderFormal.clearcoat=.05;
  const borderPrivate=privateOak.clone();borderPrivate.name='Roissy_Randfries_Privat_V332';borderPrivate.color.setHex(0xb08b64);borderPrivate.roughness=.61; borderPrivate.clearcoat=.04;
  const borderPassage=privateOak.clone();borderPassage.name='Roissy_Randfries_Passage_V332';borderPassage.color.setHex(0xc3a37b);borderPassage.roughness=.60; borderPassage.clearcoat=.04;

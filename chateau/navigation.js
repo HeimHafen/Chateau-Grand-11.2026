@@ -1,5 +1,5 @@
 /** Château Grand V3.4 – walkable ground floor and Premier Étage, shared plan metres. */
-import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR,PERRON,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy349';
+import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR,PERRON,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy350';
 export const EG_Y=EG,OG_Y=OG,EYE_Y=1.69;
 export const WALK_RADIUS=.30;
 const H=(OG-EG)*.5;
@@ -82,6 +82,8 @@ export function candidateStep(from,x,z,arch,doors=[]){
   const foot=surfaceHeight(x,z,from.footY);
   if(foot-from.footY>.37||from.footY-foot>.75)return null;
   if(collidesAt(x,z,foot,arch,doors))return null;
+  const middle=(EG+OG)/2,backZ=S.landing.z-S.landing.depth/2+.12;
+  if(Math.abs(foot-middle)<.38&&Math.abs(x-S.landing.x)<S.landing.width/2+.15&&Math.abs(z-backZ)<WALK_RADIUS+.06)return null;
   // Prevent sideways escape through the actual inner and outer stair rails.
   const rise=(OG-EG)/(2*STEPS);
   for(const [f,offset] of [[S.first,0],[S.second,STEPS]]){
