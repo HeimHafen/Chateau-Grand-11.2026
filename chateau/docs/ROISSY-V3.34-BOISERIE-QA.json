@@ -1,0 +1,17 @@
+{
+  "formalPanels": 80,
+  "dadoPanels": 80,
+  "reliefs": 80,
+  "rooms": [
+    "Cabinet de musique",
+    "Salon",
+    "Vide sur le Salon du Rez-de-Chaussée",
+    "Chambre de parade",
+    "Grand Cabinet d’Assemblée",
+    "Salle à manger"
+  ],
+  "reliefVertices": 270720,
+  "doorChecks": 5732496,
+  "doorways": 43,
+  "overlap": 0
+}
