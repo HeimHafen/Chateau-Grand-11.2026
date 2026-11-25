@@ -1,16 +1,17 @@
+import {installFurnishings} from './furnishings-v346.js?v=roissy346';
 /**
- * CHÂTEAU GRAND V3.45 – Historische Hof- und Parkfassade mit verfeinerten Raumboeden.
+ * CHÂTEAU GRAND V3.46 – Historische Hof- und Parkfassade mit verfeinerten Raumboeden.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy345';
-import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy345';
-import {resolveStaticFaces} from './surface-cleanup.js?v=roissy345';
+import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy346';
+import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy346';
+import {resolveStaticFaces} from './surface-cleanup.js?v=roissy346';
 import {addPortalDoors,createOakFinish} from '../wohnzimmer/portal-doors-v2.js';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
-import {addRoissyPortal} from './portal-doors-v321.js?v=roissy345';
-import {PLAN,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy345';
+import {addRoissyPortal} from './portal-doors-v321.js?v=roissy346';
+import {PLAN,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy346';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_V345_GRAND_ESCALIER';scene.add(root);
@@ -214,7 +215,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    const a=p+(exteriorEdge(p)?.45:.22),b=q-(exteriorEdge(q)?.45:.22),w=b-a,c=(a+b)/2;
    if(w<.17)return;
    const top=high-.31;
-   // V3.45: the continuous soffit cornice is generated once after all walls.
+   // V3.46: the continuous soffit cornice is generated once after all walls.
    // Do not install disconnected decorative bars at each window/door segment.
    if(service||w<.70)return;
    const n=Math.max(1,Math.round(w/2.2)),bay=w/n;
@@ -1161,7 +1162,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      innerWall(f,'x',divider.z,snap(divider.from),snap(divider.to),[divider.door],widerWestUpperAntechamber?1.80:divider.width);
    }
  }
- // V3.45: wall-axis finish atlas. All cells terminate at actual masonry centre
+ // V3.46: wall-axis finish atlas. All cells terminate at actual masonry centre
  // lines (including doorways); the old independently inset room rectangles no
  // longer leave exposed stone strips. No changes to walls or walk collision.
  function buildFinishAtlas(f){
@@ -1267,7 +1268,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    o.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),v.normalize());
    return o;
  }
- // V3.45: solid, continuous stair core with a stepped top and planar soffit.
+ // V3.46: solid, continuous stair core with a stepped top and planar soffit.
  // A true extruded profile prevents gaps between the stone treads and underside.
  function solidFlightCore(cfg,offset){
    const dz=cfg.length/RUN,base=EG+offset*rise;
@@ -1753,6 +1754,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  for(let i=0;i<24;i++){const a=i*Math.PI/12,g=new THREE.SphereGeometry(1,14,8);g.scale(.045,.025,.15);g.rotateY(a);g.translate(gx+Math.sin(a)*.45,galleryUpper-.039,gz+Math.cos(a)*.45);mesh(g,'intStucRelief','Roissy_Galerie_Rosettenblatt',layers.eg);}
  const referenceFixtures=installReferenceFixtures(THREE,root,layers,S,EG,OG,CORNICE,interiorAudit.roomFinishAssignments);
  interiorAudit.fixtureCount=referenceFixtures.count;interiorAudit.referenceFixtures=referenceFixtures;
+ interiorAudit.furnishings=installFurnishings(THREE,layers,EG,OG,collisionWalls);
  // Instanced stone geometry: one draw call per material and floor layer.
  const surfaceCleanup=resolveStaticFaces(THREE,batch,cast);
  const dummy=new THREE.Object3D();let renderBatches=0;

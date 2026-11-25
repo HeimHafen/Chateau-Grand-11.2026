@@ -1,5 +1,5 @@
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
-// V3.45: French gilt bronze and cut crystal; shared static meshes, real mount axes.
+// V3.46: French gilt bronze and cut crystal; shared static meshes, real mount axes.
 export function installReferenceFixtures(T,root,layers,stair,EG,OG,CORNICE,wallAssignments){
  const brass=new T.MeshStandardMaterial({name:'Roissy_V345_Ormolu',color:0xc39a50,metalness:.78,roughness:.27});
  const darkBrass=new T.MeshStandardMaterial({name:'Roissy_V345_Patine',color:0x79552a,metalness:.75,roughness:.37});
