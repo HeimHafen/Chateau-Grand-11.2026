@@ -38,15 +38,15 @@ export function installFurnishings(T,layers,EG,OG,collisionWalls){
  for(const s of [-1,1]){k.box(gilt,s*(w/2+.037),0,.036,.065,h+.12,.057);k.box(gilt,0,s*(h/2+.037),.036,w,.065,.057);k.box(shade,s*(w/2+.009),0,.067,.012,h,.012);k.box(shade,0,s*(h/2+.009),.067,w,.012,.012);for(let i=0;i<8;i++){const t=(i+.5)/8-.5;k.ball(gilt,s*(w/2+.038),t*h,.067,.022,.038,.012);k.ball(gilt,t*w,s*(h/2+.038),.067,.038,.022,.012);}scroll(k,s*.075,h/2+.115,.037,s);}k.ball(gilt,0,h/2+.10,.037,.049,.055,.023);},false);}
  function urn(name,f,x,z,base,flowers=true){build(name,f,x,z,0,base,k=>{k.box(stone,0,.045,0,.43,.09,.43);k.box(stone,0,.28,0,.33,.40,.33);k.box(stone,0,.49,0,.44,.09,.44);k.lathe(stone,0,.535,0,[[.14,0],[.16,.035],[.10,.10],[.20,.19],[.26,.31],[.27,.40],[.25,.44],[.20,.44]]);for(let i=0;i<16;i++){const a=i*2*Math.PI/16;k.tube(stone,[[Math.cos(a)*.12,.65,Math.sin(a)*.12],[Math.cos(a)*.21,.77,Math.sin(a)*.21],[Math.cos(a)*.255,.88,Math.sin(a)*.255]],.013);}if(flowers)bouquet(k,0,.96,0,.34,.39);});}
  // Rear antechamber: historically separate from the two-flight stair, but open to it.
- sofa(-9.96,-10.40);sideTable('Beistelltisch_West',-11.66,-10.50);sideTable('Beistelltisch_Ost',-8.26,-10.50);
- console('Konsole_West',-12.64,-8.86,Math.PI/2,1.30,.43);console('Konsole_Ost',-7.27,-8.83,-Math.PI/2,1.34,.45,'lamp');
- bench(-12.57,-3.93,Math.PI/2);urn('Pflanzvase_EG','eg',-7.38,-3.62,EG+.010);console('Konsole_Treppenantritt',-10.15,10.86,Math.PI,.84,.32);
+ sofa(-13.25,-10.40);sideTable('Beistelltisch_West',-14.95,-10.50);sideTable('Beistelltisch_Ost',-11.55,-10.50);
+ console('Konsole_West',-17.05,3.0,Math.PI/2,1.30,.43);console('Konsole_Ost',-7.27,-8.85,-Math.PI/2,1.34,.45,'lamp');
+ bench(-7.27,-3.7,-Math.PI/2);urn('Pflanzvase_EG','eg',-13.85,8.4,EG+.010);console('Konsole_Treppenantritt',-10.15,10.86,Math.PI,.84,.32);
  const art1=mat('V346_Landschaft_1',0xffffff,.87,0,{map:tex('landscape_1')}),art2=mat('V346_Landschaft_2',0xffffff,.87,0,{map:tex('landscape_2')});
- frame('Landschaft_Nord','eg',-10.20,-11.22,0,EG+2.26,.86,1.20,art1);frame('Landschaft_Ost','eg',-6.94,-8.85,-Math.PI/2,EG+2.16,1.12,.85,art2);frame('Goldspiegel_West','eg',-12.94,-8.86,Math.PI/2,EG+2.28,.86,1.52,mirror);
- urn('Pflanzvase_Galerie','og',-12.42,10.68,OG+.010);
+ frame('Landschaft_Nord','eg',-13.25,-11.22,0,EG+2.26,.86,1.20,art1);frame('Landschaft_Ost','eg',-6.94,-8.85,-Math.PI/2,EG+2.16,1.12,.85,art2);frame('Goldspiegel_West','eg',-17.38,3.0,Math.PI/2,EG+2.28,.86,1.52,mirror);
+ urn('Pflanzvase_Galerie','og',-16.45,10.68,OG+.010);
  // Sculpted classical bust on plinth, stylised original geometry rather than a scan.
  build('Buestenpostament','og',-7.40,-10.43,0,OG+.010,k=>{k.box(stone,0,.06,0,.40,.12,.40);k.box(stone,0,.43,0,.29,.64,.29);k.box(stone,0,.80,0,.39,.10,.39);k.lathe(stone,0,.85,0,[[.12,0],[.13,.04],[.07,.09],[.10,.14]]);k.ball(stone,0,1.10,0,.19,.19,.105);k.ball(stone,0,1.31,.01,.075,.11,.07);k.ball(stone,0,1.47,0,.10,.14,.095);k.ball(stone,0,1.46,.091,.026,.039,.035);for(let i=0;i<18;i++){const a=i*2.399;k.ball(stone,.078*Math.cos(a),1.53+.04*Math.sin(i),.066*Math.sin(a),.027,.030,.027);}});
  // Rug is a genuine low-profile 3D surface with woven material and bound edge, not a backdrop.
- const rugMat=mat('V346_Savonnerie_Wollteppich',0xffffff,.96,0,{map:tex('savonnerie')});build('Savonnerie_Teppich','eg',-9.95,-6.55,0,EG+.012,k=>{k.box(rugMat,0,.006,0,3.25,.012,4.10);for(const s of [-1,1]){k.box(welt,s*1.629,.006,0,.012,.014,4.10);k.box(welt,0,.006,s*2.054,3.25,.014,.012);for(let i=0;i<82;i++){const x=-1.60+i*3.20/81;k.tube(welt,[[x,.008,s*2.055],[x+.006,.005,s*2.075],[x+.003,.003,s*2.096]],.003);}}},false);
+ const rugMat=mat('V346_Savonnerie_Wollteppich',0xffffff,.96,0,{map:tex('savonnerie')});build('Savonnerie_Teppich','eg',-14.85,4.0,0,EG+.012,k=>{k.box(rugMat,0,.006,0,3.25,.012,4.10);for(const s of [-1,1]){k.box(welt,s*1.629,.006,0,.012,.014,4.10);k.box(welt,0,.006,s*2.054,3.25,.014,.012);for(let i=0;i<82;i++){const x=-1.60+i*3.20/81;k.tube(welt,[[x,.008,s*2.055],[x+.006,.005,s*2.075],[x+.003,.003,s*2.096]],.003);}}},false);
  return {entries,lights,totalTriangles};
 }

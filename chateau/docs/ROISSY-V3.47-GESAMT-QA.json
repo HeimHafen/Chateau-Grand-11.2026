@@ -1,0 +1,638 @@
+{
+  "roomRays": [
+    {
+      "floor": "eg",
+      "name": "Cabinet",
+      "x": -24.155,
+      "z": -6.708,
+      "samples": 25,
+      "minHead": 5.456500000000001,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Chambre à coucher",
+      "x": -19.552749999999996,
+      "z": -6.708,
+      "samples": 25,
+      "minHead": 5.456500000000001,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Antichambre",
+      "x": -12.223999999999998,
+      "z": -6.708,
+      "samples": 25,
+      "minHead": 5.4485,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Salon",
+      "x": 0,
+      "z": -6.708,
+      "samples": 25,
+      "minHead": 10.879,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Antichambre",
+      "x": 9.643,
+      "z": -6.708,
+      "samples": 25,
+      "minHead": 5.456500000000001,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Chambre de parade",
+      "x": 16.489,
+      "z": -6.708,
+      "samples": 25,
+      "minHead": 5.454000000000001,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Grand Cabinet d’Assemblée",
+      "x": 23.625,
+      "z": -3.313,
+      "samples": 25,
+      "minHead": 5.454000000000001,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Garde-robe",
+      "x": -24.421,
+      "z": -0.274,
+      "samples": 25,
+      "minHead": 5.456500000000001,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Logement du concierge",
+      "x": -24.421,
+      "z": 3.45,
+      "samples": 25,
+      "minHead": 5.456500000000001,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Conciergerie",
+      "x": -24.421,
+      "z": 8.214,
+      "samples": 25,
+      "minHead": 5.456500000000001,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Lingerie",
+      "x": -19.80575,
+      "z": 1.205,
+      "samples": 25,
+      "minHead": 5.456500000000001,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Passage",
+      "x": -19.80575,
+      "z": 7.831,
+      "samples": 25,
+      "minHead": 5.456500000000001,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Grand escalier",
+      "x": -12.224,
+      "z": 4.49,
+      "samples": 14,
+      "minHead": 3.301333333333333,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Vestibule",
+      "x": 0,
+      "z": 4.49,
+      "samples": 21,
+      "minHead": 5.1,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Salle à manger",
+      "x": 10.366,
+      "z": 4.49,
+      "samples": 25,
+      "minHead": 5.454000000000001,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Escalier secondaire",
+      "x": 17.213,
+      "z": -0.383,
+      "samples": 25,
+      "minHead": 5.472,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Antichambre",
+      "x": 17.213,
+      "z": 6.243,
+      "samples": 25,
+      "minHead": 5.456500000000001,
+      "failures": []
+    },
+    {
+      "floor": "eg",
+      "name": "Cabinet de musique",
+      "x": 23.625,
+      "z": 7.858,
+      "samples": 25,
+      "minHead": 5.454000000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Chambre à coucher (aile ouest)",
+      "x": -24.41425,
+      "z": -7.53,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Chambre à coucher",
+      "x": -19.811999999999998,
+      "z": -6.708,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Antichambre",
+      "x": -12.223999999999998,
+      "z": -6.708,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Antichambre commune",
+      "x": 10.366,
+      "z": -6.708,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Chambre à coucher",
+      "x": 17.213,
+      "z": -6.708,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Cabinet (aile est)",
+      "x": 23.625,
+      "z": -9.063,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Garde-robe (aile est)",
+      "x": 23.625,
+      "z": -4.545,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Antichambre (aile ouest)",
+      "x": -24.421,
+      "z": -2.245,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Cabinet (aile ouest)",
+      "x": -24.421,
+      "z": 1.095,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Chambre à coucher (aile ouest)",
+      "x": -24.421,
+      "z": 6.982,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Chambre à coucher (escalier ouest)",
+      "x": -19.80575,
+      "z": 4.49,
+      "samples": 25,
+      "minHead": 5.196999999999998,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Grand escalier",
+      "x": -12.224,
+      "z": 4.49,
+      "samples": 1,
+      "minHead": 5.196999999999998,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Vestibule / galerie",
+      "x": 0,
+      "z": 4.49,
+      "samples": 21,
+      "minHead": 4.825000000000002,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Garde-robe",
+      "x": 10.366,
+      "z": 0.082,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Chambre à coucher",
+      "x": 10.366,
+      "z": 6.708,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Passage",
+      "x": 17.213,
+      "z": -0.082,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Garde-robe",
+      "x": 17.213,
+      "z": 3.532,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Cabinet",
+      "x": 17.213,
+      "z": 8.105,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Chambre à coucher (aile est)",
+      "x": 23.625,
+      "z": 1.287,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    },
+    {
+      "floor": "og",
+      "name": "Cabinet (aile est, sud)",
+      "x": 23.625,
+      "z": 7.913,
+      "samples": 25,
+      "minHead": 5.181500000000001,
+      "failures": []
+    }
+  ],
+  "meshes": 1024,
+  "invalid": 0,
+  "floorRects": 86,
+  "floorOverlap": 0,
+  "hallOverlap": 0,
+  "voidIntrusions": 0,
+  "reachable": {
+    "eg": {
+      "reachableCells": 100684,
+      "rooms": [
+        {
+          "name": "Cabinet",
+          "x": -24.155,
+          "z": -6.708,
+          "free": 3652,
+          "connected": 3652
+        },
+        {
+          "name": "Chambre à coucher",
+          "x": -19.552749999999996,
+          "z": -6.708,
+          "free": 2370,
+          "connected": 2370
+        },
+        {
+          "name": "Antichambre",
+          "x": -12.223999999999998,
+          "z": -6.708,
+          "free": 7374,
+          "connected": 7374
+        },
+        {
+          "name": "Salon",
+          "x": 0,
+          "z": -6.708,
+          "free": 10139,
+          "connected": 10139
+        },
+        {
+          "name": "Antichambre",
+          "x": 9.643,
+          "z": -6.708,
+          "free": 3902,
+          "connected": 3902
+        },
+        {
+          "name": "Chambre de parade",
+          "x": 16.489,
+          "z": -6.708,
+          "free": 5603,
+          "connected": 5603
+        },
+        {
+          "name": "Grand Cabinet d’Assemblée",
+          "x": 23.625,
+          "z": -3.313,
+          "free": 7762,
+          "connected": 7762
+        },
+        {
+          "name": "Garde-robe",
+          "x": -24.421,
+          "z": -0.274,
+          "free": 1120,
+          "connected": 1120
+        },
+        {
+          "name": "Logement du concierge",
+          "x": -24.421,
+          "z": 3.45,
+          "free": 1120,
+          "connected": 1120
+        },
+        {
+          "name": "Conciergerie",
+          "x": -24.421,
+          "z": 8.214,
+          "free": 1960,
+          "connected": 1960
+        },
+        {
+          "name": "Lingerie",
+          "x": -19.80575,
+          "z": 1.205,
+          "free": 1945,
+          "connected": 1945
+        },
+        {
+          "name": "Passage",
+          "x": -19.80575,
+          "z": 7.831,
+          "free": 1918,
+          "connected": 1918
+        },
+        {
+          "name": "Grand escalier",
+          "x": -12.224,
+          "z": 4.49,
+          "free": 9234,
+          "connected": 9234
+        },
+        {
+          "name": "Vestibule",
+          "x": 0,
+          "z": 4.49,
+          "free": 14605,
+          "connected": 14605
+        },
+        {
+          "name": "Salle à manger",
+          "x": 10.366,
+          "z": 4.49,
+          "free": 7763,
+          "connected": 7763
+        },
+        {
+          "name": "Escalier secondaire",
+          "x": 17.213,
+          "z": -0.383,
+          "free": 1382,
+          "connected": 1382
+        },
+        {
+          "name": "Antichambre",
+          "x": 17.213,
+          "z": 6.243,
+          "free": 4855,
+          "connected": 4855
+        },
+        {
+          "name": "Cabinet de musique",
+          "x": 23.625,
+          "z": 7.858,
+          "free": 3088,
+          "connected": 3088
+        }
+      ]
+    },
+    "og": {
+      "reachableCells": 81423,
+      "rooms": [
+        {
+          "name": "Chambre à coucher (aile ouest)",
+          "x": -24.41425,
+          "z": -7.53,
+          "free": 2566,
+          "connected": 2566
+        },
+        {
+          "name": "Chambre à coucher",
+          "x": -19.811999999999998,
+          "z": -6.708,
+          "free": 2775,
+          "connected": 2775
+        },
+        {
+          "name": "Antichambre",
+          "x": -12.223999999999998,
+          "z": -6.708,
+          "free": 7977,
+          "connected": 7977
+        },
+        {
+          "name": "Vide sur le Salon du Rez-de-Chaussée",
+          "x": 0,
+          "z": -6.708,
+          "free": 0,
+          "connected": 0
+        },
+        {
+          "name": "Antichambre commune",
+          "x": 10.366,
+          "z": -6.708,
+          "free": 5110,
+          "connected": 5110
+        },
+        {
+          "name": "Chambre à coucher",
+          "x": 17.213,
+          "z": -6.708,
+          "free": 4470,
+          "connected": 4470
+        },
+        {
+          "name": "Cabinet (aile est)",
+          "x": 23.625,
+          "z": -9.063,
+          "free": 1870,
+          "connected": 1870
+        },
+        {
+          "name": "Garde-robe (aile est)",
+          "x": 23.625,
+          "z": -4.545,
+          "free": 2098,
+          "connected": 2098
+        },
+        {
+          "name": "Antichambre (aile ouest)",
+          "x": -24.421,
+          "z": -2.245,
+          "free": 892,
+          "connected": 892
+        },
+        {
+          "name": "Cabinet (aile ouest)",
+          "x": -24.421,
+          "z": 1.095,
+          "free": 1018,
+          "connected": 1018
+        },
+        {
+          "name": "Chambre à coucher (aile ouest)",
+          "x": -24.421,
+          "z": 6.982,
+          "free": 2926,
+          "connected": 2926
+        },
+        {
+          "name": "Chambre à coucher (escalier ouest)",
+          "x": -19.80575,
+          "z": 4.49,
+          "free": 4208,
+          "connected": 4208
+        },
+        {
+          "name": "Grand escalier",
+          "x": -12.224,
+          "z": 4.49,
+          "free": 3088,
+          "connected": 3088
+        },
+        {
+          "name": "Vestibule / galerie",
+          "x": 0,
+          "z": 4.49,
+          "free": 14606,
+          "connected": 14606
+        },
+        {
+          "name": "Garde-robe",
+          "x": 10.366,
+          "z": 0.082,
+          "free": 2205,
+          "connected": 2205
+        },
+        {
+          "name": "Chambre à coucher",
+          "x": 10.366,
+          "z": 6.708,
+          "free": 4991,
+          "connected": 4991
+        },
+        {
+          "name": "Passage",
+          "x": 17.213,
+          "z": -0.082,
+          "free": 1760,
+          "connected": 1760
+        },
+        {
+          "name": "Garde-robe",
+          "x": 17.213,
+          "z": 3.532,
+          "free": 1210,
+          "connected": 1210
+        },
+        {
+          "name": "Cabinet",
+          "x": 17.213,
+          "z": 8.105,
+          "free": 2819,
+          "connected": 2819
+        },
+        {
+          "name": "Chambre à coucher (aile est)",
+          "x": 23.625,
+          "z": 1.287,
+          "free": 3245,
+          "connected": 3245
+        },
+        {
+          "name": "Cabinet (aile est, sud)",
+          "x": 23.625,
+          "z": 7.913,
+          "free": 3032,
+          "connected": 3032
+        }
+      ]
+    }
+  },
+  "roof": []
+}

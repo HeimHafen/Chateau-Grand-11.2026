@@ -40,17 +40,17 @@ export function installReferenceFixtures(T,root,layers,stair,EG,OG,CORNICE,wallA
    for(let i=0;i<upper;i++){const a=(i+.5)*2*Math.PI/upper,c=Math.cos(a),s=Math.sin(a),p=(rr,y)=>[c*r*rr,-h*y,s*r*rr];tube(brass,[p(.12,.36),p(.38,.49),p(.59,.45),p(.63,.34)],.011);wax(...p(.63,.34),.11);gem(...p(.58,.53),.025,.095);}
    gem(0,-h*.99,0,.065,.15);
  });const {bounds,triangles}=result;fixtures.push({name,x,z,ceiling,bottom:bounds.min.y,radius:r,candles:arms+upper,triangles,bounds:[bounds.min.toArray(),bounds.max.toArray()]});lights.push({name,position:[x,ceiling-h*.55,z],intensity:name.includes('UnterGalerie')?45:58,distance:6.8,color:0xffdfb3});}
- chandelier(layers.eg,'Roissy_Kristallleuchter_UnterGalerie',-11.49,9.90,OG-.2515,1.65,.78,18);
+ chandelier(layers.eg,'Roissy_Kristallleuchter_UnterGalerie',-13.25,-4.95,OG-.2515,1.65,.78,18);
  // Match the existing upper central stucco rosette exactly.
- chandelier(layers.og,'Roissy_Kristallleuchter_GrandEscalier',(-12.65-7.20)/2,(-1.60+8.20)/2,CORNICE-.283-.045,1.72,.84,20);
+ chandelier(layers.og,'Roissy_Kristallleuchter_GrandEscalier',(-15.00-7.20)/2,(-1.60+8.20)/2,CORNICE-.283-.045,1.72,.84,20);
  // Explicitly selected full-height wall fields, not the first four arbitrary matches.
  const sites=[
   {f:'eg',axis:'x',fixed:11.5,at:-10.2,y:EG+2.82},
-  {f:'eg',axis:'z',fixed:-13.2102,at:7.9,y:EG+2.92},
+  {f:'eg',axis:'z',fixed:-17.65,at:7.9,y:EG+2.92},
   {f:'eg',axis:'z',fixed:-6.75,at:3.25,y:EG+2.72},
   {f:'eg',axis:'z',fixed:-6.75,at:9.87,y:EG+2.82},
   {f:'og',axis:'x',fixed:11.5,at:-10.2,y:OG+2.64},
-  {f:'og',axis:'z',fixed:-13.2102,at:7.90,y:OG+2.66},
+  {f:'og',axis:'z',fixed:-17.65,at:7.90,y:OG+2.66},
   {f:'og',axis:'z',fixed:-6.75,at:7.40,y:OG+2.66}
  ];
  for(const site of sites){const w=wallAssignments.find(w=>w.floor===site.f&&w.room==='Grand escalier'&&w.axis===site.axis&&Math.abs(w.fixed-site.fixed)<.001&&w.from+.32<site.at&&w.to-.32>site.at&&w.low<site.y-.43&&w.high>site.y+.46);if(!w)throw Error('no solid wall for sconce '+JSON.stringify(site));

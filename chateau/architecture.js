@@ -1,17 +1,17 @@
-import {installFurnishings} from './furnishings-v346.js?v=roissy346';
+import {installFurnishings} from './furnishings-v346.js?v=roissy347';
 /**
  * CHÂTEAU GRAND V3.46 – Historische Hof- und Parkfassade mit verfeinerten Raumboeden.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy346';
-import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy346';
-import {resolveStaticFaces} from './surface-cleanup.js?v=roissy346';
+import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy347';
+import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy347';
+import {resolveStaticFaces} from './surface-cleanup.js?v=roissy347';
 import {addPortalDoors,createOakFinish} from '../wohnzimmer/portal-doors-v2.js';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
-import {addRoissyPortal} from './portal-doors-v321.js?v=roissy346';
-import {PLAN,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy346';
+import {addRoissyPortal} from './portal-doors-v321.js?v=roissy347';
+import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy347';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_V345_GRAND_ESCALIER';scene.add(root);
@@ -65,7 +65,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    const rooms=ROOMDATA[f];const distance=r=>Math.hypot(Math.max(0,Math.abs(x-r.x)-r.w/2),Math.max(0,Math.abs(z-r.z)-r.d/2));
    return rooms.reduce((best,r)=>distance(r)<distance(best)?r:best,rooms[0]);
  }
- function stairAntechamber(r){return r.level===0&&r.name==='Antichambre'&&r.x<-9&&r.x>-11;}
+ function stairAntechamber(r){return r.level===0&&r.name==='Antichambre'&&r.x<-9&&r.x>-15;}
  function roomType(r){const n=r.name;
    if(stairAntechamber(r)||/Vestibule|Grand escalier/.test(n))return 'hall';
    if(/Salon|parade|Assemblée|Salle à manger|musique/.test(n))return 'salon';
@@ -638,7 +638,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    }
  }
  // The Salon du Rez-de-Chaussée stays double height; the west Grand Escalier has its own void.
- const salonVoid=[-6.70,6.70,X.parkBack+.40,-2.32],stairVoid=[-13.18,-6.77,-2.10,8.70];
+ const salonVoid=[-6.70,6.70,X.parkBack+.40,-2.32],stairVoid=[-15.40,-6.77,-2.10,8.70];
  addSlab(OG-.095,[salonVoid,stairVoid]);
  // The central upper vestibule bay is genuinely open into the attic, between the four beams.
  const domeOpening=[-1.74,1.74,2.70,5.90];
@@ -890,9 +890,9 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    }
  }
  // The upper roof slab spans the stairwell: ornament only at that level.
- designedCeiling('Grand escalier','stair',[-12.65,-7.20,-1.60,8.20],CORNICE-.283,'og',slabAudit[2].rectangles);
+ designedCeiling('Grand escalier','stair',[-15.00,-7.20,-1.60,8.20],CORNICE-.283,'og',slabAudit[2].rectangles);
  // Shallow sculpted stucco rosette, centred on the existing stair ceiling oval.
- const stairCeilingY=CORNICE-.283,stairCeilingX=(-12.65-7.20)/2,stairCeilingZ=(-1.60+8.20)/2;
+ const stairCeilingY=CORNICE-.283,stairCeilingX=(-15.00-7.20)/2,stairCeilingZ=(-1.60+8.20)/2;
  const rosetteParts=[];
  function reliefPetal(a,rad,rx,rz,depth){
    const g=new THREE.SphereGeometry(1,16,8);g.scale(rx,depth,rz);g.rotateY(a);g.translate(stairCeilingX+Math.sin(a)*rad,stairCeilingY-.024,stairCeilingZ+Math.cos(a)*rad);rosetteParts.push(g.toNonIndexed());g.dispose();
@@ -1114,7 +1114,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    const rearStairEast=REAR_X_CUTS[3];
    const outerJoin=HALF_W+.075;
    // OG west Antichambre spans this axis in the room register. The extra cross-wall split it into two narrow cells.
-   innerWall(f,'x',CROSS_WALL_Z,f==='og'?FRONT_X_CUTS[1]:-outerJoin,rearStairWest,f==='og'?[-17.5]:[-24,-17.5],1.6);
+   innerWall(f,'x',CROSS_WALL_Z,f==='og'?FRONT_X_CUTS[1]:-outerJoin,rearStairWest,f==='og'?[-19.8]:[-24,-19.8],1.6);
    // The historical Grand Escalier turns within a 5.78m-wide intermediate
    // landing. It actually traverses this cross-wall axis. This large opening
    // is INTENTIONAL: closing it would make the staircase impassable. The
@@ -1141,9 +1141,9 @@ export function buildChateau(THREE,scene,donor,mats,glass){
       // not detected by the V3.7 narrower doorway-core test. Move their
       // thresholds within the same historic service-room passage, away from
       // the cross walls terminating at z=4.53 and z=4.65 respectively.
-      const groundStairDoorRemoved=f==='eg'&&Math.abs(x+13.26)<.15;
+      const groundStairDoorRemoved=f==='eg'&&Math.abs(x-STAIR_WEST)<.15;
       const groundJunctionDoor=f==='eg'&&Math.abs(x-20.46)<.15;
-      const entry=f==='og'&&Math.abs(x+13.21)<.15?9.68:
+      const entry=f==='og'&&Math.abs(x-STAIR_WEST)<.15?9.68:
         f==='og'&&Math.abs(x+6.72)<.15?9.27:
         (westServiceDoor||eastUpperDoor)?7.30:
         groundJunctionDoor?5.75:f==='og'&&Math.abs(x-13.9825)<.01?6.30:5.30;
@@ -1538,7 +1538,18 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  guardEdge(stairVoid[0]+.10,S.upperLanding.x-S.upperLanding.width/2,stairVoid[3]+.10);
  // At the garden end, a real guard protects the opening above the mid-landing.
  guardEdge(stairVoid[0]+.10,stairVoid[1]-.10,stairVoid[2]-.12);
- stairAudit.handrails+=2;
+ // New longitudinal west gallery edge, above the enlarged double-height volume.
+ const wx=stairVoid[0]-.10,wz0=stairVoid[2]-.12,wz1=stairVoid[3]+.10;
+ const wn=Math.ceil((wz1-wz0)/.15);
+ for(let i=0;i<=wn;i++){
+   const z=wz0+i*(wz1-wz0)/wn;
+   addBox('stairForged',wx,OG+.52,z,.043,1,.043,'og');stairAudit.balusters++;
+   if(i%3===1){const g=new THREE.TorusGeometry(1,.12,6,24);g.scale(.09,.285,.11);g.rotateY(Math.PI/2);g.translate(wx,OG+.58,z);decorGeo(g,'stairForged','og');for(const dy of [-.285,.285])addBox('stairPatina',wx,OG+.58+dy,z,.042,.043,.043,'og');}
+ }
+ for(const [mat,h,yy,w] of [['stairWalnut',.10,1.04,.13],['stairForged',.05,.20,.065],['stairForged',.04,.95,.052]])addBox(mat,wx,OG+yy,(wz0+wz1)/2,w,h,wz1-wz0,'og');
+ for(const [dy,h,depth] of [[-.038,.052,.08],[-.112,.076,.064],[-.185,.038,.096]])addBox('intStairMolding',stairVoid[0]-depth/2+.012,OG+dy,(wz0+wz1)/2,depth,h,wz1-wz0,'og');
+ collisionWalls.og.push({x0:wx-.09,x1:wx+.09,z0:wz0,z1:wz1});
+ stairAudit.handrails+=3;
  for(const [key,geos] of stairDecor){const [layer,mat]=key.split(':');const combined=mergeGeometries(geos,false);if(!combined)throw Error('Treppenornament merge');combined.computeBoundingSphere();mesh(combined,mat,'Roissy_Treppenhaus_Ornament_'+key,layer==='shell'?root:layers[layer]);for(const g of geos)g.dispose();}
 
  if(stairAudit.steps!==36||Math.abs(EG+36*rise-OG)>1e-7||stairAudit.railClearance<2.05)
@@ -1675,7 +1686,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    // landing, swing away from the actual stair bay (towards adjoining room).
    const scores=[score(-1),score(1)];let swing=scores[0]<scores[1]?-1:1;
    if(d.axis==='z'&&d.floor==='og'&&Math.abs(d.fixed+6.75)<.01)swing=-1;
-   if(d.axis==='z'&&d.floor==='og'&&Math.abs(d.fixed+13.2102)<.01)swing=1;
+   if(d.axis==='z'&&d.floor==='og'&&Math.abs(d.fixed-STAIR_WEST)<.01)swing=1;
    if(d.axis==='z'&&d.floor==='eg'&&Math.abs(d.fixed+6.75)<.01&&d.at>0)swing=-1;
    // V3.39: wider stop hides the offset hinge clearance; the jamb spans the full reveal.
    // Its inside surface is 4 mm away from the moving slab at the closed position.
@@ -1745,11 +1756,11 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  if(windowHardwareParts.length){const g=mergeGeometries(windowHardwareParts,false);if(!g)throw Error('Window hardware merge');g.computeBoundingSphere();mesh(g,'intBrass','Roissy_Fensterbeschlaege_V340');for(const part of windowHardwareParts)part.dispose();}
  // The front gallery soffit, directly above the first-flight approach.
  // Only the solid deck beyond z=8.70 is decorated, not the open stairwell.
- const gallerySoffit=[-12.86,-10.12,8.94,10.86],galleryUpper=OG-.228;
+ const gallerySoffit=[-16.9,-10.1,-7.25,-2.65],galleryUpper=OG-.228;
  ceilingBox('intStucField',gallerySoffit,galleryUpper,.011,.025,'eg',slabAudit[1].rectangles);
  ceilingFrame(insetRect(gallerySoffit,.11),galleryUpper,'eg',slabAudit[1].rectangles,'intStucRelief',.073,.036,.068);
  ceilingFrame(insetRect(gallerySoffit,.26),galleryUpper,'eg',slabAudit[1].rectangles,'intStucRecess',.023,.028,.048);
- const gx=-11.49,gz=9.90;
+ const gx=-13.25,gz=-4.95;
  for(const [rr,tube] of [[.78,.020],[.68,.015],[.53,.010],[.13,.015]]){const g=new THREE.TorusGeometry(rr,tube,8,64);g.rotateX(Math.PI/2);g.translate(gx,galleryUpper-.037,gz);mesh(g,'intStucRelief','Roissy_Galerie_Leuchterrosette',layers.eg);}
  for(let i=0;i<24;i++){const a=i*Math.PI/12,g=new THREE.SphereGeometry(1,14,8);g.scale(.045,.025,.15);g.rotateY(a);g.translate(gx+Math.sin(a)*.45,galleryUpper-.039,gz+Math.cos(a)*.45);mesh(g,'intStucRelief','Roissy_Galerie_Rosettenblatt',layers.eg);}
  const referenceFixtures=installReferenceFixtures(THREE,root,layers,S,EG,OG,CORNICE,interiorAudit.roomFinishAssignments);

@@ -11,7 +11,7 @@ export function installStairReflection(T,renderer,scene,root, mobile){
  const look=new T.Vector3(),up=new T.Vector3(),lastPos=new T.Vector3(Infinity,0,0),lastDir=new T.Quaternion();let tick=0,ready=false,disabled=false,lastRender=-Infinity,lastAspect=0;
  const hide=()=>{for(const o of overlays)o.visible=false;};
  return {update(camera,enabled,ms){
-   const p=camera.position; if(disabled||!enabled||p.x<-13.23||p.x>-6.7||p.z<-11.3||p.z>11.4||p.y<y+.15||p.y>5.35){hide();ready=false;return;}
+   const p=camera.position; if(disabled||!enabled||p.x<-17.65||p.x>-6.7||p.z<-11.3||p.z>11.4||p.y<y+.15||p.y>5.35){hide();ready=false;return;}
    mat.uniforms.eye.value.copy(p);tick++;
    const moved=lastPos.distanceToSquared(p)>.0004||lastDir.angleTo(camera.quaternion)>.012||camera.aspect!==lastAspect;
    if(ready&&(!moved&&ms-lastRender<700||tick%(mobile?4:2)!==0)){for(const o of overlays)o.visible=true;return;}

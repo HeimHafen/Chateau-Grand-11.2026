@@ -1,0 +1,67 @@
+{
+  "version": "3.10",
+  "scope": "Grand Escalier / Geländer / Untersichten",
+  "geometryBuild": true,
+  "meshObjects": 1024,
+  "invalidMeshes": 0,
+  "roomZones": {
+    "ground": 18,
+    "first": 21
+  },
+  "entranceDoors": 3,
+  "stairs": {
+    "roundedStarterTreads": [
+      {
+        "i": 0,
+        "width": 3.07,
+        "top": 1.2383333333333333,
+        "depth": 0.5583333333333333,
+        "radius": 0.12
+      },
+      {
+        "i": 1,
+        "width": 2.9299999999999997,
+        "top": 1.3966666666666667,
+        "depth": 0.5583333333333333,
+        "radius": 0.12
+      },
+      {
+        "i": 2,
+        "width": 2.8,
+        "top": 1.5550000000000002,
+        "depth": 0.5583333333333333,
+        "radius": 0.12
+      }
+    ],
+    "closedStoneCores": 2,
+    "galleryFasciaRuns": 6,
+    "steps": 36,
+    "riser": 0.15833333333333333,
+    "stairStart": 1.08,
+    "stairMid": 3.9299999999999997,
+    "stairEnd": 6.78,
+    "soffits": 6,
+    "handrails": 8,
+    "balusters": 416,
+    "endPiers": 10,
+    "landings": 2,
+    "railClearance": 2.17,
+    "forgedCurves": 136,
+    "forgedMedallions": 34,
+    "newelFinials": 10,
+    "landingInlay": 8,
+    "innerMedallions": 34,
+    "landingScrolls": 20,
+    "landingMedallions": 10,
+    "upperScrolls": 66,
+    "upperMedallions": 33
+  },
+  "walkSimulation": {
+    "samples": 1020,
+    "roundTrip": true
+  },
+  "doorwayClashes": 0,
+  "windowClashes": 0,
+  "voidIntrusions": 0,
+  "limitations": "No real Safari/WebGL render; substitute donor geometry used for headless build. Source dimensions estimated from Le Rouge plan."
+}

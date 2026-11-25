@@ -1,0 +1,11 @@
+{
+  "width": 10.391999999999998,
+  "frontRoomDepth": 12.573,
+  "rearRoomDepth": 8.357,
+  "voidChecks": 104,
+  "railChecks": 52,
+  "walkSteps": 564,
+  "upperGalleryWidth": 2.25,
+  "originalWidth": 5.904,
+  "roomCount": 39
+}

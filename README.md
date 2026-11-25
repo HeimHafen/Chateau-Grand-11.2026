@@ -1,5 +1,5 @@
-# Château Grand Roissy V3.46 – Grand Escalier: Einrichtung
+# Château Grand Roissy V3.47 – Vergrößerter Treppensaal
 
-Vollständiges GitHub-Pages-Repository. ZIP entpacken und Inhalt in die Wurzel des bestehenden Repositories übernehmen, vorhandene Dateien ersetzen. Aufruf `?v=roissy346`; Versionsanzeige `ROISSY · V3.46`.
+Referenzorientierte Erweiterung des Grand Escalier und seiner Galerie. Raumachsen, Luftraum, Geländer, Leuchten und Möbelpositionen wurden angepasst. Details und Testgrenzen: `CHANGES-V3.47.md`.
 
-Einrichtung und Texturen: `chateau/furnishings-v346.js`, `assets/furnishing/`. Details, Quellen und Prüfgrenzen: `CHANGES-V3.46.md`.
+ZIP vollständig entpacken, Inhalt in die Wurzel des bestehenden GitHub-Repositories übernehmen und vorhandene Dateien ersetzen. Anschließend `?v=roissy347` aufrufen. Versionsanzeige: `ROISSY · V3.47`.

@@ -4,10 +4,10 @@ import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from './daylight-v342.js';
 import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {loadGardenMaple} from '../wohnzimmer/garden-maple.js';
-import {installStairReflection} from './stair-reflection-v344.js?v=roissy346';
-import {buildChateau} from './architecture.js?v=roissy346';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy346';
-import {planSectionY} from './roissy-config.js?v=roissy346';
+import {installStairReflection} from './stair-reflection-v344.js?v=roissy347';
+import {buildChateau} from './architecture.js?v=roissy347';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy347';
+import {planSectionY} from './roissy-config.js?v=roissy347';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -66,8 +66,8 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.46',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.46';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.47',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.47';
   start.disabled=false;start.textContent='Château erkunden';
   status.textContent='54 × 28,85 Meter (Rekonstruktionsmaß) · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
   resize();view('angle');
@@ -141,7 +141,7 @@ function setWalk(entry=null){
   document.body.classList.add('walking');
   setCutaway(null); // Floor plates/ceilings restored for physical exploration.
   if(typeof entry==='string'){
-    const starts={hall:[0,9.25,EG_Y,0],salon:[0,-3.65,EG_Y,0],stair:[-11.37,9.30,EG_Y,0],gallery:[0,4.5,OG_Y,0]};
+    const starts={hall:[0,9.25,EG_Y,0],salon:[0,-3.65,EG_Y,0],stair:[-15.65,9.15,EG_Y,0],gallery:[0,4.5,OG_Y,0]};
     const [x,z,foot,yaw]=starts[entry]||starts.hall;
     Object.assign(player,{x,z,footY:foot});activeWalkingFloor=foot===OG_Y?'og':'eg';
   }else if(activeWalkingFloor){

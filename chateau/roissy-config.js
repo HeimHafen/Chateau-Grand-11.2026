@@ -345,6 +345,21 @@ export const OG=PLAN.dimensions.firstFloor;
 export const PLAN_SECTION_HEIGHT=2.70;
 export function planSectionY(floor){return floor==='eg'?EG+PLAN_SECTION_HEIGHT:floor==='og'?OG+PLAN_SECTION_HEIGHT:null;}
 export const CORNICE=PLAN.dimensions.cornice;
+// V3.47: intentional design departure from the historical plan. The western
+// stair wall is moved 4.44m west, in both storeys and both longitudinal rows.
+export const STAIR_WEST=-17.65;
+function widenPair(f,left,right){
+  const a=PLAN.rooms[f][left],b=PLAN.rooms[f][right];
+  const lo=a.x-a.w/2,hi=b.x+b.w/2;
+  const ar=STAIR_WEST-.23,bl=STAIR_WEST+.23;
+  a.x=(lo+ar)/2;a.w=ar-lo;b.x=(bl+hi)/2;b.w=hi-bl;
+}
+widenPair('eg',1,2);widenPair('eg',10,12);
+// Passage shares the same longitudinal boundary as the Lingerie.
+{const a=PLAN.rooms.eg[11],lo=a.x-a.w/2,hi=STAIR_WEST-.23;a.x=(lo+hi)/2;a.w=hi-lo;}
+widenPair('og',1,2);widenPair('og',11,12);
+PLAN.status='V3.47: historically inspired design, enlarged Grand Escalier; not an original reconstruction';
+PLAN.reconstructionRule='Preserve the exterior and main floor heights; intentionally enlarge the stair hall and adjacent gallery.';
 export const ROOMDATA=PLAN.rooms;
 export const FRONT_DOORS=[-3.6,0,3.6];
 export const REAR_WINDOW_AXES=[-24.4,-19.5,-15.9,-10.6,-8.0,-3.6,0,3.6,8.6,11.5,16.5,21.7,24.6];
@@ -385,7 +400,7 @@ export const SECONDARY_ROOM_WALLS=Object.freeze({
  eg:Object.freeze([
    {z:midWallZ('eg',7,8),from:-HALF_W-.075,to:-21.98,door:-24.30,width:1.20,source:'Garde-robe / Logement'},
    {z:midWallZ('eg',8,9),from:-HALF_W-.075,to:-21.98,door:-24.30,width:1.20,source:'Logement / Conciergerie'},
-   {z:midWallZ('eg',10,11),from:-21.81,to:-13.38,door:-17.55,width:1.30,source:'Lingerie / Passage'},
+   {z:midWallZ('eg',10,11),from:-21.81,to:STAIR_WEST,door:-19.8,width:1.30,source:'Lingerie / Passage'},
    {z:midWallZ('eg',15,16),from:14.15,to:20.35,door:17.30,width:1.25,source:'Escalier secondaire / Antichambre'},
    {z:midWallZ('eg',6,17),from:20.58,to:HALF_W+.075,door:23.50,width:1.25,source:'Grand Cabinet / Cabinet de musique'}
  ]),
