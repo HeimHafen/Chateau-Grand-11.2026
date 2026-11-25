@@ -2,8 +2,9 @@ import * as THREE from '../vendor/three/build/three.module.js';
 import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from '../wohnzimmer/sky-atmosphere.js';
-import {buildChateau} from './architecture.js?v=roissy340';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy340';
+import {buildChateau} from './architecture.js?v=roissy341';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy341';
+import {planSectionY} from './roissy-config.js?v=roissy341';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -29,7 +30,7 @@ async function run(){
   camera=new THREE.PerspectiveCamera(61,1,.24,850);camera.rotation.order='YXZ';
   atmospheric=buildSky(THREE,scene,camera);
   scene.add(new THREE.HemisphereLight(0xcce1f1,0x9f8c77,1.20));
-  // V3.40 uses only global daylight/ambient illumination. No added interior
+  // V3.41 uses only global daylight/ambient illumination. No added interior
   // point lights are created so the material judgement is not falsified by helper lighting.
   scene.add(new THREE.AmbientLight(0xffe9d0,.20));
   const sun=new THREE.DirectionalLight(0xffe8ca,2.05);
@@ -50,8 +51,8 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.40',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.40';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.41',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.41';
   start.disabled=false;start.textContent='Château erkunden';
   status.textContent='54 × 28,85 Meter (Rekonstruktionsmaß) · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
   resize();view('angle');
@@ -78,7 +79,7 @@ function buildLandscape(mats){
 function setCutaway(floor){
   // Clipping takes away the upper shell for a real top-down view of constructed rooms.
   clippedMode=!!floor;
-  renderer.clippingPlanes=floor?[new THREE.Plane(new THREE.Vector3(0,-1,0),floor==='eg'?6.69:12.17)]:[];
+  renderer.clippingPlanes=floor?[new THREE.Plane(new THREE.Vector3(0,-1,0),planSectionY(floor))]:[];
   renderer.shadowMap.enabled=!floor;
   if(historicalChateau){
     for(const key of ['eg','og'])historicalChateau.historicalLayers[key].traverse(obj=>{
@@ -95,6 +96,7 @@ function setCutaway(floor){
   renderer.shadowMap.needsUpdate=true;
 }
 function view(which){
+  clearWalkInput();
   mode='orbit';activeWalkingFloor=null;
   document.body.classList.remove('walking');
   floorChoice=which==='eg'||which==='og'?which:null;
@@ -119,6 +121,7 @@ function view(which){
   if(locationPanel)locationPanel.hidden=true;
 }
 function setWalk(entry=null){
+  clearWalkInput();
   mode='walk';activeWalkingFloor=floorChoice;
   document.body.classList.add('walking');
   setCutaway(null); // Floor plates/ceilings restored for physical exploration.
@@ -182,6 +185,11 @@ function release(e){activePointers.delete(e.pointerId);window.__pinchDist=0;if(e
 for(const t of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(t,release);
 canvas.addEventListener('wheel',e=>{if(mode==='orbit'){orbit.d=THREE.MathUtils.clamp(orbit.d*Math.exp(e.deltaY*.001),30,650);e.preventDefault();}},{passive:false});
 const keys=new Set();addEventListener('keydown',e=>{keys.add(e.key.toLowerCase());if([' ','arrowup','arrowdown'].includes(e.key.toLowerCase()))e.preventDefault();});addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
+function clearWalkInput(){
+  forward=strafe=0;walkTouch=lookTouch=lookPointer=null;activePointers.clear();keys.clear();window.__pinchDist=0;
+  const stick=document.getElementById('walkStick'),knob=document.getElementById('stickKnob');if(stick)stick.hidden=true;if(knob)knob.style.transform='translate(0,0)';
+}
+addEventListener('blur',clearWalkInput);document.addEventListener('visibilitychange',()=>{if(document.hidden)clearWalkInput();});
 function resize(){const w=innerWidth,h=innerHeight;renderer.setPixelRatio(Math.min(devicePixelRatio,mobile?1.35:1.85));renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=mobile?72:60;camera.updateProjectionMatrix();}
 addEventListener('resize',()=>{if(renderer)resize();});
 function frame(ms){

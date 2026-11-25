@@ -341,6 +341,9 @@ export const HALF_W=PLAN.dimensions.width/2;
 export const HALF_D=PLAN.dimensions.depth/2;
 export const EG=PLAN.dimensions.groundFloor;
 export const OG=PLAN.dimensions.firstFloor;
+// Horizontal section above the floor, below every regular ceiling soffit.
+export const PLAN_SECTION_HEIGHT=2.70;
+export function planSectionY(floor){return floor==='eg'?EG+PLAN_SECTION_HEIGHT:floor==='og'?OG+PLAN_SECTION_HEIGHT:null;}
 export const CORNICE=PLAN.dimensions.cornice;
 export const ROOMDATA=PLAN.rooms;
 export const FRONT_DOORS=[-3.6,0,3.6];

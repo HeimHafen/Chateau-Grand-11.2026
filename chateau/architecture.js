@@ -1,18 +1,18 @@
 /**
- * CHÂTEAU GRAND V3.40 – Historische Hof- und Parkfassade mit verfeinerten Raumboeden.
+ * CHÂTEAU GRAND V3.41 – Historische Hof- und Parkfassade mit verfeinerten Raumboeden.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy340';
-import {resolveStaticFaces} from './surface-cleanup.js?v=roissy340';
+import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy341';
+import {resolveStaticFaces} from './surface-cleanup.js?v=roissy341';
 import {addPortalDoors,createOakFinish} from '../wohnzimmer/portal-doors-v2.js';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
-import {addRoissyPortal} from './portal-doors-v321.js?v=roissy340';
-import {PLAN,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy340';
+import {addRoissyPortal} from './portal-doors-v321.js?v=roissy341';
+import {PLAN,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy341';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
- const root=new THREE.Group();root.name='CHATEAU_ROISSY_V340_WINDOW_DETAILS';scene.add(root);
+ const root=new THREE.Group();root.name='CHATEAU_ROISSY_V341_REVIEW';scene.add(root);
  const layers={eg:new THREE.Group(),og:new THREE.Group()};
  layers.eg.name='ROISSY_REZ_DE_CHAUSSEE_LE_ROUGE_1776';layers.og.name='ROISSY_PREMIER_ETAGE_LE_ROUGE_1776';root.add(layers.eg,layers.og);
  const bronze=new THREE.MeshStandardMaterial({color:0x282f36,metalness:.63,roughness:.35,side:THREE.DoubleSide});
