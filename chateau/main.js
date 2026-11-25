@@ -1,14 +1,14 @@
-import {setupModelImport} from './model-import-v348.js?v=roissy348';
+import {setupModelImport} from './model-import-v348.js?v=roissy349';
 import * as THREE from '../vendor/three/build/three.module.js';
-import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js';
+import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js?v=roissy349';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from './daylight-v342.js';
 import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {loadGardenMaple} from '../wohnzimmer/garden-maple.js';
-import {installStairReflection} from './stair-reflection-v344.js?v=roissy348';
-import {buildChateau} from './architecture.js?v=roissy348';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy348';
-import {planSectionY} from './roissy-config.js?v=roissy348';
+import {installStairReflection} from './stair-reflection-v344.js?v=roissy349';
+import {buildChateau} from './architecture.js?v=roissy349';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy349';
+import {planSectionY} from './roissy-config.js?v=roissy349';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -23,6 +23,27 @@ let last=0;
 let atmospheric,stairReflection;
 let floorChoice=null, activeWalkingFloor=null, historicalChateau=null, clippedMode=false;
 let lastLocation='';
+let sceneDoors=[],portalDoors=new Set(),shadowDirty=true,lastShadowRefresh=-Infinity;
+let frameHandle=0,initialized=false,contextLost=false,qualityScale=1,qualityMode='auto',frameSamples=[],lastQualityChange=0;
+const quality=document.getElementById('quality');
+const qualityStatus=document.getElementById('qualityStatus');
+function markShadowDirty(){shadowDirty=true;}
+function pixelRatio(){return Math.max(.6,Math.min(devicePixelRatio,(mobile?1.35:1.85))*qualityScale);}
+function setQuality(mode){qualityMode=mode;qualityScale=mode==='detail'?1:mode==='smooth'?.70:1;frameSamples=[];lastQualityChange=performance.now();if(renderer)resize();}
+function monitorQuality(ms,elapsed){
+  if(qualityMode!=='auto'||elapsed<5||elapsed>250||document.hidden)return;
+  frameSamples.push(elapsed);if(frameSamples.length<75)return;
+  const sorted=frameSamples.sort((a,b)=>a-b),median=sorted[Math.floor(sorted.length/2)];frameSamples=[];
+  if(ms-lastQualityChange<4500)return;
+  let next=qualityScale;if(median>29)next=Math.max(.60,qualityScale-.10);else if(median<18)next=Math.min(1,qualityScale+.05);
+  if(Math.abs(next-qualityScale)>.005){qualityScale=next;lastQualityChange=ms;resize();}
+}
+function scheduleFrame(){if(initialized&&renderer&&historicalChateau&&atmospheric&&!frameHandle&&!contextLost&&!document.hidden)frameHandle=requestAnimationFrame(frame);}
+quality.addEventListener('change',()=>setQuality(quality.value));
+canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();contextLost=true;cancelAnimationFrame(frameHandle);frameHandle=0;clearWalkInput();document.getElementById('renderNotice').hidden=false;});
+canvas.addEventListener('webglcontextrestored',()=>{contextLost=false;document.getElementById('renderNotice').hidden=true;last=0;markShadowDirty();scheduleFrame();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frameHandle);frameHandle=0;}else{last=0;frameSamples=[];markShadowDirty();scheduleFrame();}});
+
 async function run(){
   renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',alpha:false});
   renderer.outputColorSpace=THREE.SRGBColorSpace;
@@ -42,11 +63,17 @@ async function run(){
   Object.assign(sun.shadow.camera,{left:-36,right:36,top:36,bottom:-36,near:115,far:245});
   sun.shadow.camera.updateProjectionMatrix();sun.shadow.bias=-.00035;sun.shadow.normalBias=.023;
   scene.add(sun);
+  // Register the texture load barrier before starting any asynchronous asset loads.
+  const missingAssets=[];let resolveAssets;
+  const assetsReady=new Promise(resolve=>{resolveAssets=resolve;});
+  THREE.DefaultLoadingManager.onLoad=()=>resolveAssets();
+  THREE.DefaultLoadingManager.onError=url=>{missingAssets.push(url);console.warn('Roissy Asset nicht geladen:',url);};
   const mats=createExteriorMaterialLibrary(THREE);
   const glass=createRealisticExteriorGlass(THREE,renderer);
   buildLandscape(mats);
   const chateau=buildChateau(THREE,scene,null,mats,glass);
   historicalChateau=chateau;
+  sceneDoors=[...chateau.entranceDoors,...chateau.interiorDoors];portalDoors=new Set(chateau.entranceDoors);
   if(new URLSearchParams(location.search).get('reflect')!=='0')stairReflection=installStairReflection(THREE,renderer,scene,chateau.front,mobile);
   // A low-intensity filtered environment provides believable reflection on oak,
   // honed stone and metal without adding a screen-space reflection pass.
@@ -58,7 +85,7 @@ async function run(){
   loadGardenMaple(THREE,new GLTFLoader()).then(tree=>{
     tree.updateMatrixWorld(true);const instances=[];
     const sites=[[-31,-25],[-19,-37],[-3,-45],[13,-40],[29,-32],[-42,-10],[43,-13],[-38,22],[39,22],[-24,34],[25,36]];
-    tree.traverse(o=>{if(!o.isMesh)return;const g=o.geometry.clone();g.applyMatrix4(o.matrixWorld);const inst=new THREE.InstancedMesh(g,o.material,sites.length);inst.customDepthMaterial=o.customDepthMaterial;inst.castShadow=false;inst.receiveShadow=true;const dummy=new THREE.Object3D();for(let i=0;i<sites.length;i++){const [x,z]=sites[i];dummy.position.set(x,0,z);dummy.rotation.y=i*2.39;dummy.scale.setScalar(.57+(i%4)*.11);dummy.updateMatrix();inst.setMatrixAt(i,dummy.matrix);}inst.instanceMatrix.needsUpdate=true;scene.add(inst);instances.push(inst);});
+    tree.traverse(o=>{if(!o.isMesh)return;const g=o.geometry.clone();g.applyMatrix4(o.matrixWorld);const inst=new THREE.InstancedMesh(g,o.material,sites.length);inst.customDepthMaterial=o.customDepthMaterial;inst.castShadow=false;inst.receiveShadow=true;const dummy=new THREE.Object3D();for(let i=0;i<sites.length;i++){const [x,z]=sites[i];dummy.position.set(x,0,z);dummy.rotation.y=i*2.39;dummy.scale.setScalar(.57+(i%4)*.11);dummy.updateMatrix();inst.setMatrixAt(i,dummy.matrix);}inst.instanceMatrix.needsUpdate=true;inst.computeBoundingSphere();scene.add(inst);instances.push(inst);});
   }).catch(e=>console.warn('Parkbaum optional:',e));
   for(const floor of ['eg','og'])chateau.historicalLayers[floor].traverse(obj=>{
     if(obj.userData.floorPlanLabel)obj.visible=false;
@@ -67,14 +94,20 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.48',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.48';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.49',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.49';
   window.__CHATEAU_MAXGAME.importedFurniture=setupModelImport(THREE,chateau,scene,renderer);
-  start.disabled=false;start.textContent='Château erkunden';
-  status.textContent='54 × 28,85 Meter (Rekonstruktionsmaß) · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
   resize();view('angle');
+  status.textContent='Architektur aufgebaut. Materialien und Texturen werden geladen …';
+  let timeoutId;const loaded=await Promise.race([assetsReady.then(()=>true),new Promise(resolve=>{timeoutId=setTimeout(()=>resolve(false),15000);})]);clearTimeout(timeoutId);
+  markShadowDirty();
+  start.disabled=false;start.textContent='Château erkunden';
+  status.textContent=missingAssets.length?`${missingAssets.length} Ressource(n) nicht geladen. Rundgang mit verfügbaren Materialien möglich.`:loaded?'54 × 28,85 m · EG und 1. OG · Eingang und Haupttreppe begehbar.':'Rundgang bereit · einige Texturen laden möglicherweise noch.';
+  THREE.DefaultLoadingManager.onLoad=()=>{markShadowDirty();};
+  window.__CHATEAU_MAXGAME.missingAssets=missingAssets;
+  window.__CHATEAU_MAXGAME.renderDiagnostics=()=>({pixelRatio:renderer.getPixelRatio(),qualityMode,qualityScale,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,textures:renderer.info.memory.textures});
   start.addEventListener('click',()=>{splash.hidden=true;renderer.shadowMap.needsUpdate=true;setWalk();}, {once:true});
-  requestAnimationFrame(frame);
+  initialized=true;scheduleFrame();
 }
 function buildLandscape(mats){
   const loader=new THREE.TextureLoader();
@@ -88,7 +121,6 @@ function buildLandscape(mats){
   const grass=new THREE.MeshStandardMaterial({name:'MaxGame_PBR_Gras',map:texture[0],normalMap:texture[1],roughnessMap:texture[2],roughness:.97,color:0xc7d6b6,normalScale:new THREE.Vector2(.15,.15)});
   applyProceduralFinish(THREE,grass,'grassBreakup');
   const floor=new THREE.Mesh(new THREE.PlaneGeometry(1200,1200),grass);floor.rotation.x=-Math.PI/2;floor.position.y=-.08;floor.receiveShadow=true;scene.add(floor);
-  const paving=new THREE.MeshStandardMaterial({color:0xe0d2c0,roughness:.95});
   const pavement=new THREE.Mesh(new THREE.BoxGeometry(9,.08,105),mats.porticoPaving);
   pavement.position.set(0,-.02,70);pavement.receiveShadow=true;scene.add(pavement);
   // One continuous grass surface; no redundant near-parallel lawn overlays.
@@ -110,7 +142,7 @@ function setCutaway(floor){
     info.textContent=(floor==='eg'?'ERDGESCHOSS':'1. OBERGESCHOSS')+' · Château de Roissy, 1776 · '+rs.length+' historische Raumzonen';
   } else info.hidden=true;
   document.getElementById('walk').textContent=floor?(floor==='eg'?'EG betreten':'1. OG betreten'):'Erkunden';
-  renderer.shadowMap.needsUpdate=true;
+  markShadowDirty();
 }
 function view(which){
   clearWalkInput();
@@ -156,6 +188,7 @@ function setWalk(entry=null){
   }
   player.y=player.footY+EYE_Y;
   player.yaw=0;player.pitch=.025;
+  markShadowDirty();
   forward=strafe=0;
   document.getElementById('walk').textContent='Rundgang neu';
   document.getElementById('walk').classList.add('selected');
@@ -201,33 +234,35 @@ canvas.addEventListener('pointermove',e=>{
 function release(e){activePointers.delete(e.pointerId);window.__pinchDist=0;if(e.pointerId===walkTouch){walkTouch=null;forward=strafe=0;const stick=document.getElementById('walkStick');if(stick)stick.hidden=true;const knob=document.getElementById('stickKnob');if(knob)knob.style.transform='translate(0,0)';}if(e.pointerId===lookTouch)lookTouch=null;}
 for(const t of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(t,release);
 canvas.addEventListener('wheel',e=>{if(mode==='orbit'){orbit.d=THREE.MathUtils.clamp(orbit.d*Math.exp(e.deltaY*.001),30,650);e.preventDefault();}},{passive:false});
-const keys=new Set();addEventListener('keydown',e=>{keys.add(e.key.toLowerCase());if([' ','arrowup','arrowdown'].includes(e.key.toLowerCase()))e.preventDefault();});addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
+const keys=new Set();addEventListener('keydown',e=>{if(mode!=='walk'||/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(e.target?.tagName)||e.ctrlKey||e.metaKey||e.altKey)return;const key=e.key.toLowerCase();if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright'].includes(key)){keys.add(key);e.preventDefault();}});addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
 function clearWalkInput(){
   forward=strafe=0;walkTouch=lookTouch=lookPointer=null;activePointers.clear();keys.clear();window.__pinchDist=0;
   const stick=document.getElementById('walkStick'),knob=document.getElementById('stickKnob');if(stick)stick.hidden=true;if(knob)knob.style.transform='translate(0,0)';
 }
 addEventListener('blur',clearWalkInput);document.addEventListener('visibilitychange',()=>{if(document.hidden)clearWalkInput();});
-function resize(){const w=innerWidth,h=innerHeight;renderer.setPixelRatio(Math.min(devicePixelRatio,mobile?1.35:1.85));renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=mobile?72:60;camera.updateProjectionMatrix();}
+function resize(){const w=innerWidth,h=innerHeight;renderer.setPixelRatio(pixelRatio());renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=mobile?(w<h?72:60):60;camera.updateProjectionMatrix();qualityStatus.textContent=Math.round(qualityScale*100)+' % Renderauflösung';}
 addEventListener('resize',()=>{if(renderer)resize();});
 function frame(ms){
-  const dt=Math.min(.040,(ms-last)/1000||0);last=ms;
+  frameHandle=0;if(contextLost||document.hidden)return;
+  const elapsed=last?ms-last:16.67;const dt=Math.min(.050,elapsed/1000);last=ms;monitorQuality(ms,elapsed);
   const near=mode==='orbit'?Math.max(.5,orbit.d*.014):.24;
   if(Math.abs(camera.near-near)>.001){camera.near=near;camera.updateProjectionMatrix();}
   if(mode==='orbit'){
     const p=orbit.phi,t=orbit.theta;
     const cp=Math.cos(p);camera.position.set(orbit.target.x+Math.sin(t)*orbit.d*cp,orbit.target.y+Math.sin(p)*orbit.d,orbit.target.z+Math.cos(t)*orbit.d*cp);
     camera.lookAt(orbit.target);
+    for(const d of sceneDoors)if(d.door.update(dt,1e4,1e4,-1e4)&&portalDoors.has(d))markShadowDirty();
   }else{
     let f=forward+(keys.has('w')||keys.has('arrowup')?1:0)-(keys.has('s')||keys.has('arrowdown')?1:0);
-    let st=strafe+(keys.has('d')?1:0)-(keys.has('a')?1:0);
+    let st=strafe+(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0);
     let mag=Math.max(1,Math.hypot(f,st));f/=mag;st/=mag;
     const speed=dt*6.1;
     const dx=(-Math.sin(player.yaw)*f+Math.cos(player.yaw)*st)*speed;
     const dz=(-Math.cos(player.yaw)*f-Math.sin(player.yaw)*st)*speed;
     // Real staircase heights (7 outside steps + 36 risers in two U-shaped flights),
     // real masonry collision and genuine oak doors. Never teleport on a threshold.
-    const doors=[...(historicalChateau?.entranceDoors||[]),...(historicalChateau?.interiorDoors||[])];
-    for(const d of doors)d.door.update(dt,player.x,player.z,player.footY);
+    const doors=sceneDoors;
+    for(const d of doors)if(d.door.update(dt,player.x,player.z,player.footY)&&portalDoors.has(d))markShadowDirty();
     let candidate=candidateStep(player,player.x+dx,player.z,historicalChateau,doors);
     if(candidate){player.x=candidate.x;player.footY=candidate.footY;}
     candidate=candidateStep(player,player.x,player.z+dz,historicalChateau,doors);
@@ -241,6 +276,10 @@ function frame(ms){
     camera.position.set(player.x,player.y,player.z);
     camera.rotation.set(player.pitch,player.yaw,0,'YXZ');
   }
-  atmospheric.update();stairReflection?.update(camera,mode==='walk'&&!clippedMode,ms);renderer.render(scene,camera);requestAnimationFrame(frame);
+  atmospheric.update();
+  if(shadowDirty&&!clippedMode&&ms-lastShadowRefresh>(mobile?140:85)){renderer.shadowMap.needsUpdate=true;shadowDirty=false;lastShadowRefresh=ms;}
+  // Main scene owns the shadow refresh; reflection must not consume it first.
+  stairReflection?.update(camera,mode==='walk'&&!clippedMode&&qualityScale>=.75,ms);
+  renderer.render(scene,camera);scheduleFrame();
 }
 run().catch(error=>{console.error(error);status.textContent='3D-Startfehler: '+(error.message||'Unbekannter Fehler');start.disabled=true;start.textContent='3D konnte nicht starten';});

@@ -254,14 +254,18 @@ function makePaintBumpMap(THREE){
 // and natural weathered plinths. No external texture API or streaming server.
 export function createExteriorMaterialLibrary(THREE){
   const loader=new THREE.TextureLoader();
+  const sharedMaps=new Map();
   const sourceMaterials=new Set(['facade_limestone','trim_limestone','column_stone','base_limestone']);
   function load(name,channel,repeat=2){
     const root=sourceMaterials.has(name)?'./assets/heritage-v14/':'./assets/exterior/';
-    const map=loader.load(`${root}${name}_${channel}.jpg`);
+    const url=`${root}${name}_${channel}.jpg`,key=`${url}|${repeat}`;
+    if(sharedMaps.has(key))return sharedMaps.get(key);
+    const map=loader.load(url);
     map.wrapS=map.wrapT=THREE.RepeatWrapping;
     map.repeat.set(repeat,repeat);
     map.anisotropy=8;
     if(channel==='albedo')map.colorSpace=THREE.SRGBColorSpace;
+    sharedMaps.set(key,map);
     return map;
   }
   function limestone(name,color,roughness,normalStrength=.35,repeat=2){

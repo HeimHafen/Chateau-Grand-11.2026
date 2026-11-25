@@ -18,7 +18,7 @@ export function installStairReflection(T,renderer,scene,root, mobile){
    hide();camera.updateMatrixWorld();camera.getWorldDirection(look);look.y=-look.y;up.set(0,1,0).applyQuaternion(camera.quaternion);up.y=-up.y;
    view.copy(camera,false);view.position.set(p.x,2*y-p.y,p.z);view.up.copy(up);view.lookAt(view.position.clone().add(look));view.updateMatrixWorld();view.updateProjectionMatrix();matrix.multiplyMatrices(view.projectionMatrix,view.matrixWorldInverse);
    const oldTarget=renderer.getRenderTarget(),oldPlanes=renderer.clippingPlanes,oldAuto=renderer.autoClear,oldShadow=renderer.shadowMap.needsUpdate;
-   try{renderer.clippingPlanes=[plane];renderer.autoClear=true;renderer.setRenderTarget(target);renderer.render(scene,view);ready=true;lastPos.copy(p);lastDir.copy(camera.quaternion);lastRender=ms;lastAspect=camera.aspect;}
+   try{renderer.shadowMap.needsUpdate=false;renderer.clippingPlanes=[plane];renderer.autoClear=true;renderer.setRenderTarget(target);renderer.render(scene,view);ready=true;lastPos.copy(p);lastDir.copy(camera.quaternion);lastRender=ms;lastAspect=camera.aspect;}
    catch(e){console.warn('Optionale Marmorreflexion deaktiviert',e);disabled=true;ready=false;}
    finally{renderer.setRenderTarget(oldTarget);renderer.clippingPlanes=oldPlanes;renderer.autoClear=oldAuto;renderer.shadowMap.needsUpdate=oldShadow;}
    for(const o of overlays)o.visible=ready;
