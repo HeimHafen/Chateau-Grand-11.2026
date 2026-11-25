@@ -4,9 +4,10 @@ import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from './daylight-v342.js';
 import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {loadGardenMaple} from '../wohnzimmer/garden-maple.js';
-import {buildChateau} from './architecture.js?v=roissy342';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy342';
-import {planSectionY} from './roissy-config.js?v=roissy342';
+import {installStairReflection} from './stair-reflection-v344.js?v=roissy345';
+import {buildChateau} from './architecture.js?v=roissy345';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy345';
+import {planSectionY} from './roissy-config.js?v=roissy345';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -18,7 +19,7 @@ let renderer,scene,camera,orbit={theta:.43,phi:.52,d:100,target:new THREE.Vector
 let player={x:0,y:EYE_Y,footY:0,z:31,yaw:0,pitch:0};
 let walkTouch=null,lookTouch=null,forward=0,strafe=0,lookPointer=null;
 let last=0;
-let atmospheric;
+let atmospheric,stairReflection;
 let floorChoice=null, activeWalkingFloor=null, historicalChateau=null, clippedMode=false;
 let lastLocation='';
 async function run(){
@@ -45,12 +46,12 @@ async function run(){
   buildLandscape(mats);
   const chateau=buildChateau(THREE,scene,null,mats,glass);
   historicalChateau=chateau;
+  if(new URLSearchParams(location.search).get('reflect')!=='0')stairReflection=installStairReflection(THREE,renderer,scene,chateau.front,mobile);
   // A low-intensity filtered environment provides believable reflection on oak,
   // honed stone and metal without adding a screen-space reflection pass.
   new THREE.TextureLoader().load('./assets/glass/v342_daylight_env.jpg',t=>{t.colorSpace=THREE.SRGBColorSpace;t.mapping=THREE.EquirectangularReflectionMapping;scene.environment=t;scene.environmentIntensity=.40;},undefined,()=>{});
-  // The reference contains lit chandeliers: use only two small stationary fills,
-  // no additional shadow passes. Fixtures are part of the actual 3D model.
-  for(const f of chateau.validations.interiorFinish.referenceFixtures.fixtures){const lamp=new THREE.PointLight(0xffe5ba,12,5,2);lamp.position.set(f.x,f.bottom+.28,f.z);scene.add(lamp);}
+  // Physical fixture positions and short-range warm pools of light. No extra shadow passes.
+  for(const f of chateau.validations.interiorFinish.referenceFixtures.lights){const lamp=new THREE.PointLight(f.color,f.intensity,f.distance,2);lamp.name=f.name+'_Licht';lamp.position.set(...f.position);scene.add(lamp);}
   // Reuse the locally packaged maple model; keep trees outside the palace and
   // all walkable paths. Shared geometry and materials via instancing.
   loadGardenMaple(THREE,new GLTFLoader()).then(tree=>{
@@ -65,8 +66,8 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.42',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.42';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.45',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.45';
   start.disabled=false;start.textContent='Château erkunden';
   status.textContent='54 × 28,85 Meter (Rekonstruktionsmaß) · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
   resize();view('angle');
@@ -238,6 +239,6 @@ function frame(ms){
     camera.position.set(player.x,player.y,player.z);
     camera.rotation.set(player.pitch,player.yaw,0,'YXZ');
   }
-  atmospheric.update();renderer.render(scene,camera);requestAnimationFrame(frame);
+  atmospheric.update();stairReflection?.update(camera,mode==='walk'&&!clippedMode,ms);renderer.render(scene,camera);requestAnimationFrame(frame);
 }
 run().catch(error=>{console.error(error);status.textContent='3D-Startfehler: '+(error.message||'Unbekannter Fehler');start.disabled=true;start.textContent='3D konnte nicht starten';});

@@ -1,0 +1,9 @@
+{
+  "marbleRectangles": 18,
+  "borderSegments": 4,
+  "borderArea": 5.735424000000004,
+  "groundFloorArea": 145.56285770000002,
+  "overlapPairs": 97,
+  "reflectionOverlayMeshes": 2,
+  "reflectionCameraLogic": "passed with mock renderer; no shader or GPU execution"
+}

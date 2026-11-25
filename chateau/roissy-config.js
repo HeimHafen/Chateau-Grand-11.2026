@@ -412,6 +412,7 @@ export const AXIS_AUDIT=Object.freeze({
 // not verified archaeological centimetre measurements.
 export const GRAND_STAIR=Object.freeze({
   stepsPerFlight:18,
+  starterWidening:Object.freeze([.20,.13,.065]), // each side, first 3 treads
   first:Object.freeze({x:-11.37,width:2.67,startZ:8.65,length:10.05,direction:-1}),
   second:Object.freeze({x:-8.55,width:2.62,startZ:-1.24,length:9.98,direction:1}),
   landing:Object.freeze({x:-10.00,z:-1.79,width:5.78,depth:1.30}),

@@ -1,0 +1,52 @@
+{
+  "portalRays": 63,
+  "floorChecks": 78,
+  "finishRegions": {
+    "eg": 24,
+    "og": 24
+  },
+  "floorRects": 86,
+  "fixtures": {
+    "count": 6,
+    "fixtures": [
+      {
+        "name": "Roissy_Kristallleuchter_UnterGalerie",
+        "x": -11.49,
+        "z": 9.9,
+        "ceiling": 6.5285,
+        "bottom": 4.8235,
+        "radius": 0.74
+      },
+      {
+        "name": "Roissy_Kristallleuchter_GrandEscalier",
+        "x": -9.98,
+        "z": 3.65,
+        "ceiling": 11.86,
+        "bottom": 10.375,
+        "radius": 0.7
+      }
+    ],
+    "sconces": 4,
+    "sconcePositions": [
+      [
+        -10.2,
+        11.235
+      ],
+      [
+        -13.0202,
+        4.6085
+      ],
+      [
+        -6.94,
+        1.231
+      ],
+      [
+        -6.94,
+        8.6775
+      ]
+    ]
+  },
+  "lighting": 2,
+  "interiorLabel": "Erdgeschoss · Vestibule",
+  "overlaps": 0
+}

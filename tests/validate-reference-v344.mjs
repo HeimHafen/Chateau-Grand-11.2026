@@ -1,0 +1,12 @@
+import * as T from '../vendor/three/build/three.module.js';
+import {buildChateau} from '../chateau/architecture.js';
+import {installStairReflection} from '../chateau/stair-reflection-v344.js';
+const mat=new T.MeshStandardMaterial(),mats=Object.fromEntries(['facadeWall','dressedStone','trim','windowStone','shade','paintedSash','roof','porticoPaving','columnFinish','brass'].map(k=>[k,mat]));
+const scene=new T.Scene(),a=buildChateau(T,scene,null,mats,new T.MeshStandardMaterial({transparent:true}));scene.updateMatrixWorld(true);
+const check=(v,msg)=>{if(!v)throw Error(msg);};
+const rects=a.validations.interiorFinish.floorRects.filter(r=>r.kind==='stairStone');const area=r=>(r[1]-r[0])*(r[3]-r[2]);let pairs=0;
+for(let i=0;i<rects.length;i++)for(let j=i+1;j<rects.length;j++){const p=rects[i],q=rects[j];if(p.floor!==q.floor)continue;const [a,b,c,d]=p.rect,[e,f,g,h]=q.rect;check(Math.min(b,f)-Math.max(a,e)<1e-6||Math.min(d,h)-Math.max(c,g)<1e-6,'marble overlap');pairs++;}
+const border=rects.filter(r=>r.finish==='stairBorder');check(border.length===4,'four continuous border segments');const areaEG=rects.filter(r=>r.floor==='eg').reduce((n,r)=>n+area(r.rect),0);check(Math.abs(areaEG-(6.4123*9.137+6.4602*13.463))<.01,'unchanged EG coverage');
+let calls=0,mirrorY=0,target=null;const renderer={clippingPlanes:[],autoClear:true,shadowMap:{needsUpdate:false},getRenderTarget(){return target},setRenderTarget(t){target=t},render(s,c){calls++;mirrorY=c.position.y;check(this.clippingPlanes.length===1,'reflection clipping');check(target?.isWebGLRenderTarget,'render target');}};
+const refl=installStairReflection(T,renderer,scene,a.front,true);const camera=new T.PerspectiveCamera(60,1,.24,850);camera.position.set(-11.5,2.77,9.5);camera.lookAt(-10,3,0);camera.updateMatrixWorld();refl.update(camera,true,100);check(calls===1&&Math.abs(mirrorY-(2*1.089-2.77))<1e-6,'mirror camera transform');check(target===null&&renderer.clippingPlanes.length===0,'renderer state restored');const overlays=a.front.children.filter(o=>o.name.startsWith('Roissy_Marmorreflexion_'));check(overlays.length===2&&overlays.every(o=>o.visible),'overlay coverage');refl.update(camera,false,120);check(overlays.every(o=>!o.visible),'disabled outside walking view');
+console.log(JSON.stringify({marbleRectangles:rects.length,borderSegments:border.length,borderArea:border.reduce((n,r)=>n+area(r.rect),0),groundFloorArea:areaEG,overlapPairs:pairs,reflectionOverlayMeshes:overlays.length,reflectionCameraLogic:'passed with mock renderer; no shader or GPU execution'},null,2));

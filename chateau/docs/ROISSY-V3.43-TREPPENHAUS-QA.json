@@ -1,0 +1,14 @@
+{
+  "topRays": 108,
+  "coreRays": 36,
+  "roundedRays": 6,
+  "starterWidths": [
+    3.07,
+    2.9299999999999997,
+    2.8
+  ],
+  "closedCores": 2,
+  "lowerChandelierHeadroom": 4.1034999999999995,
+  "galleryFasciaRuns": 6,
+  "staticOverlaps": 0
+}

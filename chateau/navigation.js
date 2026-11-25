@@ -1,5 +1,5 @@
 /** Château Grand V3.4 – walkable ground floor and Premier Étage, shared plan metres. */
-import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR,PERRON,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy342';
+import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR,PERRON,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy345';
 export const EG_Y=EG,OG_Y=OG,EYE_Y=1.69;
 export const WALK_RADIUS=.30;
 const H=(OG-EG)*.5;
@@ -11,8 +11,13 @@ const onSteps=(x,z)=>Math.abs(x)<PERRON.width/2-.10&&
 const terrace=(x,z)=>Math.abs(x)<EXTERIOR.terraceHalf&&between(z,HALF_D-.75,PERRON.terraceEndZ);
 const S=GRAND_STAIR, STEPS=S.stepsPerFlight;
 const stepDepth=f=>f.length/STEPS;
-const first=(x,z)=>between(x,S.first.x-S.first.width/2+.04,S.first.x+S.first.width/2-.04)&&
-  between(z,S.first.startZ-S.first.length-.01,S.first.startZ+.012);
+const first=(x,z)=>{
+  if(!between(z,S.first.startZ-S.first.length-.01,S.first.startZ+.012))return false;
+  const t=Math.max(0,S.first.startZ-z),i=Math.floor(t/stepDepth(S.first)),extra=S.starterWidening[i]||0;
+  // Conservative support boundary: excludes the curved outer 12cm corners.
+  const half=S.first.width/2+Math.max(0,extra-.12)-.04;
+  return Math.abs(x-S.first.x)<=half;
+};
 const second=(x,z)=>between(x,S.second.x-S.second.width/2+.04,S.second.x+S.second.width/2-.04)&&
   between(z,S.second.startZ-.012,S.second.startZ+S.second.length+.012);
 const landing=(x,z)=>between(x,S.landing.x-S.landing.width/2+.04,S.landing.x+S.landing.width/2-.04)&&
