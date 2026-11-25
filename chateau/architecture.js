@@ -1,18 +1,18 @@
 /**
- * CHÂTEAU GRAND V3.30 – Historische Hof- und Parkfassade mit gestaffelter Hülle.
+ * CHÂTEAU GRAND V3.31 – Historische Hof- und Parkfassade mit verfeinerten Raumboeden.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy330';
-import {resolveStaticFaces} from './surface-cleanup.js?v=roissy330';
+import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy331';
+import {resolveStaticFaces} from './surface-cleanup.js?v=roissy331';
 import {addPortalDoors,createOakFinish} from '../wohnzimmer/portal-doors-v2.js';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
-import {addRoissyPortal} from './portal-doors-v321.js?v=roissy330';
-import {PLAN,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy330';
+import {addRoissyPortal} from './portal-doors-v321.js?v=roissy331';
+import {PLAN,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy331';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
- const root=new THREE.Group();root.name='CHATEAU_ROISSY_V330_WANDANSCHLUESSE';scene.add(root);
+ const root=new THREE.Group();root.name='CHATEAU_ROISSY_V331_BODEN_REALISMUS';scene.add(root);
  const layers={eg:new THREE.Group(),og:new THREE.Group()};
  layers.eg.name='ROISSY_REZ_DE_CHAUSSEE_LE_ROUGE_1776';layers.og.name='ROISSY_PREMIER_ETAGE_LE_ROUGE_1776';root.add(layers.eg,layers.og);
  const bronze=new THREE.MeshStandardMaterial({color:0x282f36,metalness:.63,roughness:.35,side:THREE.DoubleSide});
@@ -472,50 +472,73 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  const salonVoid=[-6.70,6.70,X.parkBack+.40,-2.32],stairVoid=[-13.18,-6.77,-2.10,8.70];
  addSlab(OG-.095,[salonVoid,stairVoid]);
  addSlab(CORNICE-.15,[]);
- // Room-specific floor finishes: clipped against the actual deck, never across a void.
+ // V3.31: room-specific floor finishes, extended under skirtings and refined per room type.
  // Use metrically repeated UVs and a small physical finish height above the substrate.
  const parquetTex=(suffix,color=false)=>{
    if(typeof document==='undefined')return null;
    const t=tileLoader.load('./assets/interior/roissy_parquet_'+suffix+'.jpg');
-   t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;
+   t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=12;
    if(color)t.colorSpace=THREE.SRGBColorSpace;return t;
  };
- const parquet=new THREE.MeshStandardMaterial({name:'Roissy_Eichenparkett_Tafelverband',color:0xffffff,map:parquetTex('albedo',true),normalMap:parquetTex('normal'),roughness:.68,normalScale:new THREE.Vector2(.23,.23),polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
- const secondaryStone=vestibulePBR.clone();secondaryStone.name='Roissy_Kalkstein_Nebenraeume';secondaryStone.color.setHex(0xe7dfd2);
- const privateOak=finish('Roissy_Eichendielen_Privatraeume',0xf0e4d4,.95,mapsFor('interior/v318_oak_planks'),.22);privateOak.polygonOffset=true;privateOak.polygonOffsetFactor=-1;privateOak.polygonOffsetUnits=-2;
- const formalOak=parquet.clone();formalOak.name='Roissy_Eichenparkett_Salons';formalOak.color.setHex(0xfff5e7);formalOak.roughness=.62;
- const borderOak=privateOak.clone();borderOak.name='Roissy_Eiche_Randfries';borderOak.color.setHex(0xbba07e);const floorMats={oak:formalOak,privateOak,stone:secondaryStone,gallery:vestibulePBR,oakBorderX:borderOak,oakBorderZ:borderOak};
+ const oakTex=(file,color=false)=>{
+   if(typeof document==='undefined')return null;
+   const t=tileLoader.load('./assets/interior/'+file+'.jpg');
+   t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=12;
+   if(color)t.colorSpace=THREE.SRGBColorSpace;return t;
+ };
+ const parquet=new THREE.MeshPhysicalMaterial({name:'Roissy_Eichenparkett_Tafelverband',color:0xf8f0e2,map:parquetTex('albedo',true),normalMap:parquetTex('normal'),roughnessMap:parquetTex('roughness'),roughness:.56,clearcoat:.10,clearcoatRoughness:.48,reflectivity:.18,normalScale:new THREE.Vector2(.22,.22),polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
+ const secondaryStone=vestibulePBR.clone();secondaryStone.name='Roissy_Kalkstein_Nebenraeume';secondaryStone.color.setHex(0xece4d7);secondaryStone.roughness=.90;secondaryStone.normalScale=new THREE.Vector2(.14,.14);
+ const privateOak=new THREE.MeshPhysicalMaterial({name:'Roissy_Eichendielen_Privatraeume',color:0xf3e7d7,map:oakTex('v318_oak_planks_albedo',true),normalMap:oakTex('v318_oak_planks_normal'),roughnessMap:oakTex('v331_oak_planks_roughness'),roughness:.52,clearcoat:.08,clearcoatRoughness:.56,reflectivity:.15,normalScale:new THREE.Vector2(.18,.18),polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
+ const formalOak=parquet.clone();formalOak.name='Roissy_Eichenparkett_Salons';formalOak.color.setHex(0xfff6ea);formalOak.roughness=.48;formalOak.clearcoat=.12;formalOak.clearcoatRoughness=.44;
+ const passageOak=parquet.clone();passageOak.name='Roissy_Eichenparkett_Antichambres';passageOak.color.setHex(0xfaefe0);passageOak.roughness=.54;passageOak.clearcoat=.09;
+ const borderOak=privateOak.clone();borderOak.name='Roissy_Eiche_Randfries';borderOak.color.setHex(0xbd9d78);borderOak.roughness=.58;
+ const floorMats={oak:formalOak,privateOak,passageOak,stone:secondaryStone,gallery:vestibulePBR,oakBorderX:borderOak,oakBorderZ:borderOak};
  const floorBuffers=new Map();
- function surfaceRect(f,kind,rect,y){
+ function surfaceRect(f,kind,rect,y,uvShift=[0,0]){
    const key=f+':'+kind;
    if(!floorBuffers.has(key))floorBuffers.set(key,{pos:[],uv:[]});
    const {pos,uv}=floorBuffers.get(key),[x0,x1,z0,z1]=rect;
    interiorAudit.floorRects.push({floor:f,kind,rect:rect.slice(),y});
-   const scale=kind==='oak'?2.4:8.8;
-   for(const [x,z] of [[x0,z0],[x0,z1],[x1,z0],[x1,z0],[x0,z1],[x1,z1]]){pos.push(x,y,z);if(kind==='privateOak'||kind==='oakBorderX')uv.push(x/2.4,-z/1.12);else if(kind==='oakBorderZ')uv.push(z/2.4,x/1.12);else uv.push(x/scale,-z/scale);}
+   const scale=kind==='stone'||kind==='gallery'?6.9:kind==='passageOak'?2.9:2.7;
+   const [su,sv]=uvShift;
+   for(const [x,z] of [[x0,z0],[x0,z1],[x1,z0],[x1,z0],[x0,z1],[x1,z1]]){
+     pos.push(x,y,z);
+     if(kind==='privateOak'||kind==='oakBorderX')uv.push((x+su)/3.0,(-z+sv)/1.18);
+     else if(kind==='oakBorderZ')uv.push((z+su)/3.0,(x+sv)/1.18);
+     else if(kind==='passageOak')uv.push((x+su)/2.8,(-z+sv)/2.8);
+     else uv.push((x+su)/scale,(-z+sv)/scale);
+   }
  }
  for(const f of ['eg','og']){
    const y=f==='eg'?EG:OG,deck=slabAudit[f==='eg'?0:1].rectangles;
    const occupied=[];
    for(const r of ROOMDATA[f]){
      if(/Vide sur|Grand escalier|Escalier secondaire/.test(r.name)||(f==='eg'&&/Vestibule/.test(r.name)))continue;
-     const type=roomType(r),kind=type==='salon'?'oak':type==='private'?'privateOak':type==='hall'?'gallery':'stone';
-     // Finish field lies just inside estimated clear room boundary. The narrow existing
-     // stone perimeter and thresholds stay visible rather than bridging wall lines.
-     let bounds=[r.x-r.w/2-.04,r.x+r.w/2+.04,r.z-r.d/2-.04,r.z+r.d/2+.04];
-     if(bounds[3]>10.3&&(bounds[0]<-X.wingX||bounds[1]>X.wingX))bounds[3]=X.wingFront-.25;
-     if(r.name==='Salon')bounds=[-6.53,6.53,X.parkBack+.25,CROSS_WALL_Z-.20];
+     const type=roomType(r),kind=type==='salon'?'oak':type==='private'?'privateOak':type==='hall'?'gallery':type==='passage'?'passageOak':'stone';
+     // V3.31: carry the finish farther beneath the skirting so room floors no
+     // longer read as inset panels. Formal rooms still preserve thresholds and
+     // the structural stair/vestibule exclusions from previous versions.
+     const inset=kind==='stone'?.08:kind==='gallery'?.10:.18;
+     let bounds=[r.x-r.w/2-inset,r.x+r.w/2+inset,r.z-r.d/2-inset,r.z+r.d/2+inset];
+     if(bounds[3]>10.3&&(bounds[0]<-X.wingX||bounds[1]>X.wingX))bounds[3]=X.wingFront-.22;
+     if(r.name==='Salon')bounds=[-6.60,6.60,X.parkBack+.20,CROSS_WALL_Z-.16];
+     const uvShift=[r.x*0.45,r.z*0.35];
      let area=0;
      for(const d of deck){
        const b=[Math.max(d[0],bounds[0]),Math.min(d[1],bounds[1]),Math.max(d[2],bounds[2]),Math.min(d[3],bounds[3])];
        if(b[1]-b[0]<.02||b[3]-b[2]<.02)continue;
        let pieces=[b];for(const old of occupied)pieces=pieces.flatMap(rect=>subtract(rect,old));
        for(const rect of pieces){
-         if(kind==='oak'&&bounds[1]-bounds[0]>1.5&&bounds[3]-bounds[2]>1.5){
-           const [a,b,c,d]=bounds, t=.20;const strips=[['oakBorderX',[a,b,c,c+t]],['oakBorderX',[a,b,d-t,d]],['oakBorderZ',[a,a+t,c+t,d-t]],['oakBorderZ',[b-t,b,c+t,d-t]]];let core=[rect];
-           for(const [mat,strip] of strips){const overlap=[Math.max(rect[0],strip[0]),Math.min(rect[1],strip[1]),Math.max(rect[2],strip[2]),Math.min(rect[3],strip[3])];if(overlap[1]>overlap[0]+1e-6&&overlap[3]>overlap[2]+1e-6){surfaceRect(f,mat,overlap,y+.009);core=core.flatMap(p=>subtract(p,overlap));}}
-           for(const p of core)if(p[1]-p[0]>1e-6&&p[3]-p[2]>1e-6)surfaceRect(f,kind,p,y+.009);
-         }else surfaceRect(f,kind,rect,y+.009);
+         if((kind==='oak'||kind==='privateOak'||kind==='passageOak')&&bounds[1]-bounds[0]>1.55&&bounds[3]-bounds[2]>1.55){
+           const [a,b,c,d]=bounds, t=kind==='privateOak'?.14:.18;
+           const strips=[['oakBorderX',[a,b,c,c+t]],['oakBorderX',[a,b,d-t,d]],['oakBorderZ',[a,a+t,c+t,d-t]],['oakBorderZ',[b-t,b,c+t,d-t]]];
+           let core=[rect];
+           for(const [mat,strip] of strips){
+             const overlap=[Math.max(rect[0],strip[0]),Math.min(rect[1],strip[1]),Math.max(rect[2],strip[2]),Math.min(rect[3],strip[3])];
+             if(overlap[1]>overlap[0]+1e-6&&overlap[3]>overlap[2]+1e-6){surfaceRect(f,mat,overlap,y+.009,uvShift);core=core.flatMap(p=>subtract(p,overlap));}
+           }
+           for(const p of core)if(p[1]-p[0]>1e-6&&p[3]-p[2]>1e-6)surfaceRect(f,kind,p,y+.009,uvShift);
+         }else surfaceRect(f,kind,rect,y+.009,uvShift);
          occupied.push(rect);area+=(rect[1]-rect[0])*(rect[3]-rect[2]);
        }
      }
