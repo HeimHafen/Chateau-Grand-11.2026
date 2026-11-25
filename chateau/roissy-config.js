@@ -163,17 +163,17 @@ export const PLAN={
     "og": [
       {
         "name": "Chambre à coucher (aile ouest)",
-        "x": -24.155,
+        "x": -24.41425,
         "z": -7.53,
-        "w": 4.747,
+        "w": 4.2285,
         "d": 6.714,
         "level": 1
       },
       {
         "name": "Chambre à coucher",
-        "x": -17.333,
+        "x": -17.59225,
         "z": -6.708,
-        "w": 7.785,
+        "w": 8.3035,
         "d": 8.357,
         "level": 1
       },
@@ -422,7 +422,7 @@ export const GRAND_STAIR=Object.freeze({
 export const PERRON=Object.freeze({
   steps:7, firstCentreZ:14.80, treadDepth:.41, stoneTreadThickness:.15,
   width:12.72, groundHeight:0, landingHeight:EG,
-  terraceEndZ:14.85
+  terraceEndZ:14.595
 });
 
 // Le Rouge, 1776, plates 10/12: stepped court footprint, central park projection.

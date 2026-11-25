@@ -2,8 +2,8 @@ import * as THREE from '../vendor/three/build/three.module.js';
 import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from '../wohnzimmer/sky-atmosphere.js';
-import {buildChateau} from './architecture.js?v=roissy328';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy328';
+import {buildChateau} from './architecture.js?v=roissy330';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy330';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -29,7 +29,7 @@ async function run(){
   camera=new THREE.PerspectiveCamera(61,1,.24,850);camera.rotation.order='YXZ';
   atmospheric=buildSky(THREE,scene,camera);
   scene.add(new THREE.HemisphereLight(0xcce1f1,0x9f8c77,1.20));
-  // V3.28 uses only global daylight/ambient illumination. No added interior
+  // V3.30 uses only global daylight/ambient illumination. No added interior
   // point lights are created so the material judgement is not falsified by helper lighting.
   scene.add(new THREE.AmbientLight(0xffe9d0,.20));
   const sun=new THREE.DirectionalLight(0xffe8ca,2.05);
@@ -50,8 +50,8 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.28',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.28';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.30',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.30';
   start.disabled=false;start.textContent='Château erkunden';
   status.textContent='54 × 28,85 Meter (Rekonstruktionsmaß) · EG und 1. OG nach dem Roissy-Plan · Eingang und Haupttreppe begehbar.';
   resize();view('angle');

@@ -1,7 +1,5 @@
-# V3.28 – Grand Escalier: klassisches Stuckrelief und Gesimse
-Basis V3.27. 21 plastisch modellierte ovale Wandkartuschen mit symmetrischen Blattornamenten innerhalb vorhandener Wandfelder; neun zusätzliche gestufte Gesimsabschnitte; vier flache Eckfleurons im bestehenden Deckenfeld. Die Reliefs sind in zwei nach Geschoss zusammengefassten Meshes gebündelt, Deckenornamente in einem Mesh. Material: vorhandenes elfenbeinfarbenes Stuckmaterial mit lokalen Texturen. Historisch inspirierte Eigenentwicklung, kein originales Roissy-Aufmaß. Keine Änderungen an der Treppenführung, Geländern, Türen, Fenstern, Grundriss, Außenarchitektur, Beleuchtung oder Möblierung.
+# Château Grand Roissy V3.30 – Wandanschlüsse und Hofperron
 
-QA: `tests/validate-stair-style-v328.mjs` prüft 146160 Wandrelief- und 17760 Deckenornament-Vertices auf Lage innerhalb der vorgesehenen Felder, 44 Innentüröffnungen und null verbleibende geprüfte koplanare Boxflächenüberlappungen. Die Regressionstests für Treppe, Oberflächen, Innenräume, Stil V3.26/V3.27, Innentüren, Fenster, Portale, Türfugen und Fassade liefen erfolgreich vor der letzten kleinen Tiefenkorrektur am Kartuschenrahmen (danach V3.28-Test wiederholt). Syntax der aktiven Hauptmodule geprüft. Chromium mit Software-GPU scheiterte an EGL-Initialisierung und Zeitlimit; keine visuelle WebGL-/Safari-Freigabe und kein FPS-Nachweis.
+Grundrisskorrektur im westlichen Obergeschoss, durchgehende Wandanschlüsse und bündiger Natursteinaufbau am Hofperron. Einzelheiten, Entscheidungen und Testumfang: `CHANGES-V3.30.md`.
 
-## Installation
-ZIP entpacken und Inhalt in die Wurzel des bestehenden GitHub-Repositories übernehmen. Aufruf `?v=roissy328`; Anzeige ROISSY · V3.28.
+ZIP vollständig entpacken und den Inhalt in die Wurzel des bestehenden GitHub-Repositories übernehmen. Vorhandene Dateien ersetzen. Anschließend `?v=roissy330` aufrufen; Versionsanzeige: `ROISSY · V3.30`.
