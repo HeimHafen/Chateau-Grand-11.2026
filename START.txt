@@ -1,1 +1,7 @@
-V3.15: ZIP entpacken, sämtliche Dateien in Repository-Wurzel ersetzen, Commit + Push. Start: ?v=roissy315
+CHÂTEAU GRAND · ROISSY V3.65 · Ionische Säulen
+
+ZIP entpacken und die enthaltenen Dateien in die Wurzel des GitHub-Pages-Repositorys übernehmen. index.html muss auf derselben Ebene wie die Ordner chateau, assets und vendor liegen.
+
+Im Spiel „Übersicht“ wählen. Hof, Park, Westseite und Ostseite zeigen die vier Fassaden. „Überblick“ zeigt Dach und Gauben von oben.
+
+Die vier ionischen Säulen stehen im Erdgeschoss. Direkt erreichbar über „Innenräume …“ → „Vestibule · Eingangshalle“.

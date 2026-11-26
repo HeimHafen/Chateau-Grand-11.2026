@@ -1,3 +1,4 @@
+import {loadVestibuleColumn} from './vestibule-column.js?v=roissy365';
 import {loadAtticSeating} from './attic-seating.js?v=roissy363';
 import {CELLAR_SHAFT} from './level-stairs.js?v=roissy363';
 import {CELLAR} from './cellar.js?v=roissy363';
@@ -9,7 +10,7 @@ import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from './daylight-v342.js?v=roissy363';
 import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {loadGardenMaple} from '../wohnzimmer/garden-maple.js';
-import {buildChateau} from './architecture.js?v=roissy363';
+import {buildChateau} from './architecture.js?v=roissy365';
 import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy363';
 import {planSectionY} from './roissy-config.js?v=roissy363';
 
@@ -69,6 +70,7 @@ async function run(){
   surfaceLighting=new THREE.Group();
   surfaceLighting.add(sun,skyFill,ambient);
   scene.add(surfaceLighting);
+  const vestibuleColumn=await loadVestibuleColumn(THREE);
   // Register the texture load barrier before starting any asynchronous asset loads.
   const missingAssets=[];let resolveAssets;
   const assetsReady=new Promise(resolve=>{resolveAssets=resolve;});
@@ -77,7 +79,7 @@ async function run(){
   const mats=createExteriorMaterialLibrary(THREE);
   const glass=createRealisticExteriorGlass(THREE,renderer);
   buildLandscape(mats);
-  const chateau=buildChateau(THREE,scene,null,mats,glass);
+  const chateau=buildChateau(THREE,scene,null,mats,glass,vestibuleColumn);
   historicalChateau=chateau;
   loadAtticSeating(THREE,chateau.attic,markShadowDirty);
   chateau.cellar.root.visible=true;
@@ -101,8 +103,8 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.63',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.63';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.65',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.65';
   window.__CHATEAU_MAXGAME.importedFurniture=setupModelImport(THREE,chateau,scene,renderer);
   resize();view('angle');
   status.textContent='Architektur aufgebaut. Materialien und Texturen werden geladen …';
@@ -175,9 +177,11 @@ function view(which){
   document.body.classList.remove('walking');
   floorChoice=which==='eg'||which==='og'?which:null;
   const views={
-    front:{theta:0,phi:.06,d:92,target:[0,9.0,1]},
-    park:{theta:Math.PI,phi:.06,d:92,target:[0,9.0,0]},
-    angle:{theta:.46,phi:.38,d:99,target:[0,10.5,0]},
+    front:{theta:0,phi:.06,d:mobile?104:74,target:[0,9.0,1]},
+    park:{theta:Math.PI,phi:.28,d:mobile?104:74,target:[0,8.0,-1]},
+    west:{theta:-Math.PI/2,phi:.13,d:mobile?76:58,target:[0,8.6,2]},
+    east:{theta:Math.PI/2,phi:.13,d:mobile?76:58,target:[0,8.6,2]},
+    angle:{theta:.46,phi:.30,d:mobile?105:77,target:[0,8.9,0]},
     above:{theta:.45,phi:1.16,d:89,target:[0,8,0]},
     entrance:{theta:0,phi:.08,d:39,target:[0,5,12]},
     stairSide:{theta:1.10,phi:.22,d:35,target:[0,3,17]},
