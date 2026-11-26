@@ -1,6 +1,6 @@
-import {EG,OG,STAIR_WEST} from './roissy-config.js?v=roissy358';
-import {ATTIC} from './attic.js?v=roissy358';
-import {CELLAR} from './cellar.js?v=roissy358';
+import {EG,OG,STAIR_WEST} from './roissy-config.js?v=roissy360';
+import {ATTIC} from './attic.js?v=roissy360';
+import {CELLAR} from './cellar.js?v=roissy360';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
 
 export const CELLAR_SHAFT=[-20.80,-18.18,5.73,10.14];

@@ -1,20 +1,20 @@
-import {ATTIC_SHAFT,CELLAR_SHAFT,ATTIC_PORTAL,CELLAR_PORTAL,buildLevelStairs} from './level-stairs.js?v=roissy358';
-import {buildCellar} from './cellar.js?v=roissy358';
-import {buildAttic} from './attic.js?v=roissy358';
-import {installFurnishings} from './furnishings-v346.js?v=roissy358';
+import {ATTIC_SHAFT,CELLAR_SHAFT,ATTIC_PORTAL,CELLAR_PORTAL,buildLevelStairs} from './level-stairs.js?v=roissy360';
+import {buildCellar} from './cellar.js?v=roissy360';
+import {buildAttic} from './attic.js?v=roissy360';
+import {installFurnishings} from './furnishings-v346.js?v=roissy360';
 /**
  * CHÂTEAU GRAND V3.53 – Architekturfinish mit Gewölbekeller und Mansarde.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy358';
-import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy358';
-import {resolveStaticFaces} from './surface-cleanup.js?v=roissy358';
+import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy360';
+import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy360';
+import {resolveStaticFaces} from './surface-cleanup.js?v=roissy360';
 import {addPortalDoors,createOakFinish} from '../wohnzimmer/portal-doors-v2.js';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
-import {addRoissyPortal} from './portal-doors-v321.js?v=roissy358';
-import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy358';
+import {addRoissyPortal} from './portal-doors-v321.js?v=roissy360';
+import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy360';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_V345_GRAND_ESCALIER';scene.add(root);
@@ -35,38 +35,40 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    const load=(type,color=false)=>{const t=materialLoader.load('./assets/'+prefix+'_'+type+'.jpg');t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=4;if(color)t.colorSpace=THREE.SRGBColorSpace;return t;};
    const m={map:load('albedo',true),normalMap:load('normal')};if(hasRoughness)m.roughnessMap=load('roughness');mapsCache.set(prefix,m);return m;
  }
- const plasterMaps=mapsFor('interior/v317_plaster'),paintMaps=mapsFor('interior/v317_paint'),stoneMaps=mapsFor('heritage-v14/column_stone');
+ const plasterMaps=mapsFor('interior/v317_plaster'),stoneMaps=mapsFor('heritage-v14/column_stone');
+ const paintedFinish=Symbol('painted finish');
  function finish(name,color,roughness,source=plasterMaps,scale=.13){
-   const fields={name,color,roughness,metalness:0,...source,normalScale:new THREE.Vector2(scale,scale)};
-   if(source===paintMaps)return new THREE.MeshPhysicalMaterial({
-     ...fields,roughness:roughness-.10,clearcoat:.18,clearcoatRoughness:.44
-   });
-   return new THREE.MeshStandardMaterial(fields);
+   if(source===paintedFinish){
+     // Painted surfaces keep their colour without depending on a texture
+     // upload or the clearcoat shader variant.
+     return new THREE.MeshStandardMaterial({name,color,roughness:roughness-.06,metalness:0});
+   }
+   return new THREE.MeshStandardMaterial({name,color,roughness,metalness:0,...source,normalScale:new THREE.Vector2(scale,scale)});
  }
  const ceilingStone=finish('Roissy_Stuckdecke_Matt',0xfff9ee,.96,plasterMaps,.08);ceilingStone.side=THREE.DoubleSide;
  const cast={wall:mats.facadeWall,stone:mats.dressedStone,trim:mats.trim,window:mats.windowStone,
    sill:mats.shade,glass,sash:mats.paintedSash,bronze,bronzeTrim,gold,wood,stairIron,stairHandrail,floor:floorStone,ceiling:ceilingStone};
  Object.assign(cast,{
    intPlaster:finish('Roissy_Kalkputz_Warmweiss',0xfff9ee,.92),
-   intPanel:finish('Roissy_Boiserie_Greige',0xe3dac8,.75,paintMaps,.06),
-   intFrame:finish('Roissy_Profilleiste_Elfenbein',0xf4eadb,.78,paintMaps,.06),
-   intShadow:finish('Roissy_Profil_Kehle',0xd9ccba,.90,paintMaps,.05),
+   intPanel:finish('Roissy_Boiserie_Greige',0xe3dac8,.75,paintedFinish,.06),
+   intFrame:finish('Roissy_Profilleiste_Elfenbein',0xf4eadb,.78,paintedFinish,.06),
+   intShadow:finish('Roissy_Profil_Kehle',0xd9ccba,.90,paintedFinish,.05),
    intService:finish('Roissy_Nebenraum_Kalkputz',0xeae5d9,.96),
    intHall:finish('Roissy_Vestibule_Kalkstein',0xfff6e8,.91,stoneMaps,.17),
    intHallPanel:finish('Roissy_Vestibule_Geschliffener_Kalkstein',0xf3e8d7,.86,stoneMaps,.12),
    intSalon:finish('Roissy_Salon_Elfenbein',0xfffcf4,.88),
-   intSalonPanel:finish('Roissy_Salon_Boiserie_Elfenbein',0xf3e9d8,.70,paintMaps,.07),
-   intPrivatePanel:finish('Roissy_Chambre_Boiserie_Salbeigrau',0xd5d9cb,.76,paintMaps,.06),
-   intPassagePanel:finish('Roissy_Passage_Boiserie_Sand',0xded2bd,.83,paintMaps,.07),
-   intBasePaint:finish('Roissy_Sockel_Gestrichenes_Elfenbein',0xf0e6d6,.77,paintMaps,.045),
+   intSalonPanel:finish('Roissy_Salon_Boiserie_Elfenbein',0xf3e9d8,.70,paintedFinish,.07),
+   intPrivatePanel:finish('Roissy_Chambre_Boiserie_Salbeigrau',0xd5d9cb,.76,paintedFinish,.06),
+   intPassagePanel:finish('Roissy_Passage_Boiserie_Sand',0xded2bd,.83,paintedFinish,.07),
+   intBasePaint:finish('Roissy_Sockel_Gestrichenes_Elfenbein',0xf0e6d6,.77,paintedFinish,.045),
    intBaseStone:finish('Roissy_Sockel_Geschliffener_Kalkstein',0xf1e7d7,.86,stoneMaps,.12),
-   intBaseRecess:finish('Roissy_Sockel_Schattenkehle',0xd8ccbb,.83,paintMaps,.045),
-   intBaseCap:finish('Roissy_Sockel_Profilabschluss',0xf8f1e5,.76,paintMaps,.045),
+   intBaseRecess:finish('Roissy_Sockel_Schattenkehle',0xd8ccbb,.83,paintedFinish,.045),
+   intBaseCap:finish('Roissy_Sockel_Profilabschluss',0xf8f1e5,.76,paintedFinish,.045),
    intStairStone:finish('Roissy_GrandEscalier_Kalkstein',0xfff5e6,.68,stoneMaps,.18),
    intCeilingBand:finish('Roissy_Deckenfries_Kalkperle',0xece2d3,.83,plasterMaps,.055),
-   intPaintBevel:finish('Roissy_Boiserie_Lichtkante',0xf8efdf,.73,paintMaps,.045),
+   intPaintBevel:finish('Roissy_Boiserie_Lichtkante',0xf8efdf,.73,paintedFinish,.045),
    intStucField:finish('Roissy_Stuck_Innenfeld_Perlweiss',0xfff8ee,.94,plasterMaps,.07),
-   intStucRelief:finish('Roissy_Stuck_Profil_Elfenbein',0xfff9ee,.86,paintMaps,.05),
+   intStucRelief:finish('Roissy_Stuck_Profil_Elfenbein',0xfff9ee,.86,paintedFinish,.05),
    intStucRecess:finish('Roissy_Stuck_Kehle_Warmgrau',0xe1d4c0,.90,plasterMaps,.06),
    intBrass:new THREE.MeshStandardMaterial({name:'Roissy_Patinierte_Messingdetails',color:0xb39a6b,roughness:.48,metalness:.45})
  });
@@ -99,11 +101,11 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    service:{label:'Kalkputz / warmes Greige',wall:'intService',panel:'intPanel'}
  };
  Object.assign(cast,{
-   intRoomParade:finish('Roissy_Boiserie_Champagner',0xe6d3b7,.70,paintMaps,.055),
-   intRoomDining:finish('Roissy_Boiserie_Salbei',0xc5cdbb,.74,paintMaps,.06),
-   intRoomAssembly:finish('Roissy_Boiserie_Sandsteinfarbig',0xe2d5bf,.73,paintMaps,.06),
-   intRoomMusic:finish('Roissy_Boiserie_Rauchblau',0xc0cbd0,.73,paintMaps,.055),
-   intRoomCabinet:finish('Roissy_Boiserie_Blaugrau',0xcbd2d0,.77,paintMaps,.06)
+   intRoomParade:finish('Roissy_Boiserie_Champagner',0xe6d3b7,.70,paintedFinish,.055),
+   intRoomDining:finish('Roissy_Boiserie_Salbei',0xc5cdbb,.74,paintedFinish,.06),
+   intRoomAssembly:finish('Roissy_Boiserie_Sandsteinfarbig',0xe2d5bf,.73,paintedFinish,.06),
+   intRoomMusic:finish('Roissy_Boiserie_Rauchblau',0xc0cbd0,.73,paintedFinish,.055),
+   intRoomCabinet:finish('Roissy_Boiserie_Blaugrau',0xcbd2d0,.77,paintedFinish,.06)
  });
  function roomFinishKey(r){
    const n=r.name;
@@ -124,12 +126,12 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  cast.windowGlass=windowGlass;
  windowGlass.envMap=glass.envMap||null;
  windowGlass.onBeforeRender=()=>{if(glass.envMap&&windowGlass.envMap!==glass.envMap){windowGlass.envMap=glass.envMap;windowGlass.needsUpdate=true;}};
- cast.windowSash=finish('Roissy_Fensterholz_Warmes_Anthrazit',0x373632,.66,paintMaps,.045);
- cast.windowFillet=finish('Roissy_Fensterholz_Glasfalz_V340',0x49443d,.64,paintMaps,.035);
+ cast.windowSash=finish('Roissy_Fensterholz_Warmes_Anthrazit',0x373632,.66,paintedFinish,.045);
+ cast.windowFillet=finish('Roissy_Fensterholz_Glasfalz_V340',0x49443d,.64,paintedFinish,.035);
  cast.windowSill=finish('Roissy_Fensterbank_Geschliffener_Kalkstein_V340',0xeee4d4,.78,stoneMaps,.10);
- cast.windowGasket=finish('Roissy_Fensterholz_Schattenfalz_V340',0x302d29,.80,paintMaps,.03);
+ cast.windowGasket=finish('Roissy_Fensterholz_Schattenfalz_V340',0x302d29,.80,paintedFinish,.03);
  const windowHardwareParts=[];
- cast.windowBead=finish('Roissy_Fensterholz_Profil',0x514a40,.72,paintMaps,.035);
+ cast.windowBead=finish('Roissy_Fensterholz_Profil',0x514a40,.72,paintedFinish,.035);
  cast.windowReveal=finish('Roissy_Fensterlaibung_Geschliffener_Kalkstein',0xf2e8d7,.89,stoneMaps,.10);
  cast.stairRiserBand=finish('Roissy_Treppenfries_Sandader',0xc8b398,.72,stoneMaps,.075);
  const stairWalnut=createOakFinish(THREE,0x634432);stairWalnut.name='Roissy_Treppe_Poliertes_Dunkelholz';stairWalnut.roughness=.29;
@@ -1635,7 +1637,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.anisotropy=8;slate.map=tex;slate.color.setHex(0xd6dce1);
  }
  const e=CORNICE+.18,shoulder=15.4,ridge=17.45,inset=2.7;
- const mansardPanels=[];
+ const mansardPanels=[],roofWindowEdges=[];
  function poly(pts,mat,name){
    const vertices=pts.map(p=>new THREE.Vector3(...p));
    const normal=vertices[1].clone().sub(vertices[0]).cross(vertices[2].clone().sub(vertices[0])).normalize();
@@ -1692,7 +1694,8 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    beam('bronzeTrim',[side*l,shoulder+.028,-q],[side*l,shoulder+.028,q],.036);
  }
  function roofWindowReveal(x,sign,half,low,high,face,sill,head){
-   const inner=(u,t)=>{const p=roofPoint(x+u,t,sign);p[1]-=.045;return p;};
+   const inner=(u,t)=>{const p=roofPoint(x+u,t,sign);p[1]-=.048;return p;};
+   roofWindowEdges.push([inner(-half,low),inner(half,low),inner(half,high),inner(-half,high)]);
    const outer=(u,y)=>[x+u,y,face];
    const reveal=(points,name)=>{
      const o=poly(points,'windowReveal',name);
@@ -1826,7 +1829,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  }
  const atticGallery=buildAttic(THREE,root,slabAudit[2].rectangles,{
    oak:cast.stairWalnut,parquet:privateOak,plaster:cast.intPlaster,stone:cast.intHallPanel,iron:cast.stairForged
- },{eaves:e,shoulder,ridge,inset,panels:mansardPanels});
+ },{eaves:e,shoulder,ridge,inset,panels:mansardPanels,windowEdges:roofWindowEdges});
  // V3.28 intentionally adds no new interior light fixtures. Material realism is
  // developed first, while local lantern geometry and helper light sources stay absent
  // so the user can evaluate space purely through daylight and surface response.
