@@ -1,4 +1,4 @@
-import {CORNICE,HALF_D,HALF_W} from './roissy-config.js?v=roissy360';
+import {CORNICE,HALF_D,HALF_W} from './roissy-config.js?v=roissy361';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
 
 export const ATTIC={
@@ -17,10 +17,10 @@ export function buildAttic(T,root,deck,materials,roof){
   const brass=new T.MeshStandardMaterial({name:'Mansarde · patiniertes Messing',color:0xc39855,metalness:.67,roughness:.36});
   const paleOak=oak.clone();
   paleOak.name='Mansarde · geölte Eiche am Fenster';
-  paleOak.color.setHex(0xaf8459);
+  paleOak.color.setHex(0xbb936b);
   const insetPanel=plaster.clone();
   insetPanel.name='Mansarde · Leinenfarbener Kalkputz';
-  insetPanel.color.setHex(0xebdfca);
+  insetPanel.color.setHex(0xded6c8);
   const flame=new T.MeshStandardMaterial({color:0xffe7b8,emissive:0xffad52,emissiveIntensity:2.8});
   const lining=plaster.clone();
   lining.name='Mansarde · heller Kalkputz an der Dachschräge';
@@ -88,8 +88,17 @@ export function buildAttic(T,root,deck,materials,roof){
     geo.translate(0,-.048,0);
     add(lining,geo);
   }
-  for(const frame of windowEdges)for(let i=0;i<frame.length;i++)
-    beam(frame[i],frame[(i+1)%frame.length],.044,.052,paleOak);
+  for(const frame of windowEdges){
+    const sign=Math.sign(frame[0][2]);
+    const outward=(point,x,y,z)=>[point[0]+x,point[1]+y,point[2]+sign*z];
+    const [left,right,topRight,topLeft]=frame;
+    // Keep each profile on the lining side of the opening.
+    beam(outward(left,-.019,-.023,0),outward(right,.019,-.023,0),.051,.083,stone);
+    beam(outward(left,-.025,0,0),outward(topLeft,-.025,.018,0),.039,.047,paleOak);
+    beam(outward(right,.025,0,0),outward(topRight,.025,.018,0),.039,.047,paleOak);
+    beam(outward(topRight,.046,.023,0),outward(topLeft,-.046,.023,0),.041,.048,paleOak);
+    beam(outward(left,-.065,-.065,-.012),outward(right,.065,-.065,-.012),.022,.049,paleOak);
+  }
   for(const side of [-1,1]){
     const wallZ=side*(d+.096);
     box(plaster,0,floor+.39,wallZ,2*w,.78,.19);
@@ -124,13 +133,21 @@ export function buildAttic(T,root,deck,materials,roof){
     }
     box(stone,side*(w-.05),floor+.065,0,.13,.13,2*d);
     const face=side*(w-.024);
-    for(const z of [-5.50,0,5.50]){
-      box(insetPanel,face,floor+1.41,z,.046,2.29,4.71);
+    const panelCenters=[-6.5,-3.3,0,3.3,6.5];
+    for(const z of panelCenters){
+      const width=z===0?3.27:2.86;
+      const top=Math.min(floor+2.58,roofHeight(w,Math.abs(z)+width/2)-.27);
+      const bottom=floor+.88, height=top-bottom, mid=(bottom+top)/2;
+      box(insetPanel,face,mid,z,.036,height,width);
       for(const edge of [-1,1]){
-        box(paleOak,face-side*.033,floor+1.41,z+edge*2.40,.055,2.43,.054);
-        box(paleOak,face-side*.033,floor+1.41+edge*1.19,z,.055,.054,4.79);
+        box(stone,face-side*.027,mid,z+edge*width/2,.050,height+.05,.064);
+        box(stone,face-side*.027,mid+edge*height/2,z,.050,.064,width);
+        box(paleOak,face-side*.049,mid,z+edge*(width/2-.058),.022,height-.116,.016);
+        box(paleOak,face-side*.049,mid+edge*(height/2-.058),z,.022,.016,width-.116);
       }
     }
+    box(paleOak,face-side*.035,floor+.745,0,.094,.058,2*d);
+    box(stone,face-side*.025,floor+.688,0,.080,.075,2*d);
   }
 
   // Transverse oak trusses follow the mansard profile and leave the passage clear.
