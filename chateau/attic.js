@@ -1,16 +1,15 @@
-import {CORNICE,HALF_D,HALF_W} from './roissy-config.js?v=roissy355';
+import {CORNICE,HALF_D,HALF_W} from './roissy-config.js?v=roissy358';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
 
 export const ATTIC={
   floor:CORNICE-.055+.025,
   halfWidth:22.8,
   halfDepth:9.8,
-  domeHousing:[-2.12,2.12,2.39,6.21],
   entry:{x:-18,z:0,yaw:-Math.PI/2}
 };
 
 export function buildAttic(T,root,deck,materials,roof){
-  const {floor,halfWidth:w,halfDepth:d,domeHousing:[a,b,c,e]}=ATTIC;
+  const {floor,halfWidth:w,halfDepth:d}=ATTIC;
   const group=new T.Group();
   group.name='Roissy_Dachgeschoss_Mansardengalerie';
   root.add(group);
@@ -76,10 +75,13 @@ export function buildAttic(T,root,deck,materials,roof){
     box(plaster,0,floor+.39,wallZ,2*w,.78,.19);
     box(stone,0,floor+.061,side*(d+.025),2*w,.12,.22);
     box(oak,0,floor+.792,wallZ,2*w,.064,.29);
+    box(stone,0,floor+.740,side*(d-.016),2*w,.020,.082);
     const bay=2*w/20;
     for(let i=0;i<20;i++){
       const x=-w+(i+.5)*bay,faceZ=side*(d-.020);
       box(stone,x,floor+.43,faceZ,bay-.21,.47,.042);
+      box(plaster,x,floor+.43,side*(d-.044),bay-.36,.338,.014);
+      for(const edge of [-1,1])box(oak,x+edge*(bay-.26)/2,floor+.426,side*(d-.067),.011,.365,.018);
       for(const edge of [-1,1]){
         box(oak,x+edge*(bay-.23)/2,floor+.43,side*(d-.048),.026,.49,.035);
         box(oak,x,floor+.43+edge*.233,side*(d-.048),bay-.23,.024,.035);
@@ -116,23 +118,6 @@ export function buildAttic(T,root,deck,materials,roof){
       beam([x,tie-.11,side*(shoulderZ-.35)],[x,tie+.70,side*(shoulderZ-3.45)],.12);
     }
   }
-  // Oak housing spans the preserved dome opening; its perimeter is solid.
-  const height=1.15,midZ=(c+e)/2;
-  for(const x of [a+.06,b-.06])box(stone,x,floor+.058,midZ,.15,.116,e-c+.025);
-  for(const z of [c+.06,e-.06])box(stone,0,floor+.058,z,b-a-.27,.116,.15);
-  box(oak,0,floor+height,midZ,b-a+.04,.12,e-c+.04);
-  for(const x of [a+.07,b-.07]){
-    box(oak,x,floor+height/2,midZ,.14,height,e-c);
-    for(const z of [c+.07,midZ,e-.07])box(stone,x+Math.sign(x)*.075,floor+.55,z,.044,.91,.10);
-  }
-  for(const z of [c+.07,e-.07]){
-    box(oak,0,floor+height/2,z,b-a-.28,height,.14);
-    for(const x of [-1.62,-.54,.54,1.62]){
-      const zFace=z+Math.sign(z-midZ)*.075;
-      box(stone,x,floor+.55,zFace,.061,.90,.044);
-    }
-  }
-
   // Low-poly lanterns hang from the same timber bays that support the roof.
   const lights=[];
   for(const x of [-15.15,-7.05,7.05,15.15]){

@@ -21,7 +21,7 @@ for(const f of ['eg','og'])for(const w of SECONDARY_ROOM_WALLS[f]){
 }
 const doors=[...a.entranceDoors,...a.interiorDoors];let p={x:-24.45,z:-5.10,footY:OG},walk=0;
 function go(x,z){for(let i=0;i<2000;i++){const d=Math.hypot(x-p.x,z-p.z);if(d<1e-7)return;const n=Math.min(.045,d),nx=p.x+(x-p.x)*n/d,nz=p.z+(z-p.z)*n/d;let q;for(let wait=0;wait<150;wait++){for(const d of doors)d.door.update(1/60,p.x,p.z,p.footY);q=candidateStep(p,nx,nz,a,doors);if(q)break;}check(q,'west walk blocked '+JSON.stringify({p,nx,nz}));p=q;walk++;}throw Error('route limit');}
-for(const [x,z] of [[-24.45,-2.2],[-24.45,1.1],[-24.45,5.3],[-20.0,5.3],[-24.45,5.3],[-24.45,1.1],[-24.45,-2.2],[-24.45,-5.1]])go(x,z);
+for(const [x,z] of [[-24.45,-2.2],[-24.45,1.1],[-24.45,5.3],[-21.24,5.3],[-21.24,9.35],[-20,9.35],[-21.24,9.35],[-21.24,5.3],[-24.45,5.3],[-24.45,1.1],[-24.45,-2.2],[-24.45,-5.1]])go(x,z);
 const stones=[];scene.traverse(o=>{if(o.isMesh&&o.material?.name==='Roissy_GrandEscalier_Kalkstein')stones.push(o);});
 const ray=new THREE.Raycaster();let treadSamples=0;
 const checkHeight=(x,z,y)=>{ray.set(new THREE.Vector3(x,EG+3,z),new THREE.Vector3(0,-1,0));const hit=ray.intersectObjects(stones,false)[0];check(hit&&Math.abs(hit.point.y-y)<.0001,'wrong rendered stone height '+[x,z,y,hit?.point.y]);check(Math.abs(surfaceHeight(x,z,EG)-y)<.0001,'navigation mismatch');treadSamples++;};

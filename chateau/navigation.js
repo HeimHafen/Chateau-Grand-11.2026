@@ -1,8 +1,8 @@
-import {stairStep} from './level-stairs.js?v=roissy355';
-import {CELLAR,cellarBlocks,cellarPlace} from './cellar.js?v=roissy355';
-import {ATTIC} from './attic.js?v=roissy355';
+import {stairStep} from './level-stairs.js?v=roissy358';
+import {CELLAR,cellarBlocks,cellarPlace} from './cellar.js?v=roissy358';
+import {ATTIC} from './attic.js?v=roissy358';
 /** Château Grand V3.4 – walkable ground floor and Premier Étage, shared plan metres. */
-import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR,PERRON,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy355';
+import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR,PERRON,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy358';
 export const EG_Y=EG,OG_Y=OG,EYE_Y=1.69;
 export const WALK_RADIUS=.30;
 const H=(OG-EG)*.5;
@@ -65,9 +65,7 @@ export function collidesAt(x,z,foot,architecture,doors=[]){
   const r=WALK_RADIUS,og=foot>(EG+OG)/2+.18;
   if(foot===CELLAR.floor)return cellarBlocks(x,z,r);
   if(foot===ATTIC.floor){
-    const [x0,x1,z0,z1]=ATTIC.domeHousing;
-    return Math.abs(x)>ATTIC.halfWidth-r||Math.abs(z)>ATTIC.halfDepth-r||
-      touches(x,z,{x0:x0-.03,x1:x1+.03,z0:z0-.03,z1:z1+.03});
+    return Math.abs(x)>ATTIC.halfWidth-r||Math.abs(z)>ATTIC.halfDepth-r;
   }
   for(const s of FACADE_SEGMENTS){
     const along=s.axis==='x'?x:z,across=s.axis==='x'?z:x;

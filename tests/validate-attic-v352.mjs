@@ -30,11 +30,11 @@ for(const [x,z] of [[20,0],[20,9.25],[-22.15,9.25],[-22.15,-8],[20,-8]]){
   }
 }
 const pose={x:0,z:1.9,footY:ATTIC.floor};
-assert.equal(candidateStep(pose,0,2.12,castle),null,'collision at dome enclosure');
+assert(candidateStep(pose,0,2.12,castle),'unobstructed gallery through former dome enclosure');
 assert.equal(candidateStep(player,ATTIC.halfWidth,0,castle),null,'hip wall collision');
 assert.equal(candidateStep(player,0,-ATTIC.halfDepth,castle),null,'knee wall collision');
 ray.set(new T.Vector3(0,ATTIC.floor+EYE_Y,4.3),down);
-assert.equal(ray.intersectObject(floor).length,0,'original dome aperture remains unplanked');
+assert.equal(ray.intersectObject(floor).length,1,'oak floor closes former dome aperture');
 assert.equal(castle.attic.lights.length,4);
 assert.match(describePlace(player.x,player.z,player.footY,castle),/Mansardengalerie/);
 console.log({steps,floorMeshes:1,atticBatches:castle.attic.group.children.length,lanterns:4});

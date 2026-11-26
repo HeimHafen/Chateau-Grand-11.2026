@@ -1,6 +1,6 @@
-import {EG,OG,STAIR_WEST} from './roissy-config.js?v=roissy355';
-import {ATTIC} from './attic.js?v=roissy355';
-import {CELLAR} from './cellar.js?v=roissy355';
+import {EG,OG,STAIR_WEST} from './roissy-config.js?v=roissy358';
+import {ATTIC} from './attic.js?v=roissy358';
+import {CELLAR} from './cellar.js?v=roissy358';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
 
 export const CELLAR_SHAFT=[-20.80,-18.18,5.73,10.14];
@@ -54,7 +54,7 @@ export function stairStep(from,x,z,r){
 
 export function buildLevelStairs(T,parent,materials){
   const groups=[];
-  const glow=new T.MeshStandardMaterial({name:'Roissy_Treppenlaterne_Opalglas',color:0xffe5b9,emissive:0xffab5b,emissiveIntensity:1.85});
+  const glow=new T.MeshStandardMaterial({name:'Roissy_Treppenlaterne_Opalglas',color:0xffe5b9,emissive:0xffab5b,emissiveIntensity:.92});
   for(const stair of stairs){
     const {a,b,c,d,mid,start,going,rise}=layout(stair);
     const group=new T.Group();
@@ -92,6 +92,8 @@ export function buildLevelStairs(T,parent,materials){
       const incline=-Math.atan2(slope*rise,going);
       const span=Math.hypot(d-start,(stair.count-1)*rise);
       const midY=startY-slope*(stair.count-1)*rise/2,midZ=(start+d)/2;
+      // The closed underside follows the stair pitch and meets both stringers.
+      box(tread,x,midY-.222,midZ,r-l-.077,.155,span,incline);
       for(const edge of [l,r]){
         const inward=edge===l?1:-1;
         // A continuous stringer ties the treads and the turning platform together.
@@ -118,11 +120,15 @@ export function buildLevelStairs(T,parent,materials){
       box(brass,x,y+.163,z,.20,.059,.16);
       for(const u of [-.079,.079])for(const v of [-.057,.057])box(iron,x+u,y,z+v,.018,.30,.018);
       box(glow,x,y,z,.123,.254,.082);
-      const lamp=new T.PointLight(0xffc591,10,3.8,2);
+      const lamp=new T.PointLight(0xffce9f,3.6,3.5,2);
       lamp.position.set(x,y,z+.10);
       group.add(lamp);
     }
     box(wood,mid,turnY+1,c+.12,b-a-.24,.073,.074);
+    for(const x of [a+.12,b-.12]){
+      box(wood,x,turnY+1,(c+.12+start)/2,.077,.068,start-c-.12);
+      for(const z of [c+.29,c+.48,start-.18])box(iron,x,turnY+.49,z,.030,.98,.031);
+    }
     for(let x=a+.16;x<b-.1;x+=.16)box(iron,x,turnY+.49,c+.12,.03,.98,.029);
     // Guard the upper opening on all sides except the uphill flight.
     for(const [x0,x1,z0,z1] of [[a,b,c,c],[a,a,c,d],[b,b,c,d],[a,mid+centreGap/2,d,d]]){
@@ -132,6 +138,14 @@ export function buildLevelStairs(T,parent,materials){
     }
     // Dressed reveals bridge the underground vault and the opening in the floor above.
     if(stair.id==='cellar'){
+      // Masonry supports sit under the rear edge of the intermediate landing,
+      // away from the flight entries and retaining-wall arches.
+      for(const x of [a+.19,b-.19]){
+        const h=turnY-stair.low-.20;
+        box(stone,x,stair.low+h/2,c+.16,.31,h,.31);
+        box(stone,x,stair.low+.09,c+.16,.39,.18,.39);
+        box(stone,x,turnY-.30,c+.16,.38,.16,.38);
+      }
       for(const x of [a-.09,b+.09])box(stone,x,-.13,(c+d)/2,.18,2.43,d-c);
       box(stone,mid,-.13,c-.09,b-a+.36,2.43,.18);
       box(stone,mid,-.13,d+.09,b-a+.36,2.43,.18);

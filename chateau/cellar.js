@@ -1,4 +1,4 @@
-import {HALF_W,HALF_D,EXTERIOR as X,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy355';
+import {HALF_W,HALF_D,EXTERIOR as X,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy358';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
 
 const passages=[-22,-14,-7,0,7,14,22];
@@ -89,7 +89,7 @@ export function buildCellar(T,parent,mats,shaft){
     const span=b-a+.08;
     box(stone,x,(floor+top)/2,z,axis==='x'?span:.51,top-floor,axis==='x'?.51:span);
     const dx=axis==='x'?0:normal*.23,dz=axis==='x'?normal*.23:0;
-    for(const [height,h,depth,mat] of [[.18,.36,.20,granite],[2.22,.13,.24,trim]]){
+    for(const [height,h,depth,mat] of [[.18,.36,.20,granite],[.372,.044,.224,sandstone],[2.126,.048,.175,sandstone],[2.22,.13,.24,trim],[2.304,.039,.208,stone]]){
       box(mat,x-dx,floor+height,z-dz,axis==='x'?span:depth,h,axis==='x'?depth:span);
     }
   }

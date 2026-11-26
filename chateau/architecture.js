@@ -1,20 +1,20 @@
-import {ATTIC_SHAFT,CELLAR_SHAFT,ATTIC_PORTAL,CELLAR_PORTAL,buildLevelStairs} from './level-stairs.js?v=roissy355';
-import {buildCellar} from './cellar.js?v=roissy355';
-import {buildAttic} from './attic.js?v=roissy355';
-import {installFurnishings} from './furnishings-v346.js?v=roissy355';
+import {ATTIC_SHAFT,CELLAR_SHAFT,ATTIC_PORTAL,CELLAR_PORTAL,buildLevelStairs} from './level-stairs.js?v=roissy358';
+import {buildCellar} from './cellar.js?v=roissy358';
+import {buildAttic} from './attic.js?v=roissy358';
+import {installFurnishings} from './furnishings-v346.js?v=roissy358';
 /**
  * CHÂTEAU GRAND V3.53 – Architekturfinish mit Gewölbekeller und Mansarde.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy355';
-import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy355';
-import {resolveStaticFaces} from './surface-cleanup.js?v=roissy355';
+import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy358';
+import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy358';
+import {resolveStaticFaces} from './surface-cleanup.js?v=roissy358';
 import {addPortalDoors,createOakFinish} from '../wohnzimmer/portal-doors-v2.js';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
-import {addRoissyPortal} from './portal-doors-v321.js?v=roissy355';
-import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy355';
+import {addRoissyPortal} from './portal-doors-v321.js?v=roissy358';
+import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy358';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_V345_GRAND_ESCALIER';scene.add(root);
@@ -63,6 +63,8 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    intBaseRecess:finish('Roissy_Sockel_Schattenkehle',0xd8ccbb,.83,paintMaps,.045),
    intBaseCap:finish('Roissy_Sockel_Profilabschluss',0xf8f1e5,.76,paintMaps,.045),
    intStairStone:finish('Roissy_GrandEscalier_Kalkstein',0xfff5e6,.68,stoneMaps,.18),
+   intCeilingBand:finish('Roissy_Deckenfries_Kalkperle',0xece2d3,.83,plasterMaps,.055),
+   intPaintBevel:finish('Roissy_Boiserie_Lichtkante',0xf8efdf,.73,paintMaps,.045),
    intStucField:finish('Roissy_Stuck_Innenfeld_Perlweiss',0xfff8ee,.94,plasterMaps,.07),
    intStucRelief:finish('Roissy_Stuck_Profil_Elfenbein',0xfff9ee,.86,paintMaps,.05),
    intStucRecess:finish('Roissy_Stuck_Kehle_Warmgrau',0xe1d4c0,.90,plasterMaps,.06),
@@ -213,6 +215,8 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      if(upperDado>.28){
        put(scheme.panel,mid,base+(.242+upperDado)/2,span,upperDado-.242,.018,.021);
        if(full){
+         put('intPaintBevel',mid,base+1.073,span,.014,.021,.067);
+         put('intShadow',mid,base+.256,span,.014,.019,.030);
          put('intFrame',mid,base+1.045,span,.055,.052,.047);
          put('intShadow',mid,base+1.10,span,.026,.035,.038);
        }
@@ -241,6 +245,11 @@ export function buildChateau(THREE,scene,donor,mats,glass){
        const beadY=d<0?bottom+.035:upper-.035;
        put('intBaseCap',m+d*(pw/2-.035),(bottom+upper)/2,.013,upper-bottom-.083,.017,.066);
        put('intBaseCap',m,beadY,pw-.057,.013,.017,.066);
+       const inset=.11, half=pw/2-inset;
+       if(half>.10){
+         put('intPaintBevel',m+d*half,(bottom+upper)/2,.012,upper-bottom-2*inset,.012,.031);
+         put('intPaintBevel',m,d<0?bottom+inset:upper-inset,2*half-.012,.012,.012,.031);
+       }
      }
      // Formal boiserie: a broad recessed field and finely graduated frame.
      // All details remain within the panel, rather than covering apertures.
@@ -383,7 +392,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      }
      if(arched){put('windowFillet',0,spring,width-2*f,.028,.012,face*.056);detail.glazingBarProfiles++;}
    }
-   if(kind==='facade'){
+   if(kind==='facade'||kind==='attic'||kind==='dormer'){
      // Finish wraps the masonry opening up to the wooden frame. The chamfered
      // face mouldings project only toward the room, not into the light opening.
      if(!arched){
@@ -444,6 +453,14 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      const frame=archShape(r+.19,-.08),hole=new THREE.Path();hole.moveTo(-r,isDoor?-.08:0);hole.lineTo(-r,spring);hole.absarc(0,spring,r,Math.PI,0,true);hole.lineTo(r,isDoor?-.08:0);hole.closePath();frame.holes.push(hole);
      let archFrame=frame;if(isDoor){archFrame=new THREE.Shape();archFrame.moveTo(-r-.19,0);archFrame.lineTo(-r-.19,spring);archFrame.absarc(0,spring,r+.19,Math.PI,0,true);archFrame.lineTo(r+.19,0);archFrame.lineTo(r,0);archFrame.lineTo(r,spring);archFrame.absarc(0,spring,r,0,Math.PI,false);archFrame.lineTo(-r,0);archFrame.closePath();}
      const f=mesh(new THREE.ExtrudeGeometry(archFrame,{depth:.20,bevelEnabled:false}),'window','Roissy_Bogenarchivolte');transform(f,.23);
+     // The outer roll follows the real archivolt and stays outside the light opening.
+     const rim=new THREE.TorusGeometry(r+.134,.023,9,42,Math.PI);
+     rim.translate(0,spring,0);
+     transform(mesh(rim,'trim','Roissy_Archivolte_Aussenprofil'),.444);
+     for(const side of [-1,1]){
+       along('trim',at+side*(r+.134),y+spring/2,.046,spring,.046,.444);
+       along('stone',at+side*(r+.132),y+spring-.018,.161,.105,.112,.43);
+     }
      if(isDoor){
        const door=addRoissyPortal(THREE,root,mats,glass,at,fixed,width,height,y);doors.push({x:at,z:fixed,base:y,door});
      }else{
@@ -463,13 +480,26 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    along('trim',at,y+height+.12,width+.42,.20,.60,.30);
    along('window',at,y+height+.31,width+.60,.10,.66,.34);
    along('window',at,y-.10,width+.44,.16,.64,.30);
+   along('trim',at,y-.024,width+.50,.037,.67,.317);
+   along('stone',at,y-.184,width+.27,.054,.33,.34);
+   for(const side of [-1,1]){
+     along('trim',at+side*(width/2+.121),y+height/2,.034,height+.13,.085,.521);
+     along('window',at+side*(width/2+.077),y-.025,.19,.098,.13,.52);
+   }
    if(!isDoor&&level===1){
      along('trim',at,y+height+.43,width+.46,.12,.67,.32);
      // Delicate French balcony immediately below 1.OG window, without masking the panes.
      if(axis==='x'&&fixed>0){
-       along('stone',at,y-.30,width+.38,.12,.23,.42);
-       for(let i=-2;i<=2;i++)along('bronzeTrim',at+i*.36,y+.02,.048,.54,.075,.47);
-       along('bronzeTrim',at,y+.34,width+.40,.06,.08,.49);
+       const railWidth=width+.32;
+       along('stone',at,y-.31,railWidth+.10,.10,.52,.453);
+       along('bronzeTrim',at,y-.248,railWidth,.026,.052,.678);
+       along('bronzeTrim',at,y-.041,railWidth,.028,.063,.678);
+       for(let i=-3;i<=3;i++){
+         const x=at+i*railWidth/6;
+         along('bronzeTrim',x,y-.144,.021,.207,.035,.678);
+       }
+       const motif=mesh(new THREE.TorusGeometry(.068,.011,7,24),'bronzeTrim','Roissy_Balkon_Oval');
+       motif.scale.y=1.29;motif.position.set(at,y-.143,fixed+.682);
      }
    }
    if(isDoor){
@@ -495,6 +525,13 @@ export function buildChateau(THREE,scene,donor,mats,glass){
        const mid=(l+r)/2;
        put('trim',mid,y,r-l,.19,.64);
        put('window',mid,y+.16,r-l,.085,.58);
+       if(y<EG+.5){
+         put('stone',mid,y-.18,r-l,.083,.42,.256);
+         put('window',mid,y-.115,r-l,.032,.52,.27);
+       }else if(y<OG+.5){
+         put('stone',mid,y-.17,r-l,.11,.46,.26);
+         put('trim',mid,y+.093,r-l,.033,.67,.307);
+       }
        if(y>CORNICE-.5){
          put('stone',mid,y-.151,r-l,.073,.48,.25);
          put('window',mid,y-.109,r-l,.035,.56,.27);
@@ -505,7 +542,11 @@ export function buildChateau(THREE,scene,donor,mats,glass){
        }
      }
    }
-   for(const end of [a,b])for(let i=0;i<15;i++)put(i%2?'window':'stone',end+(end===a?.28:-.28),EG+.32+i*.73,i%2?.48:.66,.36,.14,.27);
+   for(const end of [a,b])for(let i=0;i<15;i++){
+     const pos=end+(end===a?.28:-.28),y=EG+.32+i*.73,w=i%2?.48:.66;
+     put(i%2?'window':'stone',pos,y,w,.36,.14,.27);
+     put('window',pos,y+.148,w-.074,.026,.033,.344);
+   }
  }
  const X=EXTERIOR;
  // The core plus three true extensions, without hidden rectangular front walls.
@@ -668,9 +709,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  // The Salon du Rez-de-Chaussée stays double height; the west Grand Escalier has its own void.
  const salonVoid=[-6.70,6.70,X.parkBack+.40,-2.32],stairVoid=[-15.40,-6.77,-2.10,8.70];
  addSlab(OG-.095,[salonVoid,stairVoid]);
- // The central upper vestibule bay is genuinely open into the attic, between the four beams.
- const domeOpening=[-1.74,1.74,2.70,5.90];
- addSlab(CORNICE-.15,[domeOpening,ATTIC_SHAFT]);
+ addSlab(CORNICE-.15,[ATTIC_SHAFT]);
  // V3.32: step 1 of the room-by-room refinement focuses on the floors.
  // Representative rooms now receive calmer, more château-like parquet tuning,
  // while passages, private rooms and service zones keep distinct materials.
@@ -706,6 +745,8 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  // A thin satin finish catches light on the wood without a second floor surface.
  for(const woodFloor of [salonParquet,diningParquet,cabinetParquet,chamberParquet,passageParquet,privateOak]){
    woodFloor.clearcoat+=.10;
+   woodFloor.normalScale.multiplyScalar(.82);
+   woodFloor.envMapIntensity=.83;
    woodFloor.clearcoatRoughness=Math.max(.34,woodFloor.clearcoatRoughness-.08);
  }
  const floorMats={salonParquet,diningParquet,cabinetParquet,chamberParquet,passageParquet,privateOak,stone:secondaryStone,vestStone:vestibulePBR,stairStone,stairBorder,
@@ -768,36 +809,6 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      const o=mesh(geo,mat,'Roissy_Stuck_Ovalrahmen',layers[layer]);o.position.set(x,upper-drop,z);
    }
    interiorAudit.ceilingMedallions++;
- }
- function vestibuleDome(rect,upper,layer,deck){
-   const [a,b,c,d]=rect,x=(a+b)/2,z=(c+d)/2,hw=(b-a)/2,hd=(d-c)/2;
-   const rx=hw-.09,rz=hd-.09,rise=.84;
-   const occupied=deck.reduce((n,r)=>n+ceilingArea(ceilingIntersection(rect,r)),0);
-   if(occupied>1e-7)throw Error('Dome opening blocked by roof slab');
-   // Smooth concave plaster cap. The cap and its planar spandrels close the
-   // rectangular aperture completely without an opaque plane across the dome.
-   const domeMaterial=cast.ceiling.clone();domeMaterial.name='Roissy_Kuppel_Kalkstuck';domeMaterial.side=THREE.DoubleSide;
-   const geo=new THREE.SphereGeometry(1,64,24,0,Math.PI*2,0,Math.PI/2);
-   const dome=mesh(geo,domeMaterial,'Roissy_Vestibule_Kuppel',layers[layer]);
-   dome.scale.set(rx,rise,rz);dome.position.set(x,upper,z);dome.castShadow=false;
-   // Include exact rectangle corners and the cap's 64 azimuth samples.
-   // Match the cap's polygonal edge by interpolating the corresponding chord.
-   const tau=2*Math.PI,step=tau/64;
-   const angles=Array.from({length:64},(_,i)=>i*step);
-   for(const sx of [-1,1])for(const sz of [-1,1])angles.push((Math.atan2(sz*hd/rz,sx*hw/rx)+tau)%tau);
-   angles.sort((a,b)=>a-b);
-   const unique=angles.filter((a,i)=>!i||a-angles[i-1]>1e-8);
-   const outer=t=>{const u=rx*Math.cos(t),v=rz*Math.sin(t),m=Math.min(hw/Math.max(1e-12,Math.abs(u)),hd/Math.max(1e-12,Math.abs(v)));return [x+u*m,upper,z+v*m];};
-   const inner=t=>{const j=Math.floor(t/step),a=j*step,b=(j+1)*step,m=Math.cos(step/2)/Math.cos(t-(a+b)/2);return [x+rx*Math.cos(t)*m,upper,z+rz*Math.sin(t)*m];};
-   const pos=[],uv=[];const vertex=p=>{pos.push(...p);uv.push(p[0]/1.2,p[2]/1.2);};
-   for(let i=0;i<unique.length;i++){const t=unique[i],u=unique[(i+1)%unique.length];const A=outer(t),B=outer(u),C=inner(t),D=inner(u);for(const p of [A,C,B,B,C,D])vertex(p);}
-   const sp=new THREE.BufferGeometry();sp.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));sp.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));sp.computeVertexNormals();
-   const surround=mesh(sp,domeMaterial,'Roissy_Kuppel_Zwickel',layers[layer]);surround.castShadow=false;
-   for(const [fraction,tube,drop,mat] of [[1,.025,.020,'intStucRelief'],[1.027,.012,.009,'intStucRecess']]){
-     const g=new THREE.TorusGeometry(1,tube,10,96);g.rotateX(Math.PI/2);g.scale(rx*fraction,1,rz*fraction);
-     const o=mesh(g,mat,'Roissy_Vestibule_Kuppelring',layers[layer]);o.position.set(x,upper-drop,z);
-   }
-   interiorAudit.domeCount++;interiorAudit.domeGeometry={rect:rect.slice(),centre:[x,z],radii:[rx,rz],rise,upper,slabOverlap:occupied};
  }
  // V3.37: room-specific carved plaster relief on the existing supported ceiling fields.
  const formalCeilingSpecs={
@@ -892,6 +903,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    ceilingBox('intStucField',rect,upper,.006,.024,layer,deck);
    ceilingFrame(insetRect(rect,.045),upper,layer,deck,'intStucRelief',.12,.040,.080);
    ceilingFrame(insetRect(rect,.205),upper,layer,deck,'intStucRecess',.045,.029,.054);
+   ceilingFrame(insetRect(rect,.274),upper,layer,deck,'intCeilingBand',.035,.020,.034);
    if(style==='grand'||style==='salon'||style==='stair'){
      const inner=insetRect(rect,.35);
      ceilingFrame(inner,upper,layer,deck,'intStucRelief',.085,.043,.078);
@@ -975,53 +987,20 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    const z=stairCeilingZ+sign*3.48;
    hallCeilingMedallion('og',[stairCeilingX-.83,stairCeilingX+.83,z-.83,z+.83],stairCeilingY,'stair');
  }
- // A continuous carved laurel band hugs the curved dome, not a flat disk
- // suspended in the opening. Map every ornament vertex onto the cap surface.
- function domeLaurelBand(){
-   const d=interiorAudit.domeGeometry,[cx,cz]=d.centre,[rx,rz]=d.radii;
-   const yAt=(u,v)=>d.upper+d.rise*Math.sqrt(Math.max(0,1-u*u-v*v));
-   const parts=[];const push=g=>{parts.push(g.index?g.toNonIndexed():g);if(g.index)g.dispose();};
-   for(const radius of [.855,.967]){
-     const pts=Array.from({length:96},(_,i)=>{const a=i*Math.PI/48,u=radius*Math.cos(a),v=radius*Math.sin(a);return new THREE.Vector3(cx+rx*u,yAt(u,v)-.007,cz+rz*v);});
-     push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,true),192,.015,8,true));
-   }
-   for(let i=0;i<32;i++){
-     const t=i*Math.PI/16;
-     for(const side of [-1,1]){
-       const g=new THREE.SphereGeometry(1,12,8),p=g.attributes.position;
-       for(let j=0;j<p.count;j++){
-         const a=t+p.getZ(j)*.055+side*.039,r=.911+side*.022+p.getX(j)*.018+side*p.getZ(j)*.012;
-         const u=r*Math.cos(a),v=r*Math.sin(a);
-         p.setXYZ(j,cx+rx*u,yAt(u,v)-.010+p.getY(j)*.035,cz+rz*v);
-       }
-       p.needsUpdate=true;g.computeVertexNormals();push(g);
-     }
-   }
-   const g=mergeGeometries(parts,false);if(!g)throw Error('Dome laurel merge');
-   const o=mesh(g,'intStucRelief','Roissy_Kuppel_Lorbeerfries_V338',layers.og);o.castShadow=false;
-   interiorAudit.domeLaurel={leaves:64,rings:2,vertices:g.attributes.position.count};for(const p of parts)p.dispose();
- }
-
- // Vestibule ceilings: lower level keeps framed coffers around the central bay;
- // upper level receives a true shallow dome rather than a merely drawn circle.
+ // Both vestibules use flat, framed plaster ceiling fields.
  for(const f of ['eg','og']){
    const top=f==='eg'?OG-.228:CORNICE-.283,deck=slabAudit[f==='eg'?1:2].rectangles;
    const rangesX=[[hallLeft+.34,-2.24-.39],[-2.24+.39,2.24-.39],[2.24+.39,hallRight-.34]];
    const rangesZ=[[hallBack+.34,2.15-.41],[2.15+.41,6.45-.41],[6.45+.41,hallFront-.34]];
-   const domeRect=domeOpening;
    for(const [a,b] of rangesX)for(const [c,d] of rangesZ){
      const w=b-a,h=d-c;if(w<.4||h<.4)continue;
      const rect=[a,b,c,d];
-     const ix=ceilingIntersection(rect,domeRect);
-     const overlap=ceilingArea(ix);
-     if(f==='og'&&overlap>1e-7)continue; // central bay reserved for dome
      ceilingBox('intStucField',rect,top,.005,.023,f,deck);
      ceilingFrame(rect,top,f,deck,'intStucRelief',.115,.042,.082);
      if(w>.85&&h>.85)ceilingFrame(insetRect(rect,.17),top,f,deck,'intStucRecess',.035,.028,.048);
      if(w>1.2&&h>1.2)hallCeilingMedallion(f,rect,top,'vestibule');
      interiorAudit.ceilingFields++;
    }
-   if(f==='og'){vestibuleDome(domeRect,top,f,deck);domeLaurelBand();}
  }
  for(const f of ['eg','og'])if(hallCeilingParts[f].length){
    const g=mergeGeometries(hallCeilingParts[f],false);if(!g)throw Error('Hall ceiling merge');
@@ -1243,7 +1222,12 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    const type=roomType(r),fit=(mat,bounds,drop,h)=>{for(const d of deck){const p=ceilingIntersection(bounds,d);if(ceilingArea(p)>1e-7)ceilingBox(mat,p,upper,drop,h,f,deck);}};
    fit('intStucField',rect,.004,.023);
    const frame=(inset,width,drop,h,mat)=>{const [a,b,c,d]=insetRect(rect,inset);if(b-a<=2*width||d-c<=2*width)return;for(const p of [[a,a+width,c,d],[b-width,b,c,d],[a+width,b-width,c,c+width],[a+width,b-width,d-width,d]])fit(mat,p,drop,h);};
-   frame(.035,.105,.033,.065,'intStucRelief');if(type!=='service')frame(.19,.025,.024,.038,'intStucRecess');
+   frame(.035,.105,.033,.065,'intStucRelief');
+   if(type!=='service'){
+     frame(.145,.034,.021,.030,'intCeilingBand');
+     frame(.19,.025,.024,.038,'intStucRecess');
+     frame(.238,.014,.028,.041,'intStucRelief');
+   }
    interiorAudit.plainCeilingFields.push({name:r.name,layer:f,rect,upper,type});interiorAudit.ceilingFields++;
  }
 
@@ -1451,6 +1435,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    const topA=[x,begin.y+h,begin.z],topB=[x,end.y+h,end.z];
    const lowA=[x,begin.y+.34,begin.z],lowB=[x,end.y+.34,end.z];
    beam('stairWalnut',topA,topB,.078);stairAudit.handrails++;
+   beam('stairPatina',[x,begin.y+h-.076,begin.z],[x,end.y+h-.076,end.z],.011);
    beam('stairForged',[x,begin.y+h-.105,begin.z],[x,end.y+h-.105,end.z],.036);
    beam('stairForged',lowA,lowB,.031);
    for(let i=0;i<samples.length;i++){
@@ -1620,6 +1605,18 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  for(const sign of [-1,1]){
    const a=PERRON.width/2,b=X.terraceHalf;
    addBox('stone',sign*(a+b)/2,EG+.43,terraceEnd-.12,b-a,.86,.34);
+   addBox('window',sign*(a+b)/2,EG+.158,terraceEnd-.12,b-a,.077,.44);
+   addBox('window',sign*(a+b)/2,EG+.754,terraceEnd-.12,b-a,.053,.43);
+   // Classical stone urns rest on the end piers, beyond the walking envelope.
+   for(const x of [sign*(a+.535),sign*(b-1.08)]){
+     const z=terraceEnd-.12,top=EG+.978;
+     addBox('trim',x,top+.04,z,.42,.081,.40);
+     addBox('window',x,top+.105,z,.33,.068,.31);
+     const profile=[[0,.137],[.122,.137],[.103,.193],[.074,.233],[.13,.281],[.184,.357],
+       [.176,.424],[.126,.491],[.149,.502],[.151,.537],[.105,.555],[0,.571]];
+     const vase=mesh(new THREE.LatheGeometry(profile.map(([r,y])=>new THREE.Vector2(r,y)),24),'window','Roissy_Perron_Steinurne');
+     vase.position.set(x,top,z);
+   }
    addBox('trim',sign*(a+b)/2,EG+.91,terraceEnd-.12,b-a+.12,.13,.48);
  }
  // Historical elevations: continuous slate hip roof, three court pediments,
@@ -1664,12 +1661,21 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  }
  const roofDormerAxes=FRONT_WINDOW_AXES.filter(x=>Math.abs(x)>6.7&&Math.abs(x)<X.wingX);
  const rearDormers=REAR_WINDOW_AXES.filter(x=>Math.abs(x)>6.7&&Math.abs(x)<24);
- const roofOpeningT0=.23,roofOpeningT1=.72;
+ const roofOpeningT0=(13.24-e)/(shoulder-e),roofOpeningT1=(14.86-e)/(shoulder-e);
  function roofPoint(x,t,sign){return [x,e+(shoulder-e)*t,sign*(HALF_D-inset*t)];}
  function slopePanel(left,right,t0,t1,sign,edgeL=false,edgeR=false){if(right-left<.001||t1-t0<.001)return;const L=t=>edgeL?-HALF_W+inset*t:left,R=t=>edgeR?HALF_W-inset*t:right;poly([roofPoint(L(t0),t0,sign),roofPoint(R(t0),t0,sign),roofPoint(R(t1),t1,sign),roofPoint(L(t1),t1,sign)],'slate','Schiefer_Mansardfläche');}
  for(const sign of [-1,1]){
-   const axes=sign>0?roofDormerAxes:rearDormers;let cursor=-HALF_W,first=true;
-   for(const x of axes){const a=x-.57,b=x+.57;slopePanel(cursor,a,0,1,sign,first,false);slopePanel(a,b,0,roofOpeningT0,sign);slopePanel(a,b,roofOpeningT1,1,sign);cursor=b;first=false;}
+   const dormers=sign>0?roofDormerAxes:rearDormers;
+   const openings=[...dormers.map(x=>({x,half:.57,low:roofOpeningT0,high:roofOpeningT1})),
+     ...[-3.6,0,3.6].map(x=>({x,half:.775,low:(CORNICE+.40-e)/(shoulder-e),high:(14.97-e)/(shoulder-e)}))].sort((a,b)=>a.x-b.x);
+   let cursor=-HALF_W,first=true;
+   for(const {x,half,low,high} of openings){
+     const a=x-half,b=x+half;
+     slopePanel(cursor,a,0,1,sign,first,false);
+     slopePanel(a,b,0,low,sign);
+     slopePanel(a,b,high,1,sign);
+     cursor=b;first=false;
+   }
    slopePanel(cursor,HALF_W,0,1,sign,false,true);
    poly([[-HALF_W+inset,shoulder,sign*(HALF_D-inset)],[HALF_W-inset,shoulder,sign*(HALF_D-inset)],[HALF_W-7,ridge,0],[-HALF_W+7,ridge,0]],'slate','Schiefer_Oberdach');
  }
@@ -1679,12 +1685,44 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    for(const zsign of [-1,1]){beam('bronzeTrim',[sign*HALF_W,e+.04,zsign*HALF_D],[sign*(HALF_W-inset),shoulder+.04,zsign*(HALF_D-inset)],.05);beam('bronzeTrim',[sign*(HALF_W-inset),shoulder+.04,zsign*(HALF_D-inset)],[sign*(HALF_W-7),ridge+.04,0],.05);}
  }
  beam('bronzeTrim',[-HALF_W+7,ridge+.04,0],[HALF_W-7,ridge+.04,0],.065);
- // Dormer glazing within physically cut roof slopes. Slender French stone frames.
+ // Narrow lead flashings pick out the break in the mansard pitch.
+ for(const side of [-1,1]){
+   const l=HALF_W-inset,q=HALF_D-inset;
+   beam('bronzeTrim',[-l,shoulder+.028,side*q],[l,shoulder+.028,side*q],.036);
+   beam('bronzeTrim',[side*l,shoulder+.028,-q],[side*l,shoulder+.028,q],.036);
+ }
+ function roofWindowReveal(x,sign,half,low,high,face,sill,head){
+   const inner=(u,t)=>{const p=roofPoint(x+u,t,sign);p[1]-=.045;return p;};
+   const outer=(u,y)=>[x+u,y,face];
+   const reveal=(points,name)=>{
+     const o=poly(points,'windowReveal',name);
+     if(o.material.side!==THREE.DoubleSide){
+       const material=cast.roofReveal||(cast.roofReveal=cast.windowReveal.clone());
+       material.side=THREE.DoubleSide;o.material=material;
+     }
+   };
+   for(const side of [-1,1])reveal([inner(side*half,low),outer(side*half,sill),outer(side*half,head),inner(side*half,high)],'Roissy_Dachfenster_SeitlicheLaibung');
+   for(const [t,y] of [[low,sill],[high,head]])
+     reveal([inner(-half,t),inner(half,t),outer(half,y),outer(-half,y)],'Roissy_Dachfenster_SohlbankOderSturz');
+ }
+ function roofWindowTrim(x,y,z,width,height,sign){
+   for(const side of [-1,1]){
+     addBox('window',x+side*(width/2+.065),y+height/2,z+sign*.07,.13,height+.14,.22);
+     addBox('trim',x+side*(width/2+.118),y+height/2,z+sign*.146,.035,height+.13,.095);
+     for(const dy of [.17,height-.17])addBox('window',x+side*(width/2+.067),y+dy,z+sign*.12,.19,.12,.13);
+   }
+   for(const [dy,h,extension,d] of [[-.052,.095,.35,.34],[-.124,.047,.26,.22],[height+.06,.114,.31,.24],[height+.146,.045,.38,.31]])
+     addBox('trim',x,y+dy,z+sign*.115,width+extension,h,d);
+ }
+ // Dormer glazing within physically cut roof slopes.
  for(const sign of [-1,1])for(const x of (sign>0?roofDormerAxes:rearDormers)){
    const z=sign*(HALF_D-1.25),y=14.05;
    for(const q of [-1,1])addBox('window',x+q*.59,y,z,.14,1.88,1.05);
    addBox('window',x,y-.90,z,1.30,.18,1.05);addBox('window',x,y+.90,z,1.30,.18,1.05);
-   detailedWindow('x',z+sign*.54,x,y-.81,1.04,1.62,sign,false,'dormer');
+   const face=z+sign*.54;
+   detailedWindow('x',face,x,y-.81,1.04,1.62,sign,false,'dormer');
+   roofWindowTrim(x,y-.81,face,1.04,1.62,sign);
+   roofWindowReveal(x,sign,.57,roofOpeningT0,roofOpeningT1,face-sign*.045,y-.81,y+.81);
    const peak=y+1.55,lo=y+.99;
    poly([[x-.79,lo,z+sign*.66],[x+.79,lo,z+sign*.66],[x,peak,z+sign*.66]],'window','Gauben_Dreiecksgiebel');
    for(const q of [-1,1])poly([[x,peak,z+sign*.68],[x+q*.80,lo,z+sign*.68],[x+q*.80,lo,z-sign*.68],[x,peak,z-sign*.68]],'slate','Gaubendach');
@@ -1696,9 +1734,22 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    const g=mesh(new THREE.ExtrudeGeometry(sh,{depth:.28,bevelEnabled:false}),'stone',name);g.position.set(cx,base,z);if(normal<0)g.rotation.y=Math.PI;
    addBox('trim',cx,base-.045,z+normal*.13,w+.35,.20,.60);
    for(const q of [-1,1])beam('window',[cx+q*w/2,base+.03,z+normal*.35],[cx,peak+.03,z+normal*.35],.14);
-   const med=mesh(new THREE.SphereGeometry(1,20,12),'window','Tympanon_Kartusche');med.scale.set(.50,.63,.13);med.position.set(cx,base+.76,z+normal*.34);
+   const med=mesh(new THREE.SphereGeometry(1,24,16),'window','Tympanon_Kartusche');
+   med.scale.set(.42,.48,.105);med.position.set(cx,base+.71,z+normal*.32);
+   if(name.includes('Mittelgiebel')){
+     const rim=mesh(new THREE.TorusGeometry(1,.041,8,56),'trim','Mittelgiebel_Kartuschenfassung');
+     rim.scale.set(.45,.52,.43);rim.position.set(cx,base+.71,z+normal*.375);
+     for(const side of [-1,1])for(let i=0;i<5;i++){
+       const angle=.28+i*.27;
+       const leaf=mesh(new THREE.SphereGeometry(1,12,8),'window','Mittelgiebel_Lorbeer');
+       leaf.scale.set(.049,.13,.035);
+       leaf.rotation.z=side*(.42+i*.20);
+       leaf.position.set(cx+side*(.47+i*.12),base+.49+Math.sin(angle)*.20,z+normal*.32);
+     }
+     addBox('trim',cx,base+.16,z+normal*.34,w-.96,.039,.095);
+   }
    for(const q of [-1,1])for(let i=0;i<7;i++){
-      const d=.69+i*.38;if(d>w/2-1)continue;const h=Math.min(.68,(peak-base)*(1-d/(w/2))*.54);
+      const d=.69+i*.38;if(d>w/2-1||name.includes('Mittelgiebel')&&i<3)continue;const h=Math.min(.68,(peak-base)*(1-d/(w/2))*.54);
       const leaf=mesh(new THREE.SphereGeometry(1,10,7),'window','Tympanon_Blattrelief');leaf.scale.set(.31,h*.52,.10);leaf.rotation.z=q*(.35+i*.08);leaf.position.set(cx+q*d,base+.23+h*.65,z+normal*.32);
    }
  }
@@ -1709,13 +1760,24 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    wallSegments('x',z,a,b,{bottom:base,top,sill:.28,glassH:h-.56},positions.map(at=>({at,width:1.55})),.40);
    for(const x of positions){
      detailedWindow('x',z+sign*.02,x,base+.28,1.55,h-.56,sign,false,'attic');
-     for(const q of [-1,1])addBox('window',x+q*.86,base+h/2,z+sign*.23,.17,h-.38,.20);
-     addBox('trim',x,top-.18,z+sign*.22,1.94,.16,.28);addBox('trim',x,base+.20,z+sign*.22,1.94,.12,.30);
+     roofWindowTrim(x,base+.28,z+sign*.22,1.55,h-.56,sign);
+     roofWindowReveal(x,sign,.775,(base+.28-e)/(shoulder-e),(top-.28-e)/(shoulder-e),z-sign*.055,base+.28,top-.28);
    }
    for(const q of [-1,1])addBox('wall',q*(w/2-.16),base+h/2,z-sign*1.20,.34,h,2.4);
    addBox('trim',0,top+.02,z+sign*.10,w+.30,.28,.66);
    pediment(0,z+sign*.12,w+.32,top+.12,top+1.92,sign,sign>0?'Hof_Mittelgiebel':'Park_Mittelgiebel');
-   for(const q of [-1,1])poly([[q*w/2,top+.1,z+sign*.17],[0,top+1.92,z+sign*.17],[0,top+1.92,z-sign*4.5],[q*w/2,top+.1,z-sign*4.5]],'slate','Mittelrisalit_Dach');
+   // Stone pilasters articulate the separations between the three windows.
+   for(const x of [-6.27,-1.81,1.81,6.27]){
+     addBox('window',x,(base+top)/2,z+sign*.23,.31,h-.28,.19);
+     addBox('trim',x,base+.16,z+sign*.27,.44,.20,.29);
+     addBox('trim',x,top-.115,z+sign*.28,.47,.15,.29);
+     for(const u of [-.085,0,.085])addBox('stone',x+u,(base+top)/2,z+sign*.337,.023,h-.40,.032);
+   }
+   for(const q of [-1,1]){
+     const shape=[[q*w/2,top+.1,z+sign*.17],[0,top+1.92,z+sign*.17],[0,top+1.92,z-sign*4.5],[q*w/2,top+.1,z-sign*4.5]];
+     const visible=clipRoof(shape,([,y,z])=>y-e-(HALF_D-sign*z)*(shoulder-e)/inset);
+     if(visible.length>=3)poly(visible,'slate','Mittelrisalit_Dach');
+   }
  }
  attic(1,HALF_D+.12,13.4,CORNICE+.12,15.25);attic(-1,X.parkBack-.12,13.4,CORNICE+.12,15.25);
  function clipRoof(points,distance){
@@ -1749,6 +1811,8 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  for(const x of [-22.8,-14.1,-7.0,7.0,14.1,22.8]){
    addBox('stone',x,16.58,0,.72,2.66,.82);
    addBox('stone',x,17.95,0,.81,.08,.91);
+   addBox('window',x,17.884,0,.768,.053,.869);
+   addBox('stone',x,18.104,0,.855,.040,.962);
    addBox('trim',x,18.035,0,.92,.09,1.02);
    // The stone cap encloses a recessed chamber with two open flues.
    for(const sign of [-1,1]){
@@ -1788,6 +1852,13 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    const put=(u,Y,w,h,dep,v=0)=>{const [x,z]=point(u,v);if(d.axis==='x')addBox('doorFrame',x,Y,z,w,h,dep,d.floor);else addBox('doorFrame',x,Y,z,dep,h,w,d.floor);};
    for(const side of [-1,1])put(side*(half-.019),d.baseY+1.40,.038,2.80,.312);
    put(0,d.baseY+2.775,d.width-.076,.05,.312);
+   // The pearl-coloured cap sits above the clear opening and the leaf sweep.
+   for(const v of [-.18,.18]){
+     const [x,z]=point(0,v);
+     const w=d.width+.095,y=d.baseY+2.822;
+     if(d.axis==='x')addBox('intPaintBevel',x,y,z,w,.018,.040,d.floor);
+     else addBox('intPaintBevel',x,y,z,.040,.018,w,d.floor);
+   }
    const score=direction=>{let hits=0;for(const sign of [-1,1])for(let i=1;i<=12;i++)for(let j=1;j<=5;j++){
      const a=i*Math.PI/24,t=j/5*(half-.052),u=sign*(half-.048-t*Math.cos(a)),v=direction*t*Math.sin(a);
      if(Math.abs(v)<.23)continue;
@@ -2045,7 +2116,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    instancedElements:[...batch.values()].reduce((s,a)=>s+a.length,0),instancedDrawcalls:renderBatches,staticConstructionBoxes:batch,
    planAxes:{frontDoors:FRONT_DOORS,frontWindows:FRONT_WINDOW_AXES,rearWindows:REAR_WINDOW_AXES},
    validations:{roomCountEG:ROOMDATA.eg.length,roomCountOG:ROOMDATA.og.length,directMeshes,interiorDoorCount:interiorDoors.length,windowAudit,interiorFinish:interiorAudit,surfaceCleanup:surfaceCleanup.stats,
-     roofDormersPerSide:roofDormerAxes.length,roofPlaneCutouts:roofDormerAxes.length+rearDormers.length,
+     roofDormersPerSide:roofDormerAxes.length,roofPlaneCutouts:roofDormerAxes.length+rearDormers.length+6,
      floatingRoofDecor:0,orphanSideStairs:0,roofHipAndRidgeCaps:9,salonUpperDoorsIntoVoid:0,ceilingUndersides:true,
      roissyRoomOverlapCount:0,facadeOpeningsChecked:true,perronTreads:perronAudit,perronNavigationUsesStoneStepHeights:true,stairRailAnchoredToTreads:true,stairGeometrySharesNavigationConfig:true,
      salonGalleryGuardedWidth:galleryW,vestibuleSupports:hallSupports.length,stairInnerRails:2,stairRisersPerFlight:RUN,
