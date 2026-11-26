@@ -1,4 +1,4 @@
-import {CORNICE,HALF_D,HALF_W} from './roissy-config.js?v=roissy352';
+import {CORNICE,HALF_D,HALF_W} from './roissy-config.js?v=roissy355';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
 
 export const ATTIC={

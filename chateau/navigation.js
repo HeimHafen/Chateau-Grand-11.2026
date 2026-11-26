@@ -1,6 +1,8 @@
-import {ATTIC} from './attic.js?v=roissy352';
+import {stairStep} from './level-stairs.js?v=roissy355';
+import {CELLAR,cellarBlocks,cellarPlace} from './cellar.js?v=roissy355';
+import {ATTIC} from './attic.js?v=roissy355';
 /** Château Grand V3.4 – walkable ground floor and Premier Étage, shared plan metres. */
-import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR,PERRON,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy352';
+import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR,PERRON,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy355';
 export const EG_Y=EG,OG_Y=OG,EYE_Y=1.69;
 export const WALK_RADIUS=.30;
 const H=(OG-EG)*.5;
@@ -42,6 +44,7 @@ function stairHeight(x,z,prior){
   return null;
 }
 export function surfaceHeight(x,z,prev=0){
+  if(prev===CELLAR.floor)return CELLAR.floor;
   if(prev===ATTIC.floor)return ATTIC.floor;
   if(onSteps(x,z)){
     // The support height is that of the ACTUAL tread under the player, not a
@@ -60,6 +63,7 @@ const near=(x,centers,width)=>centers.some(c=>Math.abs(x-c)<width/2-WALK_RADIUS*
 function touches(x,z,w,r=WALK_RADIUS){return x+r>w.x0&&x-r<w.x1&&z+r>w.z0&&z-r<w.z1;}
 export function collidesAt(x,z,foot,architecture,doors=[]){
   const r=WALK_RADIUS,og=foot>(EG+OG)/2+.18;
+  if(foot===CELLAR.floor)return cellarBlocks(x,z,r);
   if(foot===ATTIC.floor){
     const [x0,x1,z0,z1]=ATTIC.domeHousing;
     return Math.abs(x)>ATTIC.halfWidth-r||Math.abs(z)>ATTIC.halfDepth-r||
@@ -86,6 +90,8 @@ export function collidesAt(x,z,foot,architecture,doors=[]){
   return false;
 }
 export function candidateStep(from,x,z,arch,doors=[]){
+  const connection=stairStep(from,x,z,WALK_RADIUS);
+  if(connection!==undefined)return connection;
   const foot=surfaceHeight(x,z,from.footY);
   if(foot-from.footY>.37||from.footY-foot>.75)return null;
   if(collidesAt(x,z,foot,arch,doors))return null;
@@ -106,6 +112,7 @@ export function candidateStep(from,x,z,arch,doors=[]){
   return {x,z,footY:foot};
 }
 export function describePlace(x,z,foot,architecture){
+  if(foot===CELLAR.floor)return cellarPlace(x,z);
   if(foot===ATTIC.floor)return 'Dachgeschoss · Mansardengalerie';
   if(onSteps(x,z))return 'Perron · Eingangsstufen';
   if(terrace(x,z)&&!inside(x,z))return 'Historische Eingangs-Terrasse';

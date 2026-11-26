@@ -4,7 +4,7 @@ import {candidateStep,collidesAt,surfaceHeight} from '../chateau/navigation.js';
 const check=(ok,m)=>{if(!ok)throw Error(m)};
 const mat=new THREE.MeshStandardMaterial(),mats=Object.fromEntries(['facadeWall','dressedStone','trim','windowStone','shade','paintedSash','roof','porticoPaving','columnFinish','brass'].map(k=>[k,mat]));
 const scene=new THREE.Scene(),a=buildChateau(THREE,scene,null,mats,mat),doors=a.interiorDoors;
-check(doors.length===43&&a.interiorDoorways.length===43,'43 apertures after removal of spurious partition');
+check(doors.length===44&&a.interiorDoorways.length===44,'44 apertures including the cellar access');
 let steps=0,meshes=0;const unique=new Set(),blocked=[],sweeps=[];
 for(const d of doors){const door=d.door,point=(u,v)=>d.axis==='x'?[d.at+u,d.fixed+v]:[d.fixed-v,d.at+u];const [x,z]=point(0,0);const label=`${d.floor} ${d.axis} ${d.fixed} ${d.at}`;
  check(door.blocks(x,z,.30,d.baseY),'closed '+label);check(!door.blocks(x,z,.30,d.baseY+5.7),'other floor');

@@ -1,18 +1,20 @@
-import {buildAttic} from './attic.js?v=roissy352';
-import {installFurnishings} from './furnishings-v346.js?v=roissy352';
+import {ATTIC_SHAFT,CELLAR_SHAFT,ATTIC_PORTAL,CELLAR_PORTAL,buildLevelStairs} from './level-stairs.js?v=roissy355';
+import {buildCellar} from './cellar.js?v=roissy355';
+import {buildAttic} from './attic.js?v=roissy355';
+import {installFurnishings} from './furnishings-v346.js?v=roissy355';
 /**
- * CHÂTEAU GRAND V3.52 – Architekturfinish mit begehbarer Mansarde.
+ * CHÂTEAU GRAND V3.53 – Architekturfinish mit Gewölbekeller und Mansarde.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy352';
-import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy352';
-import {resolveStaticFaces} from './surface-cleanup.js?v=roissy352';
+import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy355';
+import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy355';
+import {resolveStaticFaces} from './surface-cleanup.js?v=roissy355';
 import {addPortalDoors,createOakFinish} from '../wohnzimmer/portal-doors-v2.js';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
-import {addRoissyPortal} from './portal-doors-v321.js?v=roissy352';
-import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy352';
+import {addRoissyPortal} from './portal-doors-v321.js?v=roissy355';
+import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy355';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_V345_GRAND_ESCALIER';scene.add(root);
@@ -127,6 +129,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  const windowHardwareParts=[];
  cast.windowBead=finish('Roissy_Fensterholz_Profil',0x514a40,.72,paintMaps,.035);
  cast.windowReveal=finish('Roissy_Fensterlaibung_Geschliffener_Kalkstein',0xf2e8d7,.89,stoneMaps,.10);
+ cast.stairRiserBand=finish('Roissy_Treppenfries_Sandader',0xc8b398,.72,stoneMaps,.075);
  const stairWalnut=createOakFinish(THREE,0x634432);stairWalnut.name='Roissy_Treppe_Poliertes_Dunkelholz';stairWalnut.roughness=.29;
  Object.assign(cast,{stairWalnut,stairForged:new THREE.MeshStandardMaterial({name:'Roissy_Treppe_Schmiedeeisen_Satin',color:0x242322,metalness:.68,roughness:.32}),stairPatina:new THREE.MeshStandardMaterial({name:'Roissy_Treppe_Messing_Patiniert',color:0xc39a51,metalness:.73,roughness:.29}),intStairMolding:finish('Roissy_Treppe_Geschliffener_Kalkstein',0xfff5e6,.66,stoneMaps,.12),intStairInlay:finish('Roissy_Treppe_Steinfries_Taupe',0xa99a86,.92,stoneMaps,.09)});
  cast.stairScroll=cast.stairForged;
@@ -507,7 +510,10 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  const X=EXTERIOR;
  // The core plus three true extensions, without hidden rectangular front walls.
  const extensionRects=[[-HALF_W+.0,-X.wingX,HALF_D,X.wingFront],[X.wingX,HALF_W,HALF_D,X.wingFront],[-X.parkX,X.parkX,X.parkBack,-HALF_D]];
- const foundation=(x0,x1,z0,z1)=>addBox('stone',(x0+x1)/2,EG/2,(z0+z1)/2,x1-x0+.46,EG,z1-z0+.46);
+ const foundation=(x0,x1,z0,z1)=>{
+   for(const [a,b,c,d] of subtract([x0-.23,x1+.23,z0-.23,z1+.23],CELLAR_SHAFT))
+     addBox('stone',(a+b)/2,EG/2,(c+d)/2,b-a,EG,d-c);
+ };
  foundation(-HALF_W,HALF_W,-HALF_D,HALF_D);for(const r of extensionRects)foundation(...r);
  for(const seg of FACADE_SEGMENTS)facade(seg);
  // Attached classical giant-order pilasters on the park risalit; court centre
@@ -584,7 +590,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    }
    slabAudit.push({y,rectangles:pieces,holes:omit.map(h=>h.slice())});
  }
- addSlab(EG-.095,[]);
+ addSlab(EG-.095,[CELLAR_SHAFT]);
  // V3.6: architectural finish in the verified Vestibule footprint, without
  // covering doorways, step treads or historic partitions. This is a plausible
  // period limestone finish, NOT evidence of the original Roissy paving.
@@ -664,7 +670,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  addSlab(OG-.095,[salonVoid,stairVoid]);
  // The central upper vestibule bay is genuinely open into the attic, between the four beams.
  const domeOpening=[-1.74,1.74,2.70,5.90];
- addSlab(CORNICE-.15,[domeOpening]);
+ addSlab(CORNICE-.15,[domeOpening,ATTIC_SHAFT]);
  // V3.32: step 1 of the room-by-room refinement focuses on the floors.
  // Representative rooms now receive calmer, more château-like parquet tuning,
  // while passages, private rooms and service zones keep distinct materials.
@@ -1168,16 +1174,16 @@ export function buildChateau(THREE,scene,donor,mats,glass){
       // not detected by the V3.7 narrower doorway-core test. Move their
       // thresholds within the same historic service-room passage, away from
       // the cross walls terminating at z=4.53 and z=4.65 respectively.
-      const groundStairDoorRemoved=f==='eg'&&Math.abs(x-STAIR_WEST)<.15;
+      const cellarAccessDoor=f==='eg'&&Math.abs(x-STAIR_WEST)<.15;
       const groundJunctionDoor=f==='eg'&&Math.abs(x-20.46)<.15;
-      const entry=f==='og'&&Math.abs(x-STAIR_WEST)<.15?9.68:
+      const entry=cellarAccessDoor?CELLAR_PORTAL:f==='og'&&Math.abs(x-STAIR_WEST)<.15?ATTIC_PORTAL:
         f==='og'&&Math.abs(x+6.72)<.15?9.27:
         (westServiceDoor||eastUpperDoor)?7.30:
         groundJunctionDoor?5.75:f==='og'&&Math.abs(x-13.9825)<.01?6.30:5.30;
       // V3.30: the west first-floor connection into the outer suite must feel
       // like a real passage, not a thin accidental gap.
       const passageWidth=f==='og'&&Math.abs(x+21.93)<.15?1.80:1.35;
-      innerWall(f,'z',x,CROSS_WALL_Z-.075,frontAt(x)-.12,groundStairDoorRemoved?[]:[entry],passageWidth);
+      innerWall(f,'z',x,CROSS_WALL_Z-.075,frontAt(x)-.12,[entry],passageWidth);
    }
    for(const divider of SECONDARY_ROOM_WALLS[f]){
      // V3.30: the tiny western upper Antichambre/Cabinet sequence felt like an
@@ -1348,6 +1354,9 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      addBox('intStairStone',cfg.x,y-.091,z,cfg.width,.182,dz+.006);
      const leading=z-cfg.direction*(dz*.486);
      addBox('intStairMolding',cfg.x,y-.021,leading,cfg.width+.018,.036,.038);
+     const riserFace=z-cfg.direction*(dz/2+.004);
+     addBox('stairRiserBand',cfg.x,y-.103,riserFace,cfg.width-.24,.030,.008);
+     addBox('intStairMolding',cfg.x,y-.124,riserFace,cfg.width-.24,.011,.009);
    }
    solidFlightCore(cfg,offset);
    const first=samples[0],last=samples.at(-1);
@@ -1366,6 +1375,8 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      stoneSlopedSlab('Roissy_Geschlossenes_Seitliches_Treppenprofil', [edge,from.y-.25,from.z],[edge,last.y-.25,last.z],.095,.20,'intStairMolding');
      stoneSlopedSlab('Roissy_Treppenwange_Profilstab',[edge,from.y-.15,from.z],[edge,last.y-.15,last.z],.115,.044,'intStairMolding');
      stoneSlopedSlab('Roissy_Treppenwange_Unteres_Gesims',[edge,soffitY(from)+.035,from.z],[edge,soffitY(last)+.035,last.z],.106,.035,'intStairMolding');
+     const frieze=edge+sign*.031;
+     stoneSlopedSlab('Roissy_Treppenwange_Sandader',[frieze,from.y-.248,from.z],[frieze,last.y-.248,last.z],.040,.073,'stairRiserBand');
      stairAudit.soffits++;
    }
    return samples;
@@ -1419,6 +1430,20 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  for(const inset of [.20,.27]){
    const x=S.landing.x,z=S.landing.z,w=S.landing.width-2*inset,d=S.landing.depth-2*inset,t=.018;
    for(const q of [-1,1]){addBox('intStairInlay',x+q*(w/2-t/2),MID+.0015,z,t,.003,d);addBox('intStairInlay',x,MID+.0015,z+q*(d/2-t/2),w-2*t,.003,t);stairAudit.landingInlay+=2;}
+ }
+ // The ornament lives on the back of the landing fascia, below the rail and
+ // outside the tread and door envelopes.
+ const landingFriezeZ=S.landing.z-S.landing.depth/2-.016;
+ for(let i=-4;i<=4;i++){
+   const x=S.landing.x+i*.48;
+   const ring=new THREE.TorusGeometry(.047,.010,6,24);
+   ring.scale(1,.58,1);
+   ring.translate(x,MID-.156,landingFriezeZ);
+   decorGeo(ring,'intStairMolding');
+   const centre=new THREE.SphereGeometry(1,12,8);
+   centre.scale(.018,.013,.009);
+   centre.translate(x,MID-.156,landingFriezeZ+.001);
+   decorGeo(centre,'stairRiserBand');
  }
  function flightBalustrade(samples,cfg,edgeSign){
    const x=cfg.x+edgeSign*(cfg.width/2-.12);
@@ -1556,6 +1581,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    // Dentil strip attached to the gallery's existing lower edge, never in a doorway.
    const dentils=Math.floor((x1-x0)/.12);
    for(let i=0;i<dentils;i++)addBox('intStairMolding',x0+(i+.5)*(x1-x0)/dentils,OG-.145,face-side*.025,.054,.035,.040);
+   addBox('stairRiserBand',(x0+x1)/2,OG-.106,face-side*.033,x1-x0,.035,.009);
    // Centred low-relief shell and two symmetrical foliage scrolls.
    const cx=(x0+x1)/2,cy=OG-.102,cz=face-side*.055;
    for(let i=-3;i<=3;i++){const g=new THREE.SphereGeometry(1,12,8);g.scale(.016,.052,.013);g.rotateZ(-i*.16);g.translate(cx+i*.027,cy-.008+Math.abs(i)*.003,cz);decorGeo(g,'intStairMolding');}
@@ -1692,10 +1718,28 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    for(const q of [-1,1])poly([[q*w/2,top+.1,z+sign*.17],[0,top+1.92,z+sign*.17],[0,top+1.92,z-sign*4.5],[q*w/2,top+.1,z-sign*4.5]],'slate','Mittelrisalit_Dach');
  }
  attic(1,HALF_D+.12,13.4,CORNICE+.12,15.25);attic(-1,X.parkBack-.12,13.4,CORNICE+.12,15.25);
+ function clipRoof(points,distance){
+   const result=[];
+   for(let i=0;i<points.length;i++){
+     const a=points[i],b=points[(i+1)%points.length],u=distance(a),v=distance(b);
+     if(u>=0)result.push(a);
+     if((u<0)!==(v<0))result.push(a.map((value,j)=>value+(b[j]-value)*u/(u-v)));
+   }
+   return result;
+ }
  for(const q of [-1,1]){
    const cx=q*(HALF_W+X.wingX)/2,w=HALF_W-X.wingX,z=X.wingFront;
    pediment(cx,z+.22,w+.44,CORNICE+.13,15.02,1,q<0?'Westpavillon_Giebel':'Ostpavillon_Giebel');
-   for(const sign of [-1,1])poly([[cx+sign*w/2,CORNICE+.16,z+.20],[cx,15.02,z+.20],[cx,15.02,8.15],[cx+sign*w/2,CORNICE+.16,8.15]],'slate','Pavillon_Querdach');
+   // Keep only the wings' roof skin above the main mansard. Its old
+   // concealed tail projected into the newly walkable attic.
+   const frontPlane=([,y,z])=>y-e-(HALF_D-z)*(shoulder-e)/inset;
+   const hipPlane=([x,y])=>y-e-(HALF_W-q*x)*(shoulder-e)/inset;
+   for(const sign of [-1,1]){
+     const edge=cx+sign*w/2;
+     const shape=[[edge,CORNICE+.16,z+.20],[cx,15.02,z+.20],[cx,15.02,8.15],[edge,CORNICE+.16,8.15]];
+     for(const visible of [clipRoof(shape,frontPlane),clipRoof(clipRoof(shape,p=>-frontPlane(p)),hipPlane)])
+       if(visible.length>=3)poly(visible,'slate','Pavillon_Querdach');
+   }
    const o=mesh(new THREE.SphereGeometry(1,16,12),'bronzeTrim','Pavillon_Oculus');o.scale.set(.30,.30,.055);o.position.set(cx,CORNICE+.82,z+.58);
  }
  const flues=new THREE.CylinderGeometry(.129,.145,.30,16,1,true);
@@ -1754,6 +1798,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    const scores=[score(-1),score(1)];let swing=scores[0]<scores[1]?-1:1;
    if(d.axis==='z'&&d.floor==='og'&&Math.abs(d.fixed+6.75)<.01)swing=-1;
    if(d.axis==='z'&&d.floor==='og'&&Math.abs(d.fixed-STAIR_WEST)<.01)swing=1;
+   if(d.axis==='z'&&d.floor==='eg'&&Math.abs(d.fixed-STAIR_WEST)<.01)swing=-1;
    if(d.axis==='z'&&d.floor==='eg'&&Math.abs(d.fixed+6.75)<.01&&d.at>0)swing=-1;
    // V3.39: wider stop hides the offset hinge clearance; the jamb spans the full reveal.
    // Its inside surface is 4 mm away from the moving slab at the closed position.
@@ -1991,7 +2036,9 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      if(i>0&&pts[i]-pts[i-1]<2.45)throw Error(`${which}: Fensteröffnungen überlappen`);
    }
  }
- return {front:root,facadeWidth:54,
+ const cellar=buildCellar(THREE,root,mats,CELLAR_SHAFT);
+ const levelStairs=buildLevelStairs(THREE,root,{stone:cast.intStairMolding,wood:cast.stairWalnut,iron:cast.stairForged,brass:cast.stairPatina});
+ return {front:root,facadeWidth:54,cellar,levelStairs,
    palaceDimensions:{width:54,depth:X.wingFront-X.parkBack,height:18.46,calibration:'approximate; existing core preserved and extended to represent historical setbacks'},
    buildings:['Château de Roissy – Hauptgebäude'],historicalFloors:ROOMDATA,historicalLayers:layers,finishRegions,roomAt,
    attic:atticGallery,interiorCollision:collisionWalls,upperDeckRectangles:slabAudit[1].rectangles,roofDeckRectangles:slabAudit[2].rectangles,hallSupports,interiorDoorways,planPartitions:partitionRegister,entranceDoors:doors,interiorDoors,

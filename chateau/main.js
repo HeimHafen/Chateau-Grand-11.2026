@@ -1,14 +1,16 @@
-import {ATTIC} from './attic.js?v=roissy352';
-import {setupModelImport} from './model-import-v348.js?v=roissy352';
+import {CELLAR_SHAFT} from './level-stairs.js?v=roissy355';
+import {CELLAR} from './cellar.js?v=roissy355';
+import {ATTIC} from './attic.js?v=roissy355';
+import {setupModelImport} from './model-import-v348.js?v=roissy355';
 import * as THREE from '../vendor/three/build/three.module.js';
-import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js?v=roissy352';
+import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js?v=roissy355';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
-import {buildSky} from './daylight-v342.js?v=roissy352';
+import {buildSky} from './daylight-v342.js?v=roissy355';
 import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {loadGardenMaple} from '../wohnzimmer/garden-maple.js';
-import {buildChateau} from './architecture.js?v=roissy352';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy352';
-import {planSectionY} from './roissy-config.js?v=roissy352';
+import {buildChateau} from './architecture.js?v=roissy355';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy355';
+import {planSectionY} from './roissy-config.js?v=roissy355';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -20,7 +22,8 @@ let renderer,scene,camera,orbit={theta:.43,phi:.52,d:100,target:new THREE.Vector
 let player={x:0,y:EYE_Y,footY:0,z:31,yaw:0,pitch:0};
 let walkTouch=null,lookTouch=null,forward=0,strafe=0,lookPointer=null;
 let last=0;
-let atmospheric;
+let atmospheric, surfaceLighting;
+let underground=false;
 let floorChoice=null, activeWalkingFloor=null, historicalChateau=null, clippedMode=false;
 let lastLocation='';
 let sceneDoors=[],portalDoors=new Set(),shadowDirty=true,lastShadowRefresh=-Infinity;
@@ -54,15 +57,17 @@ async function run(){
   scene=new THREE.Scene();scene.background=new THREE.Color(0xaac8e4);scene.fog=new THREE.FogExp2(0xc6d6df,.0009);
   camera=new THREE.PerspectiveCamera(61,1,.24,850);camera.rotation.order='YXZ';
   atmospheric=buildSky(THREE,scene,camera);
-  scene.add(new THREE.HemisphereLight(0xe6eeff,0xcbb895,1.16));
+  const skyFill=new THREE.HemisphereLight(0xe6eeff,0xcbb895,1.16);
   // Daylight-focused reference look; no camera-attached light.
-  scene.add(new THREE.AmbientLight(0xfff4e5,.23));
+  const ambient=new THREE.AmbientLight(0xfff4e5,.23);
   const sun=new THREE.DirectionalLight(0xffeed8,2.95);
   sun.position.set(78,88,132);sun.castShadow=true;
   const s=mobile?2048:4096;sun.shadow.mapSize.set(s,s);
   Object.assign(sun.shadow.camera,{left:-36,right:36,top:36,bottom:-36,near:115,far:245});
   sun.shadow.camera.updateProjectionMatrix();sun.shadow.bias=-.00035;sun.shadow.normalBias=.023;
-  scene.add(sun);
+  surfaceLighting=new THREE.Group();
+  surfaceLighting.add(sun,skyFill,ambient);
+  scene.add(surfaceLighting);
   // Register the texture load barrier before starting any asynchronous asset loads.
   const missingAssets=[];let resolveAssets;
   const assetsReady=new Promise(resolve=>{resolveAssets=resolve;});
@@ -73,12 +78,13 @@ async function run(){
   buildLandscape(mats);
   const chateau=buildChateau(THREE,scene,null,mats,glass);
   historicalChateau=chateau;
+  chateau.cellar.root.visible=true;
   sceneDoors=[...chateau.entranceDoors,...chateau.interiorDoors];portalDoors=new Set(chateau.entranceDoors);
   // A low-intensity filtered environment provides believable reflection on oak,
   // honed stone and metal without adding a screen-space reflection pass.
-  new THREE.TextureLoader().load('./assets/glass/v342_daylight_env.jpg',t=>{t.colorSpace=THREE.SRGBColorSpace;t.mapping=THREE.EquirectangularReflectionMapping;scene.environment=t;scene.environmentIntensity=.47;},undefined,()=>{});
+  new THREE.TextureLoader().load('./assets/glass/v342_daylight_env.jpg',t=>{t.colorSpace=THREE.SRGBColorSpace;t.mapping=THREE.EquirectangularReflectionMapping;scene.environment=t;scene.environmentIntensity=underground?.15:.47;},undefined,()=>{});
   // Physical fixture positions and short-range warm pools of light. No extra shadow passes.
-  for(const f of [...chateau.validations.interiorFinish.referenceFixtures.lights,...chateau.validations.interiorFinish.furnishings.lights,...chateau.attic.lights]){const lamp=new THREE.PointLight(f.color,f.intensity,f.distance,2);lamp.name=f.name+'_Licht';lamp.position.set(...f.position);scene.add(lamp);}
+  for(const f of [...chateau.validations.interiorFinish.referenceFixtures.lights,...chateau.validations.interiorFinish.furnishings.lights,...chateau.attic.lights]){const lamp=new THREE.PointLight(f.color,f.intensity,f.distance,2);lamp.name=f.name+'_Licht';lamp.position.set(...f.position);surfaceLighting.add(lamp);}
   // Reuse the locally packaged maple model; keep trees outside the palace and
   // all walkable paths. Shared geometry and materials via instancing.
   loadGardenMaple(THREE,new GLTFLoader()).then(tree=>{
@@ -93,15 +99,15 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.52',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.52';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.55',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.55';
   window.__CHATEAU_MAXGAME.importedFurniture=setupModelImport(THREE,chateau,scene,renderer);
   resize();view('angle');
   status.textContent='Architektur aufgebaut. Materialien und Texturen werden geladen …';
   let timeoutId;const loaded=await Promise.race([assetsReady.then(()=>true),new Promise(resolve=>{timeoutId=setTimeout(()=>resolve(false),15000);})]);clearTimeout(timeoutId);
   markShadowDirty();
   start.disabled=false;start.textContent='Château erkunden';
-  status.textContent=missingAssets.length?`${missingAssets.length} Ressource(n) nicht geladen. Rundgang mit verfügbaren Materialien möglich.`:loaded?'54 × 28,85 m · EG, 1. OG und Mansardengalerie · Rundgang bereit.':'Rundgang bereit · einige Texturen laden möglicherweise noch.';
+  status.textContent=missingAssets.length?`${missingAssets.length} Ressource(n) nicht geladen. Rundgang mit verfügbaren Materialien möglich.`:loaded?'54 × 28,85 m · Keller, EG, 1. OG und Mansarde · Rundgang bereit.':'Rundgang bereit · einige Texturen laden möglicherweise noch.';
   THREE.DefaultLoadingManager.onLoad=()=>{markShadowDirty();};
   window.__CHATEAU_MAXGAME.missingAssets=missingAssets;
   window.__CHATEAU_MAXGAME.renderDiagnostics=()=>({pixelRatio:renderer.getPixelRatio(),qualityMode,qualityScale,reflectionMode:'physical-material-only',cameraNear:camera.near,cameraFar:camera.far,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,textures:renderer.info.memory.textures});
@@ -119,10 +125,27 @@ function buildLandscape(mats){
   });
   const grass=new THREE.MeshStandardMaterial({name:'MaxGame_PBR_Gras',map:texture[0],normalMap:texture[1],roughnessMap:texture[2],roughness:.97,color:0xc7d6b6,normalScale:new THREE.Vector2(.15,.15)});
   applyProceduralFinish(THREE,grass,'grassBreakup');
-  const floor=new THREE.Mesh(new THREE.PlaneGeometry(1200,1200),grass);floor.rotation.x=-Math.PI/2;floor.position.y=-.08;floor.receiveShadow=true;scene.add(floor);
+  const [a,b,c,d]=CELLAR_SHAFT;
+  for(const [x0,x1,z0,z1] of [[-600,a,-600,600],[b,600,-600,600],[a,b,-600,c],[a,b,d,600]]){
+    const geo=new THREE.PlaneGeometry(x1-x0,z1-z0);
+    geo.rotateX(-Math.PI/2);
+    geo.translate((x0+x1)/2,-.08,(z0+z1)/2);
+    const pos=geo.attributes.position,uv=geo.attributes.uv;
+    for(let i=0;i<pos.count;i++)uv.setXY(i,(pos.getX(i)+600)/1200,(600-pos.getZ(i))/1200);
+    const floor=new THREE.Mesh(geo,grass);
+    floor.receiveShadow=true;scene.add(floor);
+  }
   const pavement=new THREE.Mesh(new THREE.BoxGeometry(9,.08,105),mats.porticoPaving);
   pavement.position.set(0,-.02,70);pavement.receiveShadow=true;scene.add(pavement);
   // One continuous grass surface; no redundant near-parallel lawn overlays.
+}
+function setUnderground(active){
+  if(underground===active)return;
+  underground=active;
+  historicalChateau.cellar.lighting.visible=active;
+  surfaceLighting.visible=!active;
+  scene.environmentIntensity=active?.15:.47;
+  markShadowDirty();
 }
 function setCutaway(floor){
   // Clipping takes away the upper shell for a real top-down view of constructed rooms.
@@ -146,6 +169,7 @@ function setCutaway(floor){
 function view(which){
   clearWalkInput();
   mode='orbit';activeWalkingFloor=null;
+  setUnderground(false);
   document.body.classList.remove('walking');
   floorChoice=which==='eg'||which==='og'?which:null;
   const views={
@@ -173,13 +197,14 @@ function setWalk(entry=null){
   mode='walk';activeWalkingFloor=floorChoice;
   document.body.classList.add('walking');
   setCutaway(null); // Floor plates/ceilings restored for physical exploration.
+  player.access=undefined;
   let entryYaw=0;
   if(typeof entry==='string'){
-    const starts={hall:[0,9.25,EG_Y,0],salon:[0,-3.65,EG_Y,0],stair:[-15.65,9.15,EG_Y,0],gallery:[0,4.5,OG_Y,0],attic:[ATTIC.entry.x,ATTIC.entry.z,ATTIC.floor,ATTIC.entry.yaw]};
+    const starts={hall:[0,9.25,EG_Y,0],salon:[0,-3.65,EG_Y,0],stair:[-15.65,9.15,EG_Y,0],gallery:[0,4.5,OG_Y,0],attic:[ATTIC.entry.x,ATTIC.entry.z,ATTIC.floor,ATTIC.entry.yaw],cellar:[CELLAR.entry.x,CELLAR.entry.z,CELLAR.floor,CELLAR.entry.yaw]};
     const [x,z,foot,yaw]=starts[entry]||starts.hall;
     Object.assign(player,{x,z,footY:foot});
     entryYaw=yaw;
-    activeWalkingFloor=foot===ATTIC.floor?'attic':foot===OG_Y?'og':'eg';
+    activeWalkingFloor=foot===CELLAR.floor?'cellar':foot===ATTIC.floor?'attic':foot===OG_Y?'og':'eg';
   }else if(activeWalkingFloor){
     // Optional shortcut for testing the two plans; normal exploration never
     // teleports: approach stairs and walk through the automatic entrance doors.
@@ -188,6 +213,8 @@ function setWalk(entry=null){
   }else{
     player.x=0;player.footY=0;player.z=31;
   }
+  setUnderground(player.footY===CELLAR.floor);
+  if(underground)historicalChateau.cellar.updateLights(player.x,player.z);
   player.y=player.footY+EYE_Y;
   player.yaw=entryYaw;player.pitch=.025;
   markShadowDirty();
@@ -204,8 +231,9 @@ function showWalkLocation(){
   const ui=document.getElementById('locationStatus');
   if(!ui)return;
   if(mode!=='walk'){ui.hidden=true;return;}
-  const label=describePlace(player.x,player.z,player.footY,historicalChateau);
-  if(label!==lastLocation){lastLocation=label;ui.textContent=label;hint.textContent=player.footY===ATTIC.floor?'Links gehen · rechts umsehen · Geschosswechsel über „Innenräume“':player.footY>=EG_Y-.14?'Links ziehen: gehen · rechts umsehen · Türen öffnen automatisch':'Links ziehen: gehen · rechts umsehen · Treppen und Türen begehbar';}
+  const label=player.access==='cellar'?'Kellertreppe · Kalkstein':player.access==='attic'?
+    'Mansardentreppe · Eiche':describePlace(player.x,player.z,player.footY,historicalChateau);
+  if(label!==lastLocation){lastLocation=label;ui.textContent=label;hint.textContent=(player.footY===ATTIC.floor||underground)?'Links gehen · rechts umsehen · Geschosswechsel über „Innenräume“':player.footY>=EG_Y-.14?'Links ziehen: gehen · rechts umsehen · Türen öffnen automatisch':'Links ziehen: gehen · rechts umsehen · Treppen und Türen begehbar';}
   ui.hidden=false;
 }
 for(const b of document.querySelectorAll('[data-view]'))b.addEventListener('click',()=>view(b.dataset.view));
@@ -270,15 +298,18 @@ function frame(ms){
     const substeps=Math.max(1,Math.ceil(Math.hypot(dx,dz)/.055));
     for(let i=0;i<substeps;i++){
       let candidate=candidateStep(player,player.x+dx/substeps,player.z,historicalChateau,doors);
-      if(candidate){player.x=candidate.x;player.footY=candidate.footY;}
+      if(candidate){player.x=candidate.x;player.footY=candidate.footY;player.access=candidate.access;}
       candidate=candidateStep(player,player.x,player.z+dz/substeps,historicalChateau,doors);
-      if(candidate){player.z=candidate.z;player.footY=candidate.footY;}
+      if(candidate){player.z=candidate.z;player.footY=candidate.footY;player.access=candidate.access;}
     }
     // Keep the eye-height human-sized; damp out the discrete stair risers.
     player.y=THREE.MathUtils.damp(player.y,player.footY+EYE_Y,11,dt);
     player.x=THREE.MathUtils.clamp(player.x,-85,85);
     player.z=THREE.MathUtils.clamp(player.z,-85,125);
-    activeWalkingFloor=player.footY===ATTIC.floor?'attic':player.footY>=(EG_Y+OG_Y)/2+.15?'og':player.footY>=EG_Y-.14?'eg':null;
+    const below=player.footY<-.90;
+    if(below&&(dx||dz||!underground))historicalChateau.cellar.updateLights(player.x,player.z);
+    setUnderground(below);
+    activeWalkingFloor=player.access|| (underground?'cellar':player.footY===ATTIC.floor?'attic':player.footY>=(EG_Y+OG_Y)/2+.15?'og':player.footY>=EG_Y-.14?'eg':null);
     showWalkLocation();
     camera.position.set(player.x,player.y,player.z);
     camera.rotation.set(player.pitch,player.yaw,0,'YXZ');

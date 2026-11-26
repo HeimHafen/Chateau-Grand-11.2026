@@ -20,7 +20,7 @@ const clear=(x,z)=>{
 };
 let player={...ATTIC.entry,footY:ATTIC.floor};
 let steps=0;
-for(const [x,z] of [[20,0],[20,8],[-20,8],[-20,-8],[20,-8]]){
+for(const [x,z] of [[20,0],[20,9.25],[-22.15,9.25],[-22.15,-8],[20,-8]]){
   const old=player,n=Math.ceil(Math.hypot(x-old.x,z-old.z)/.05);
   for(let i=1;i<=n;i++){
     player=candidateStep(player,old.x+(x-old.x)*i/n,old.z+(z-old.z)*i/n,castle);
