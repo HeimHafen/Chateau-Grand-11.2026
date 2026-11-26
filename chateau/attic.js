@@ -1,4 +1,4 @@
-import {CORNICE,HALF_D,HALF_W} from './roissy-config.js?v=roissy362';
+import {CORNICE,HALF_D,HALF_W} from './roissy-config.js?v=roissy363';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
 
 export const ATTIC={
@@ -18,6 +18,10 @@ export function buildAttic(T,root,deck,materials,roof){
   const paleOak=oak.clone();
   paleOak.name='Mansarde · geölte Eiche am Fenster';
   paleOak.color.setHex(0xbb936b);
+  const paintedTrim=plaster.clone();
+  paintedTrim.name='Mansarde · lackierte Wandprofile';
+  paintedTrim.color.setHex(0xf0e2ce);
+  paintedTrim.roughness=.56;
   const insetPanel=plaster.clone();
   insetPanel.name='Mansarde · Leinenfarbener Kalkputz';
   insetPanel.color.setHex(0xded6c8);
@@ -92,28 +96,26 @@ export function buildAttic(T,root,deck,materials,roof){
     const sign=Math.sign(frame[0][2]);
     const outward=(point,x,y,z)=>[point[0]+x,point[1]+y,point[2]+sign*z];
     const [left,right,topRight,topLeft]=frame;
-    // Keep each profile on the lining side of the opening.
-    beam(outward(left,-.019,-.023,0),outward(right,.019,-.023,0),.051,.083,stone);
-    beam(outward(left,-.025,0,0),outward(topLeft,-.025,.018,0),.039,.047,paleOak);
-    beam(outward(right,.025,0,0),outward(topRight,.025,.018,0),.039,.047,paleOak);
-    beam(outward(topRight,.046,.023,0),outward(topLeft,-.046,.023,0),.041,.048,paleOak);
-    beam(outward(left,-.065,-.065,-.012),outward(right,.065,-.065,-.012),.022,.049,paleOak);
+    beam(outward(left,-.020,-.026,0),outward(right,.020,-.026,0),.048,.070,stone);
+    beam(outward(left,-.021,0,0),outward(topLeft,-.021,.013,0),.034,.038,paintedTrim);
+    beam(outward(right,.021,0,0),outward(topRight,.021,.013,0),.034,.038,paintedTrim);
+    beam(outward(topRight,.036,.023,0),outward(topLeft,-.036,.023,0),.043,.038,paintedTrim);
   }
   for(const side of [-1,1]){
     const wallZ=side*(d+.096);
     box(plaster,0,floor+.39,wallZ,2*w,.78,.19);
     box(stone,0,floor+.061,side*(d+.025),2*w,.12,.22);
-    box(oak,0,floor+.792,wallZ,2*w,.064,.29);
+    box(paleOak,0,floor+.792,wallZ,2*w,.064,.29);
     box(stone,0,floor+.740,side*(d-.016),2*w,.020,.082);
     const bay=2*w/20;
     for(let i=0;i<20;i++){
       const x=-w+(i+.5)*bay,faceZ=side*(d-.020);
       box(stone,x,floor+.43,faceZ,bay-.21,.47,.042);
       box(insetPanel,x,floor+.43,side*(d-.044),bay-.36,.338,.014);
-      for(const edge of [-1,1])box(oak,x+edge*(bay-.26)/2,floor+.426,side*(d-.067),.011,.365,.018);
+      for(const edge of [-1,1])box(paintedTrim,x+edge*(bay-.26)/2,floor+.426,side*(d-.067),.011,.365,.018);
       for(const edge of [-1,1]){
-        box(oak,x+edge*(bay-.23)/2,floor+.43,side*(d-.048),.026,.49,.035);
-        box(oak,x,floor+.43+edge*.233,side*(d-.048),bay-.23,.024,.035);
+        box(paintedTrim,x+edge*(bay-.23)/2,floor+.43,side*(d-.048),.026,.49,.035);
+        box(paintedTrim,x,floor+.43+edge*.233,side*(d-.048),bay-.23,.024,.035);
       }
     }
     // Hipped end walls rise to the roof and have a timber base and head.

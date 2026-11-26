@@ -1,17 +1,17 @@
-import {loadAtticSeating} from './attic-seating.js?v=roissy362';
-import {CELLAR_SHAFT} from './level-stairs.js?v=roissy362';
-import {CELLAR} from './cellar.js?v=roissy362';
-import {ATTIC} from './attic.js?v=roissy362';
-import {setupModelImport} from './model-import-v348.js?v=roissy362';
+import {loadAtticSeating} from './attic-seating.js?v=roissy363';
+import {CELLAR_SHAFT} from './level-stairs.js?v=roissy363';
+import {CELLAR} from './cellar.js?v=roissy363';
+import {ATTIC} from './attic.js?v=roissy363';
+import {setupModelImport} from './model-import-v348.js?v=roissy363';
 import * as THREE from '../vendor/three/build/three.module.js';
-import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js?v=roissy362';
+import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js?v=roissy363';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
-import {buildSky} from './daylight-v342.js?v=roissy362';
+import {buildSky} from './daylight-v342.js?v=roissy363';
 import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {loadGardenMaple} from '../wohnzimmer/garden-maple.js';
-import {buildChateau} from './architecture.js?v=roissy362';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy362';
-import {planSectionY} from './roissy-config.js?v=roissy362';
+import {buildChateau} from './architecture.js?v=roissy363';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy363';
+import {planSectionY} from './roissy-config.js?v=roissy363';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -101,8 +101,8 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.62',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.62';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.63',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.63';
   window.__CHATEAU_MAXGAME.importedFurniture=setupModelImport(THREE,chateau,scene,renderer);
   resize();view('angle');
   status.textContent='Architektur aufgebaut. Materialien und Texturen werden geladen …';

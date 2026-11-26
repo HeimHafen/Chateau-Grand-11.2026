@@ -1,4 +1,4 @@
-import {HALF_W,HALF_D,EXTERIOR as X,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy362';
+import {HALF_W,HALF_D,EXTERIOR as X,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy363';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
 
 const passages=[-22,-14,-7,0,7,14,22];

@@ -1,20 +1,20 @@
-import {ATTIC_SHAFT,CELLAR_SHAFT,ATTIC_PORTAL,CELLAR_PORTAL,buildLevelStairs} from './level-stairs.js?v=roissy362';
-import {buildCellar} from './cellar.js?v=roissy362';
-import {buildAttic} from './attic.js?v=roissy362';
-import {installFurnishings} from './furnishings-v346.js?v=roissy362';
+import {ATTIC_SHAFT,CELLAR_SHAFT,ATTIC_PORTAL,CELLAR_PORTAL,buildLevelStairs} from './level-stairs.js?v=roissy363';
+import {buildCellar} from './cellar.js?v=roissy363';
+import {buildAttic} from './attic.js?v=roissy363';
+import {installFurnishings} from './furnishings-v346.js?v=roissy363';
 /**
  * CHÂTEAU GRAND V3.53 – Architekturfinish mit Gewölbekeller und Mansarde.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy362';
-import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy362';
-import {resolveStaticFaces} from './surface-cleanup.js?v=roissy362';
+import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy363';
+import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy363';
+import {resolveStaticFaces} from './surface-cleanup.js?v=roissy363';
 import {addPortalDoors,createOakFinish} from '../wohnzimmer/portal-doors-v2.js';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
-import {addRoissyPortal} from './portal-doors-v321.js?v=roissy362';
-import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy362';
+import {addRoissyPortal} from './portal-doors-v321.js?v=roissy363';
+import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy363';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_V345_GRAND_ESCALIER';scene.add(root);
@@ -1658,7 +1658,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
    geometry.computeVertexNormals();
    const panel=mesh(geometry,mat,name);
-   if(name.startsWith('Schiefer_')||name==='Gaubendach')mansardPanels.push(panel);
+   if(name.startsWith('Schiefer_'))mansardPanels.push(panel);
    return panel;
  }
  const roofDormerAxes=FRONT_WINDOW_AXES.filter(x=>Math.abs(x)>6.7&&Math.abs(x)<X.wingX);
@@ -1693,10 +1693,10 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    beam('bronzeTrim',[-l,shoulder+.028,side*q],[l,shoulder+.028,side*q],.036);
    beam('bronzeTrim',[side*l,shoulder+.028,-q],[side*l,shoulder+.028,q],.036);
  }
- function roofWindowReveal(x,sign,half,low,high,face,sill,head){
+ function roofWindowReveal(x,sign,half,low,high,face,sill,head,frameHalf=half){
    const inner=(u,t)=>{const p=roofPoint(x+u,t,sign);p[1]-=.048;return p;};
    roofWindowEdges.push([inner(-half,low),inner(half,low),inner(half,high),inner(-half,high)]);
-   const outer=(u,y)=>[x+u,y,face];
+   const outer=(u,y)=>[x+u*frameHalf/half,y,face];
    for(const [key,source,color] of [
      ['mansardReveal','intPlaster',0xf9efde],
      ['mansardSill','windowReveal',0xf5e8d5]
@@ -1724,12 +1724,25 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  // Dormer glazing within physically cut roof slopes.
  for(const sign of [-1,1])for(const x of (sign>0?roofDormerAxes:rearDormers)){
    const z=sign*(HALF_D-1.25),y=14.05;
-   for(const q of [-1,1])addBox('window',x+q*.59,y,z,.14,1.88,1.05);
-   addBox('window',x,y-.90,z,1.30,.18,1.05);addBox('window',x,y+.90,z,1.30,.18,1.05);
+   const aboveRoof=([,height,depth])=>height-e-(HALF_D-sign*depth)*(shoulder-e)/inset+.027;
+   for(const [left,right,bottom,top] of [
+     [x-.66,x-.52,y-.94,y+.94], [x+.52,x+.66,y-.94,y+.94],
+     [x-.52,x+.52,y-.99,y-.81], [x-.52,x+.52,y+.81,y+.99]
+   ]){
+     const near=z-.525,far=z+.525;
+     const corners=[
+       [left,bottom,near],[right,bottom,near],[right,top,near],[left,top,near],
+       [left,bottom,far],[right,bottom,far],[right,top,far],[left,top,far]
+     ];
+     for(const face of [[3,2,1,0],[4,5,6,7],[0,4,7,3],[1,2,6,5],[0,1,5,4],[3,7,6,2]]){
+       const profile=clipRoof(face.map(index=>corners[index]),aboveRoof);
+       if(profile.length>=3)poly(profile,'window','Roissy_Dachfenster_Gaubenstein');
+     }
+   }
    const face=z+sign*.54;
    detailedWindow('x',face,x,y-.81,1.04,1.62,sign,false,'dormer');
    roofWindowTrim(x,y-.81,face,1.04,1.62,sign);
-   roofWindowReveal(x,sign,.57,roofOpeningT0,roofOpeningT1,face-sign*.045,y-.81,y+.81);
+   roofWindowReveal(x,sign,.57,roofOpeningT0,roofOpeningT1,face-sign*.064,y-.81,y+.81,.52);
    const peak=y+1.55,lo=y+.99;
    poly([[x-.79,lo,z+sign*.66],[x+.79,lo,z+sign*.66],[x,peak,z+sign*.66]],'window','Gauben_Dreiecksgiebel');
    for(const q of [-1,1])poly([[x,peak,z+sign*.68],[x+q*.80,lo,z+sign*.68],[x+q*.80,lo,z-sign*.68],[x,peak,z-sign*.68]],'slate','Gaubendach');
