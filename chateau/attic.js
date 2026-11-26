@@ -1,4 +1,4 @@
-import {CORNICE,HALF_D,HALF_W} from './roissy-config.js?v=roissy361';
+import {CORNICE,HALF_D,HALF_W} from './roissy-config.js?v=roissy362';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
 
 export const ATTIC={
@@ -155,8 +155,12 @@ export function buildAttic(T,root,deck,materials,roof){
   for(const x of [-21.9,-15.15,-7.05,7.05,15.15,21.9]){
     beam([x,tie,-shoulderZ],[x,tie,shoulderZ],.24,.28);
     for(const side of [-1,1]){
-      box(paleOak,x,tie-.119,side*(shoulderZ-.21),.29,.087,.46);
-      box(iron,x,tie+.011,side*(shoulderZ-.21),.304,.042,.078);
+      const jointZ=side*(shoulderZ-.21);
+      for(const face of [-1,1]){
+        box(iron,x+face*.122,tie-.028,jointZ,.018,.126,.30);
+        for(const offset of [-.085,.085])
+          box(iron,x+face*.135,tie-.028,jointZ+offset,.012,.035,.035);
+      }
     }
     for(const side of [-1,1]){
       beam([x,floor+.79,side*d],[x,roofHeight(x,shoulderZ)-.18,side*shoulderZ],.19);

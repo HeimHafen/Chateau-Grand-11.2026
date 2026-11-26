@@ -35,7 +35,7 @@ assert(v.fullDoorwayCoreCollisions===0,'interior doors not occluded');
 assert(v.sideWindowCollisions===0,'no blocked side windows');
 assert(v.slabOpeningIntrusions===0,'stair and salon voids unblocked by slabs');
 assert(v.roomCountEG===18&&v.roomCountOG===21,'historical room zones intact');
-assert(chateau.entranceDoors.length===3,'three entrance doors');
+assert(chateau.entranceDoors.length===1&&chateau.entranceDoors[0].x===0,'single central entrance');
 assert(scene.getObjectByName('Roissy_Treppenuntersicht_Aus_Kalkstein'),'inclined structural soffits present');
 assert(scene.getObjectByName('Roissy_Geschlossenes_Seitliches_Treppenprofil'),'two structural side stringers present');
 let bad=0,objectCount=0;

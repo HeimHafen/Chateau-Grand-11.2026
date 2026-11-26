@@ -1,8 +1,8 @@
-import {stairStep} from './level-stairs.js?v=roissy361';
-import {CELLAR,cellarBlocks,cellarPlace} from './cellar.js?v=roissy361';
-import {ATTIC} from './attic.js?v=roissy361';
+import {stairStep} from './level-stairs.js?v=roissy362';
+import {CELLAR,cellarBlocks,cellarPlace} from './cellar.js?v=roissy362';
+import {ATTIC} from './attic.js?v=roissy362';
 /** Château Grand V3.4 – walkable ground floor and Premier Étage, shared plan metres. */
-import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR,PERRON,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy361';
+import {HALF_W,HALF_D,EG,OG,ROOMDATA,FRONT_DOORS,GRAND_STAIR,PERRON,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy362';
 export const EG_Y=EG,OG_Y=OG,EYE_Y=1.69;
 export const WALK_RADIUS=.30;
 const H=(OG-EG)*.5;

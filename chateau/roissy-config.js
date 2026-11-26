@@ -361,7 +361,7 @@ widenPair('og',1,2);widenPair('og',11,12);
 PLAN.status='V3.47: historically inspired design, enlarged Grand Escalier; not an original reconstruction';
 PLAN.reconstructionRule='Preserve the exterior and main floor heights; intentionally enlarge the stair hall and adjacent gallery.';
 export const ROOMDATA=PLAN.rooms;
-export const FRONT_DOORS=[-3.6,0,3.6];
+export const FRONT_DOORS=[0];
 export const REAR_WINDOW_AXES=[-24.4,-19.5,-15.9,-10.6,-8.0,-3.6,0,3.6,8.6,11.5,16.5,21.7,24.6];
 export const FRONT_WINDOW_AXES=[-24.2,-20.4,-15.8,-11.8,-8.6,-3.6,0,3.6,8.6,11.8,16.2,21.7,24.6];
 // V3.8 side elevation: preserve four vertically aligned bays but move them

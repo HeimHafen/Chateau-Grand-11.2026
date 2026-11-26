@@ -8,7 +8,7 @@ const scene=new THREE.Scene(),a=buildChateau(THREE,scene,null,mats,glass);
 const panes=[];scene.traverse(o=>{if(o.userData.windowOpening)panes.push(o)});
 const expected=FACADE_SEGMENTS.reduce((n,s)=>n+2*s.windows.length-(s.entrance?s.windows.filter(x=>FRONT_DOORS.includes(x)).length:0),0);
 check(panes.filter(o=>o.userData.windowOpening.kind==='facade').length===expected,'facade count');
-check(panes.length===expected+a.validations.roofPlaneCutouts+6,'total count');
+check(panes.length===expected+a.validations.roofPlaneCutouts,'total count');
 check(new Set(panes.map(o=>JSON.stringify(o.userData.windowOpening))).size===panes.length,'duplicated window');
 scene.updateMatrixWorld(true);
 const ray=new THREE.Raycaster();let rayTests=0;const failures=[];

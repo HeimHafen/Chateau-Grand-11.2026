@@ -6,7 +6,7 @@ const check=(x,m)=>{if(!x)throw Error(m);};
 const mat=new THREE.MeshStandardMaterial(),glass=new THREE.MeshStandardMaterial({transparent:true,opacity:.18});
 const mats=Object.fromEntries(['facadeWall','dressedStone','trim','windowStone','shade','paintedSash','roof','porticoPaving','columnFinish','brass'].map(k=>[k,mat]));
 const scene=new THREE.Scene(),a=buildChateau(THREE,scene,null,mats,glass),doors=a.entranceDoors;
-check(doors.length===3,'three doors');let meshes=0,triangles=0,walkSteps=0;
+check(doors.length===1&&doors[0].x===0,'single central door');let meshes=0,triangles=0,walkSteps=0;
 for(const {x,z,base,door} of doors){
  check(door.leaves.length===2,'two moving leaves');
  check(door.blocks(x,z-.18,.3,base),'closed door blocks');

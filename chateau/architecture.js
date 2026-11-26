@@ -1,20 +1,20 @@
-import {ATTIC_SHAFT,CELLAR_SHAFT,ATTIC_PORTAL,CELLAR_PORTAL,buildLevelStairs} from './level-stairs.js?v=roissy361';
-import {buildCellar} from './cellar.js?v=roissy361';
-import {buildAttic} from './attic.js?v=roissy361';
-import {installFurnishings} from './furnishings-v346.js?v=roissy361';
+import {ATTIC_SHAFT,CELLAR_SHAFT,ATTIC_PORTAL,CELLAR_PORTAL,buildLevelStairs} from './level-stairs.js?v=roissy362';
+import {buildCellar} from './cellar.js?v=roissy362';
+import {buildAttic} from './attic.js?v=roissy362';
+import {installFurnishings} from './furnishings-v346.js?v=roissy362';
 /**
  * CHÂTEAU GRAND V3.53 – Architekturfinish mit Gewölbekeller und Mansarde.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy361';
-import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy361';
-import {resolveStaticFaces} from './surface-cleanup.js?v=roissy361';
+import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy362';
+import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy362';
+import {resolveStaticFaces} from './surface-cleanup.js?v=roissy362';
 import {addPortalDoors,createOakFinish} from '../wohnzimmer/portal-doors-v2.js';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
-import {addRoissyPortal} from './portal-doors-v321.js?v=roissy361';
-import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy361';
+import {addRoissyPortal} from './portal-doors-v321.js?v=roissy362';
+import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy362';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_V345_GRAND_ESCALIER';scene.add(root);
@@ -1770,7 +1770,26 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      roofWindowTrim(x,base+.28,z+sign*.22,1.55,h-.56,sign);
      roofWindowReveal(x,sign,.775,(base+.28-e)/(shoulder-e),(top-.28-e)/(shoulder-e),z-sign*.055,base+.28,top-.28);
    }
-   for(const q of [-1,1])addBox('wall',q*(w/2-.16),base+h/2,z-sign*1.20,.34,h,2.4);
+   // Stop the risalit cheeks at the roof skin so they cannot cross the
+   // interior lining, timberwork or continuous knee-wall panelling.
+   const cheekDepth=Math.max(.40,sign*z-HALF_D+inset*(top-e)/(shoulder-e));
+   for(const side of [-1,1]){
+     const x=side*(w/2-.16);
+     const roofDistance=([,y,v])=>y-e-(HALF_D-sign*v)*(shoulder-e)/inset;
+     const cheek=clipRoof([[x,base,z],[x,top,z],[x,top,z-sign*cheekDepth],[x,base,z-sign*cheekDepth]],roofDistance);
+     if(cheek.length<3)continue;
+     for(const offset of [-.17,.17]){
+       const surface=cheek.map(([u,y,v])=>[u+offset,y,v]);
+       if(sign*offset>0)surface.reverse();
+       poly(surface,'wall','Roissy_Mittelrisalit_Wange');
+     }
+     for(let i=0;i<cheek.length;i++){
+       const [a,y,b]=cheek[i], [c,h,d]=cheek[(i+1)%cheek.length];
+       const edge=[[a-.17,y,b],[c-.17,h,d],[c+.17,h,d],[a+.17,y,b]];
+       if(sign<0)edge.reverse();
+       poly(edge,'wall','Roissy_Mittelrisalit_Wangenkante');
+     }
+   }
    addBox('trim',0,top+.02,z+sign*.10,w+.30,.28,.66);
    pediment(0,z+sign*.12,w+.32,top+.12,top+1.92,sign,sign>0?'Hof_Mittelgiebel':'Park_Mittelgiebel');
    // Stone pilasters articulate the separations between the three windows.
