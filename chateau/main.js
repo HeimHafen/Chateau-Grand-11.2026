@@ -1,13 +1,13 @@
-import {setupModelImport} from './model-import-v348.js?v=roissy350';
+import {setupModelImport} from './model-import-v348.js?v=roissy351';
 import * as THREE from '../vendor/three/build/three.module.js';
-import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js?v=roissy350';
+import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js?v=roissy351';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
-import {buildSky} from './daylight-v342.js';
+import {buildSky} from './daylight-v342.js?v=roissy351';
 import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {loadGardenMaple} from '../wohnzimmer/garden-maple.js';
-import {buildChateau} from './architecture.js?v=roissy350';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy350';
-import {planSectionY} from './roissy-config.js?v=roissy350';
+import {buildChateau} from './architecture.js?v=roissy351';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy351';
+import {planSectionY} from './roissy-config.js?v=roissy351';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -47,17 +47,17 @@ async function run(){
   renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',alpha:false});
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=1.13;
+  renderer.toneMappingExposure=1.07;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   renderer.shadowMap.autoUpdate=false;
   scene=new THREE.Scene();scene.background=new THREE.Color(0xaac8e4);scene.fog=new THREE.FogExp2(0xc6d6df,.0009);
   camera=new THREE.PerspectiveCamera(61,1,.24,850);camera.rotation.order='YXZ';
   atmospheric=buildSky(THREE,scene,camera);
-  scene.add(new THREE.HemisphereLight(0xe5efff,0xe4d7c2,1.45));
+  scene.add(new THREE.HemisphereLight(0xe6eeff,0xcbb895,1.16));
   // Daylight-focused reference look; no camera-attached light.
-  scene.add(new THREE.AmbientLight(0xffffff,.32));
-  const sun=new THREE.DirectionalLight(0xffecd3,2.65);
-  sun.position.set(-72,95,-132);sun.castShadow=true;
+  scene.add(new THREE.AmbientLight(0xfff4e5,.23));
+  const sun=new THREE.DirectionalLight(0xffeed8,2.95);
+  sun.position.set(78,88,132);sun.castShadow=true;
   const s=mobile?2048:4096;sun.shadow.mapSize.set(s,s);
   Object.assign(sun.shadow.camera,{left:-36,right:36,top:36,bottom:-36,near:115,far:245});
   sun.shadow.camera.updateProjectionMatrix();sun.shadow.bias=-.00035;sun.shadow.normalBias=.023;
@@ -75,7 +75,7 @@ async function run(){
   sceneDoors=[...chateau.entranceDoors,...chateau.interiorDoors];portalDoors=new Set(chateau.entranceDoors);
   // A low-intensity filtered environment provides believable reflection on oak,
   // honed stone and metal without adding a screen-space reflection pass.
-  new THREE.TextureLoader().load('./assets/glass/v342_daylight_env.jpg',t=>{t.colorSpace=THREE.SRGBColorSpace;t.mapping=THREE.EquirectangularReflectionMapping;scene.environment=t;scene.environmentIntensity=.40;},undefined,()=>{});
+  new THREE.TextureLoader().load('./assets/glass/v342_daylight_env.jpg',t=>{t.colorSpace=THREE.SRGBColorSpace;t.mapping=THREE.EquirectangularReflectionMapping;scene.environment=t;scene.environmentIntensity=.47;},undefined,()=>{});
   // Physical fixture positions and short-range warm pools of light. No extra shadow passes.
   for(const f of [...chateau.validations.interiorFinish.referenceFixtures.lights,...chateau.validations.interiorFinish.furnishings.lights]){const lamp=new THREE.PointLight(f.color,f.intensity,f.distance,2);lamp.name=f.name+'_Licht';lamp.position.set(...f.position);scene.add(lamp);}
   // Reuse the locally packaged maple model; keep trees outside the palace and
@@ -92,8 +92,8 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.50',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.50';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.51',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.51';
   window.__CHATEAU_MAXGAME.importedFurniture=setupModelImport(THREE,chateau,scene,renderer);
   resize();view('angle');
   status.textContent='Architektur aufgebaut. Materialien und Texturen werden geladen …';

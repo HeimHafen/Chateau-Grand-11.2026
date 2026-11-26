@@ -40,7 +40,7 @@ export function buildSky(THREE,scene,camera){
       float relief=cloud(warped+vec2(-.12,.07));
       float edge=mass-relief;
       vec3 moonDir=normalize(vec3(.26,.36,-.90));
-      float sunset=pow(max(0.,dot(dir,normalize(vec3(-.70,.03,-.72)))),5.);
+      float sunset=pow(max(0.,dot(dir,normalize(vec3(.51,.03,.86)))),5.);
       vec3 horizon=mix(vec3(.76,.85,.92),vec3(.94,.87,.74),sunset*.40);
       vec3 col=mix(horizon,vec3(.29,.53,.78),pow(smoothstep(0.,.92,y),.52));
       vec3 right=normalize(cross(vec3(0.,1.,0.),moonDir));

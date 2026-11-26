@@ -1,17 +1,17 @@
-import {installFurnishings} from './furnishings-v346.js?v=roissy350';
+import {installFurnishings} from './furnishings-v346.js?v=roissy351';
 /**
- * CHÂTEAU GRAND V3.46 – Historische Hof- und Parkfassade mit verfeinerten Raumboeden.
+ * CHÂTEAU GRAND V3.51 – Architekturfinish für Fassaden, Dach und Innenräume.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy350';
-import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy350';
-import {resolveStaticFaces} from './surface-cleanup.js?v=roissy350';
+import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy351';
+import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy351';
+import {resolveStaticFaces} from './surface-cleanup.js?v=roissy351';
 import {addPortalDoors,createOakFinish} from '../wohnzimmer/portal-doors-v2.js';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
-import {addRoissyPortal} from './portal-doors-v321.js?v=roissy350';
-import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy350';
+import {addRoissyPortal} from './portal-doors-v321.js?v=roissy351';
+import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy351';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_V345_GRAND_ESCALIER';scene.add(root);
@@ -33,7 +33,13 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    const m={map:load('albedo',true),normalMap:load('normal')};if(hasRoughness)m.roughnessMap=load('roughness');mapsCache.set(prefix,m);return m;
  }
  const plasterMaps=mapsFor('interior/v317_plaster'),paintMaps=mapsFor('interior/v317_paint'),stoneMaps=mapsFor('heritage-v14/column_stone');
- const finish=(name,color,roughness,source=plasterMaps,scale=.13)=>new THREE.MeshStandardMaterial({name,color,roughness,metalness:0,...source,normalScale:new THREE.Vector2(scale,scale)});
+ function finish(name,color,roughness,source=plasterMaps,scale=.13){
+   const fields={name,color,roughness,metalness:0,...source,normalScale:new THREE.Vector2(scale,scale)};
+   if(source===paintMaps)return new THREE.MeshPhysicalMaterial({
+     ...fields,roughness:roughness-.10,clearcoat:.18,clearcoatRoughness:.44
+   });
+   return new THREE.MeshStandardMaterial(fields);
+ }
  const ceilingStone=finish('Roissy_Stuckdecke_Matt',0xfff9ee,.96,plasterMaps,.08);ceilingStone.side=THREE.DoubleSide;
  const cast={wall:mats.facadeWall,stone:mats.dressedStone,trim:mats.trim,window:mats.windowStone,
    sill:mats.shade,glass,sash:mats.paintedSash,bronze,bronzeTrim,gold,wood,stairIron,stairHandrail,floor:floorStone,ceiling:ceilingStone};
@@ -228,6 +234,9 @@ export function buildChateau(THREE,scene,donor,mats,glass){
        put('intFrame',m+d*(pw/2-.035),(bottom+upper)/2,.034,upper-bottom-.035,.042,.045);
        put('intShadow',m,d<0?bottom+.035:upper-.035,pw-.14,.07,.027,.034);
        put('intFrame',m,d<0?bottom+.035:upper-.035,pw-.14,.035,.042,.045);
+       const beadY=d<0?bottom+.035:upper-.035;
+       put('intBaseCap',m+d*(pw/2-.035),(bottom+upper)/2,.013,upper-bottom-.083,.017,.066);
+       put('intBaseCap',m,beadY,pw-.057,.013,.017,.066);
      }
      // Formal boiserie: a broad recessed field and finely graduated frame.
      // All details remain within the panel, rather than covering apertures.
@@ -478,7 +487,19 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      let ranges=[[a-.23,b+.23]];
      if(excludeEntrance&&y<EG+.5)for(const x of FRONT_DOORS){const half=apertureWidth(axis,x,0,true)/2+.23;
        ranges=ranges.flatMap(([l,r])=>x+half<=l||x-half>=r?[[l,r]]:[[l,Math.max(l,x-half)],[Math.min(r,x+half),r]].filter(q=>q[1]-q[0]>.001));}
-     for(const [l,r] of ranges){put('trim',(l+r)/2,y,r-l,.19,.64);put('window',(l+r)/2,y+.16,r-l,.085,.58);}
+     for(const [l,r] of ranges){
+       const mid=(l+r)/2;
+       put('trim',mid,y,r-l,.19,.64);
+       put('window',mid,y+.16,r-l,.085,.58);
+       if(y>CORNICE-.5){
+         put('stone',mid,y-.151,r-l,.073,.48,.25);
+         put('window',mid,y-.109,r-l,.035,.56,.27);
+         // Dentils sit under the projecting crown and are batched with the stonework.
+         const count=Math.max(0,Math.floor((r-l-.80)/.39));
+         const start=mid-(count-1)*.39/2;
+         for(let i=0;i<count;i++)put('stone',start+i*.39,y-.104,.15,.095,.13,.547);
+       }
+     }
    }
    for(const end of [a,b])for(let i=0;i<15;i++)put(i%2?'window':'stone',end+(end===a?.28:-.28),EG+.32+i*.73,i%2?.48:.66,.36,.14,.27);
  }
@@ -675,6 +696,11 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  const borderFormal=privateOak.clone();borderFormal.name='Roissy_Randfries_Formal_V332';borderFormal.color.setHex(0xbb9972);borderFormal.roughness=.58; borderFormal.clearcoat=.05;
  const borderPrivate=privateOak.clone();borderPrivate.name='Roissy_Randfries_Privat_V332';borderPrivate.color.setHex(0xb08b64);borderPrivate.roughness=.61; borderPrivate.clearcoat=.04;
  const borderPassage=privateOak.clone();borderPassage.name='Roissy_Randfries_Passage_V332';borderPassage.color.setHex(0xc3a37b);borderPassage.roughness=.60; borderPassage.clearcoat=.04;
+ // A thin satin finish catches light on the wood without a second floor surface.
+ for(const woodFloor of [salonParquet,diningParquet,cabinetParquet,chamberParquet,passageParquet,privateOak]){
+   woodFloor.clearcoat+=.10;
+   woodFloor.clearcoatRoughness=Math.max(.34,woodFloor.clearcoatRoughness-.08);
+ }
  const floorMats={salonParquet,diningParquet,cabinetParquet,chamberParquet,passageParquet,privateOak,stone:secondaryStone,vestStone:vestibulePBR,stairStone,stairBorder,
    borderFormalX:borderFormal,borderFormalZ:borderFormal,borderPrivateX:borderPrivate,borderPrivateZ:borderPrivate,borderPassageX:borderPassage,borderPassageZ:borderPassage};
  const floorBuffers=new Map();
@@ -1585,7 +1611,27 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.anisotropy=8;slate.map=tex;slate.color.setHex(0xd6dce1);
  }
  const e=CORNICE+.18,shoulder=15.4,ridge=17.45,inset=2.7;
- function poly(pts,mat,name){const arr=[];for(let i=1;i<pts.length-1;i++)arr.push(...pts[0],...pts[i],...pts[i+1]);const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(arr,3));const p0=new THREE.Vector3(...pts[0]),u=new THREE.Vector3(...pts[1]).sub(p0).normalize(),n=u.clone().cross(new THREE.Vector3(...pts[2]).sub(p0)).normalize(),v=n.clone().cross(u);const uv=[];for(let i=0;i<arr.length;i+=3){const q=new THREE.Vector3(arr[i],arr[i+1],arr[i+2]).sub(p0);uv.push(q.dot(u)/2.5,q.dot(v)/3.5);}g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();return mesh(g,mat,name);}
+ function poly(pts,mat,name){
+   const vertices=pts.map(p=>new THREE.Vector3(...p));
+   const normal=vertices[1].clone().sub(vertices[0]).cross(vertices[2].clone().sub(vertices[0])).normalize();
+   if(mat==='slate'&&normal.y<0){vertices.reverse();normal.negate();}
+   // Use one metric frame per roof plane. Dormer openings may split a
+   // slope into many polygons, but the tile courses keep the same origin.
+   const across=new THREE.Vector3(normal.z,0,-normal.x);
+   if(across.lengthSq()<1e-6)across.set(1,0,0);
+   across.normalize();
+   const upslope=normal.clone().cross(across).normalize();
+   const positions=[],uvs=[];
+   for(let i=1;i<vertices.length-1;i++)for(const point of [vertices[0],vertices[i],vertices[i+1]]){
+     positions.push(point.x,point.y,point.z);
+     uvs.push(point.dot(across)/2.4,point.dot(upslope)/2.8);
+   }
+   const geometry=new THREE.BufferGeometry();
+   geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+   geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
+   geometry.computeVertexNormals();
+   return mesh(geometry,mat,name);
+ }
  const roofDormerAxes=FRONT_WINDOW_AXES.filter(x=>Math.abs(x)>6.7&&Math.abs(x)<X.wingX);
  const rearDormers=REAR_WINDOW_AXES.filter(x=>Math.abs(x)>6.7&&Math.abs(x)<24);
  const roofOpeningT0=.23,roofOpeningT1=.72;
@@ -1648,9 +1694,23 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    for(const sign of [-1,1])poly([[cx+sign*w/2,CORNICE+.16,z+.20],[cx,15.02,z+.20],[cx,15.02,8.15],[cx+sign*w/2,CORNICE+.16,8.15]],'slate','Pavillon_Querdach');
    const o=mesh(new THREE.SphereGeometry(1,16,12),'bronzeTrim','Pavillon_Oculus');o.scale.set(.30,.30,.055);o.position.set(cx,CORNICE+.82,z+.58);
  }
+ const flues=new THREE.CylinderGeometry(.129,.145,.30,16,1,true);
+ const flueMaterial=new THREE.MeshStandardMaterial({
+   name:'Roissy_Kaminrohr_Patiniertes_Eisen',color:0x3b3833,roughness:.83,side:THREE.DoubleSide
+ });
  for(const x of [-22.8,-14.1,-7.0,7.0,14.1,22.8]){
-   addBox('stone',x,16.75,0,.72,3.0,.82);addBox('trim',x,18.24,0,.92,.22,1.02);
-   for(const q of [-1,1])addBox('bronzeTrim',x+q*.19,18.39,0,.24,.13,.30);
+   addBox('stone',x,16.58,0,.72,2.66,.82);
+   addBox('stone',x,17.95,0,.81,.08,.91);
+   addBox('trim',x,18.035,0,.92,.09,1.02);
+   // The stone cap encloses a recessed chamber with two open flues.
+   for(const sign of [-1,1]){
+     addBox('trim',x+sign*.401,18.19,0,.118,.22,1.02);
+     addBox('trim',x,18.19,sign*.45,.684,.22,.12);
+   }
+   for(const sign of [-1,1]){
+     const flue=mesh(flues,flueMaterial,'Roissy_Offener_Kaminzug');
+     flue.position.set(x+sign*.19,18.32,0);
+   }
  }
  // V3.28 intentionally adds no new interior light fixtures. Material realism is
  // developed first, while local lantern geometry and helper light sources stay absent
