@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#18232a">
-<title>CHÂTEAU GRAND 2027 · Roissy 3.51 · Architektur</title>
-<link rel="stylesheet" href="chateau/style.css?v=roissy351">
+<title>CHÂTEAU GRAND 2027 · Roissy 3.52 · Mansardengalerie</title>
+<link rel="stylesheet" href="chateau/style.css?v=roissy352">
 </head>
 <body>
 <canvas id="world" aria-label="Château Grand: historischer Roissy-Grundriss-Rundgang"></canvas>
 <header><div class="wordmark">CHÂTEAU</div><small>GRAND · 2027</small></header>
-<div id="version">ROISSY · V3.51</div>
+<div id="version">ROISSY · V3.52</div>
 <div id="menu" aria-label="Ansichten und Rundgang">
   <button data-view="front">Hof</button>
   <button data-view="park">Park</button>
@@ -20,7 +20,7 @@
   <button data-view="above">Überblick</button>
   <button data-view="eg">EG · Grundriss</button>
   <button data-view="og">1. OG · Grundriss</button>
-  <select id="interiorJump" aria-label="Innenräume direkt betreten"><option value="">Innenräume …</option><option value="hall">Vestibule · Eingangshalle</option><option value="salon">Salon · Festsaal</option><option value="stair">Grand escalier · Treppenhaus</option><option value="gallery">Galerie · 1. OG</option></select>
+  <select id="interiorJump" aria-label="Innenräume direkt betreten"><option value="">Innenräume …</option><option value="hall">Vestibule · Eingangshalle</option><option value="salon">Salon · Festsaal</option><option value="stair">Grand escalier · Treppenhaus</option><option value="gallery">Galerie · 1. OG</option><option value="attic">Dachgeschoss · Mansardengalerie</option></select>
   <button id="walk">Erkunden</button>
   <button id="reset">Übersicht</button>
   <label id="qualityControl">Grafik <select id="quality" aria-label="Grafikqualität"><option value="auto">Automatisch</option><option value="detail">Details</option><option value="smooth">Flüssig</option></select><span id="qualityStatus"></span></label>
@@ -35,12 +35,12 @@
 <section id="splash">
   <div class="splashInner"><span class="eyebrow">MAXGAME-TECHNIK · GRAND PALAIS 2027</span>
     <h1>Roissy – ein Schloss zum Erkunden.</h1>
-    <p>Raumaufteilung nach dem frühesten belegten, veröffentlichten Bestandsgrundriss von Le Rouge (1776) für das 1703–1709 errichtete Schloss. EG und 1. OG mit originalen Raumfolgen; Maße aus dem Zeichnungsmaßstab näherungsweise ermittelt. Historisch inspirierte Innenarchitektur mit eingerichtetem Grand Escalier.</p>
+    <p>Raumaufteilung nach dem frühesten belegten, veröffentlichten Bestandsgrundriss von Le Rouge (1776) für das 1703–1709 errichtete Schloss. EG und 1. OG mit originalen Raumfolgen; Maße aus dem Zeichnungsmaßstab näherungsweise ermittelt. Historisch inspirierte Innenarchitektur mit eingerichtetem Grand Escalier und begehbarer Mansardengalerie.</p>
     <button id="start" disabled>Lade 3D-Modell …</button>
     <details id="modelImport" hidden><summary>Originale GLB-Möbel testen</summary><label>Sofa <input id="sofaFile" type="file" accept=".glb,model/gltf-binary"></label><label>Beistelltisch (beide) <input id="tableFile" type="file" accept=".glb,model/gltf-binary"></label><div id="importStatus" role="status">Noch keine Originaldatei geladen.</div><small>Lokale Auswahl gilt für diese Sitzung. Dauerhaft: assets/models/seating/</small></details>
     <div id="status" role="status">Historische Fassaden und Raumstruktur werden aufgebaut.</div>
   </div>
 </section>
-<script type="module" src="chateau/main.js?v=roissy351"></script>
+<script type="module" src="chateau/main.js?v=roissy352"></script>
 </body>
 </html>

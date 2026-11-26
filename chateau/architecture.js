@@ -1,17 +1,18 @@
-import {installFurnishings} from './furnishings-v346.js?v=roissy351';
+import {buildAttic} from './attic.js?v=roissy352';
+import {installFurnishings} from './furnishings-v346.js?v=roissy352';
 /**
- * CHÂTEAU GRAND V3.51 – Architekturfinish für Fassaden, Dach und Innenräume.
+ * CHÂTEAU GRAND V3.52 – Architekturfinish mit begehbarer Mansarde.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy351';
-import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy351';
-import {resolveStaticFaces} from './surface-cleanup.js?v=roissy351';
+import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy352';
+import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy352';
+import {resolveStaticFaces} from './surface-cleanup.js?v=roissy352';
 import {addPortalDoors,createOakFinish} from '../wohnzimmer/portal-doors-v2.js';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
-import {addRoissyPortal} from './portal-doors-v321.js?v=roissy351';
-import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy351';
+import {addRoissyPortal} from './portal-doors-v321.js?v=roissy352';
+import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy352';
 
 export function buildChateau(THREE,scene,donor,mats,glass){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_V345_GRAND_ESCALIER';scene.add(root);
@@ -1611,6 +1612,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.anisotropy=8;slate.map=tex;slate.color.setHex(0xd6dce1);
  }
  const e=CORNICE+.18,shoulder=15.4,ridge=17.45,inset=2.7;
+ const mansardPanels=[];
  function poly(pts,mat,name){
    const vertices=pts.map(p=>new THREE.Vector3(...p));
    const normal=vertices[1].clone().sub(vertices[0]).cross(vertices[2].clone().sub(vertices[0])).normalize();
@@ -1630,7 +1632,9 @@ export function buildChateau(THREE,scene,donor,mats,glass){
    geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
    geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
    geometry.computeVertexNormals();
-   return mesh(geometry,mat,name);
+   const panel=mesh(geometry,mat,name);
+   if(name.startsWith('Schiefer_')||name==='Gaubendach')mansardPanels.push(panel);
+   return panel;
  }
  const roofDormerAxes=FRONT_WINDOW_AXES.filter(x=>Math.abs(x)>6.7&&Math.abs(x)<X.wingX);
  const rearDormers=REAR_WINDOW_AXES.filter(x=>Math.abs(x)>6.7&&Math.abs(x)<24);
@@ -1712,6 +1716,9 @@ export function buildChateau(THREE,scene,donor,mats,glass){
      flue.position.set(x+sign*.19,18.32,0);
    }
  }
+ const atticGallery=buildAttic(THREE,root,slabAudit[2].rectangles,{
+   oak:cast.stairWalnut,parquet:privateOak,plaster:cast.intPlaster,stone:cast.intHallPanel,iron:cast.stairForged
+ },{eaves:e,shoulder,ridge,inset,panels:mansardPanels});
  // V3.28 intentionally adds no new interior light fixtures. Material realism is
  // developed first, while local lantern geometry and helper light sources stay absent
  // so the user can evaluate space purely through daylight and surface response.
@@ -1987,7 +1994,7 @@ export function buildChateau(THREE,scene,donor,mats,glass){
  return {front:root,facadeWidth:54,
    palaceDimensions:{width:54,depth:X.wingFront-X.parkBack,height:18.46,calibration:'approximate; existing core preserved and extended to represent historical setbacks'},
    buildings:['Château de Roissy – Hauptgebäude'],historicalFloors:ROOMDATA,historicalLayers:layers,finishRegions,roomAt,
-   interiorCollision:collisionWalls,upperDeckRectangles:slabAudit[1].rectangles,roofDeckRectangles:slabAudit[2].rectangles,hallSupports,interiorDoorways,planPartitions:partitionRegister,entranceDoors:doors,interiorDoors,
+   attic:atticGallery,interiorCollision:collisionWalls,upperDeckRectangles:slabAudit[1].rectangles,roofDeckRectangles:slabAudit[2].rectangles,hallSupports,interiorDoorways,planPartitions:partitionRegister,entranceDoors:doors,interiorDoors,
    instancedElements:[...batch.values()].reduce((s,a)=>s+a.length,0),instancedDrawcalls:renderBatches,staticConstructionBoxes:batch,
    planAxes:{frontDoors:FRONT_DOORS,frontWindows:FRONT_WINDOW_AXES,rearWindows:REAR_WINDOW_AXES},
    validations:{roomCountEG:ROOMDATA.eg.length,roomCountOG:ROOMDATA.og.length,directMeshes,interiorDoorCount:interiorDoors.length,windowAudit,interiorFinish:interiorAudit,surfaceCleanup:surfaceCleanup.stats,

@@ -1,13 +1,14 @@
-import {setupModelImport} from './model-import-v348.js?v=roissy351';
+import {ATTIC} from './attic.js?v=roissy352';
+import {setupModelImport} from './model-import-v348.js?v=roissy352';
 import * as THREE from '../vendor/three/build/three.module.js';
-import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js?v=roissy351';
+import {createExteriorMaterialLibrary,applyProceduralFinish} from '../wohnzimmer/exterior-materials-portikus-kalkstein.js?v=roissy352';
 import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
-import {buildSky} from './daylight-v342.js?v=roissy351';
+import {buildSky} from './daylight-v342.js?v=roissy352';
 import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {loadGardenMaple} from '../wohnzimmer/garden-maple.js';
-import {buildChateau} from './architecture.js?v=roissy351';
-import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy351';
-import {planSectionY} from './roissy-config.js?v=roissy351';
+import {buildChateau} from './architecture.js?v=roissy352';
+import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy352';
+import {planSectionY} from './roissy-config.js?v=roissy352';
 
 const canvas=document.getElementById('world');
 const splash=document.getElementById('splash');
@@ -77,7 +78,7 @@ async function run(){
   // honed stone and metal without adding a screen-space reflection pass.
   new THREE.TextureLoader().load('./assets/glass/v342_daylight_env.jpg',t=>{t.colorSpace=THREE.SRGBColorSpace;t.mapping=THREE.EquirectangularReflectionMapping;scene.environment=t;scene.environmentIntensity=.47;},undefined,()=>{});
   // Physical fixture positions and short-range warm pools of light. No extra shadow passes.
-  for(const f of [...chateau.validations.interiorFinish.referenceFixtures.lights,...chateau.validations.interiorFinish.furnishings.lights]){const lamp=new THREE.PointLight(f.color,f.intensity,f.distance,2);lamp.name=f.name+'_Licht';lamp.position.set(...f.position);scene.add(lamp);}
+  for(const f of [...chateau.validations.interiorFinish.referenceFixtures.lights,...chateau.validations.interiorFinish.furnishings.lights,...chateau.attic.lights]){const lamp=new THREE.PointLight(f.color,f.intensity,f.distance,2);lamp.name=f.name+'_Licht';lamp.position.set(...f.position);scene.add(lamp);}
   // Reuse the locally packaged maple model; keep trees outside the palace and
   // all walkable paths. Shared geometry and materials via instancing.
   loadGardenMaple(THREE,new GLTFLoader()).then(tree=>{
@@ -92,15 +93,15 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.51',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.51';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.52',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.52';
   window.__CHATEAU_MAXGAME.importedFurniture=setupModelImport(THREE,chateau,scene,renderer);
   resize();view('angle');
   status.textContent='Architektur aufgebaut. Materialien und Texturen werden geladen …';
   let timeoutId;const loaded=await Promise.race([assetsReady.then(()=>true),new Promise(resolve=>{timeoutId=setTimeout(()=>resolve(false),15000);})]);clearTimeout(timeoutId);
   markShadowDirty();
   start.disabled=false;start.textContent='Château erkunden';
-  status.textContent=missingAssets.length?`${missingAssets.length} Ressource(n) nicht geladen. Rundgang mit verfügbaren Materialien möglich.`:loaded?'54 × 28,85 m · EG und 1. OG · Eingang und Haupttreppe begehbar.':'Rundgang bereit · einige Texturen laden möglicherweise noch.';
+  status.textContent=missingAssets.length?`${missingAssets.length} Ressource(n) nicht geladen. Rundgang mit verfügbaren Materialien möglich.`:loaded?'54 × 28,85 m · EG, 1. OG und Mansardengalerie · Rundgang bereit.':'Rundgang bereit · einige Texturen laden möglicherweise noch.';
   THREE.DefaultLoadingManager.onLoad=()=>{markShadowDirty();};
   window.__CHATEAU_MAXGAME.missingAssets=missingAssets;
   window.__CHATEAU_MAXGAME.renderDiagnostics=()=>({pixelRatio:renderer.getPixelRatio(),qualityMode,qualityScale,reflectionMode:'physical-material-only',cameraNear:camera.near,cameraFar:camera.far,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,textures:renderer.info.memory.textures});
@@ -172,10 +173,13 @@ function setWalk(entry=null){
   mode='walk';activeWalkingFloor=floorChoice;
   document.body.classList.add('walking');
   setCutaway(null); // Floor plates/ceilings restored for physical exploration.
+  let entryYaw=0;
   if(typeof entry==='string'){
-    const starts={hall:[0,9.25,EG_Y,0],salon:[0,-3.65,EG_Y,0],stair:[-15.65,9.15,EG_Y,0],gallery:[0,4.5,OG_Y,0]};
+    const starts={hall:[0,9.25,EG_Y,0],salon:[0,-3.65,EG_Y,0],stair:[-15.65,9.15,EG_Y,0],gallery:[0,4.5,OG_Y,0],attic:[ATTIC.entry.x,ATTIC.entry.z,ATTIC.floor,ATTIC.entry.yaw]};
     const [x,z,foot,yaw]=starts[entry]||starts.hall;
-    Object.assign(player,{x,z,footY:foot});activeWalkingFloor=foot===OG_Y?'og':'eg';
+    Object.assign(player,{x,z,footY:foot});
+    entryYaw=yaw;
+    activeWalkingFloor=foot===ATTIC.floor?'attic':foot===OG_Y?'og':'eg';
   }else if(activeWalkingFloor){
     // Optional shortcut for testing the two plans; normal exploration never
     // teleports: approach stairs and walk through the automatic entrance doors.
@@ -185,7 +189,7 @@ function setWalk(entry=null){
     player.x=0;player.footY=0;player.z=31;
   }
   player.y=player.footY+EYE_Y;
-  player.yaw=0;player.pitch=.025;
+  player.yaw=entryYaw;player.pitch=.025;
   markShadowDirty();
   forward=strafe=0;
   document.getElementById('walk').textContent='Rundgang neu';
@@ -201,7 +205,7 @@ function showWalkLocation(){
   if(!ui)return;
   if(mode!=='walk'){ui.hidden=true;return;}
   const label=describePlace(player.x,player.z,player.footY,historicalChateau);
-  if(label!==lastLocation){lastLocation=label;ui.textContent=label;hint.textContent=player.footY>=EG_Y-.14?'Links ziehen: gehen · rechts umsehen · Türen öffnen automatisch':'Links ziehen: gehen · rechts umsehen · Treppen und Türen begehbar';}
+  if(label!==lastLocation){lastLocation=label;ui.textContent=label;hint.textContent=player.footY===ATTIC.floor?'Links gehen · rechts umsehen · Geschosswechsel über „Innenräume“':player.footY>=EG_Y-.14?'Links ziehen: gehen · rechts umsehen · Türen öffnen automatisch':'Links ziehen: gehen · rechts umsehen · Treppen und Türen begehbar';}
   ui.hidden=false;
 }
 for(const b of document.querySelectorAll('[data-view]'))b.addEventListener('click',()=>view(b.dataset.view));
@@ -274,7 +278,7 @@ function frame(ms){
     player.y=THREE.MathUtils.damp(player.y,player.footY+EYE_Y,11,dt);
     player.x=THREE.MathUtils.clamp(player.x,-85,85);
     player.z=THREE.MathUtils.clamp(player.z,-85,125);
-    activeWalkingFloor=player.footY>=(EG_Y+OG_Y)/2+.15?'og':player.footY>=EG_Y-.14?'eg':null;
+    activeWalkingFloor=player.footY===ATTIC.floor?'attic':player.footY>=(EG_Y+OG_Y)/2+.15?'og':player.footY>=EG_Y-.14?'eg':null;
     showWalkLocation();
     camera.position.set(player.x,player.y,player.z);
     camera.rotation.set(player.pitch,player.yaw,0,'YXZ');
