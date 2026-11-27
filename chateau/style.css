@@ -34,7 +34,7 @@ body.walking #qualityControl{display:none;}
 @media(prefers-reduced-motion:reduce){#menu button:active,#start:active{transform:none;}}
 
 @media(max-width:600px) and (orientation:portrait){
-  :is(body.attic-walk,body.vestibule-walk,body.antichambre-walk) #controlHint{left:max(12px,env(safe-area-inset-left));max-width:39vw}
-  :is(body.attic-walk,body.vestibule-walk,body.antichambre-walk) #menu{max-width:52vw}
-  :is(body.attic-walk,body.vestibule-walk,body.antichambre-walk) #interiorJump{max-width:100%}
+  :is(body.attic-walk,body.vestibule-walk,body.antichambre-walk,body.escalier-walk) #controlHint{left:max(12px,env(safe-area-inset-left));max-width:39vw}
+  :is(body.attic-walk,body.vestibule-walk,body.antichambre-walk,body.escalier-walk) #menu{max-width:52vw}
+  :is(body.attic-walk,body.vestibule-walk,body.antichambre-walk,body.escalier-walk) #interiorJump{max-width:100%}
 }

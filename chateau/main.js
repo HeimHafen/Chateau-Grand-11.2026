@@ -10,7 +10,7 @@ import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from './daylight-v342.js?v=roissy363';
 import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {loadGardenMaple} from '../wohnzimmer/garden-maple.js';
-import {buildChateau} from './architecture.js?v=roissy370';
+import {buildChateau} from './architecture.js?v=roissy371';
 import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy367';
 import {planSectionY} from './roissy-config.js?v=roissy363';
 
@@ -103,8 +103,8 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.70',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.70';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.71',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.71';
   window.__CHATEAU_MAXGAME.importedFurniture=setupModelImport(THREE,chateau,scene,renderer);
   resize();view('angle');
   status.textContent='Architektur aufgebaut. Materialien und Texturen werden geladen …';
@@ -174,7 +174,7 @@ function view(which){
   clearWalkInput();
   mode='orbit';activeWalkingFloor=null;
   setUnderground(false);
-  document.body.classList.remove('walking','attic-walk','vestibule-walk','antichambre-walk');
+  document.body.classList.remove('walking','attic-walk','vestibule-walk','antichambre-walk','escalier-walk');
   floorChoice=which==='eg'||which==='og'?which:null;
   const views={
     front:{theta:0,phi:.06,d:mobile?104:74,target:[0,9.0,1]},
@@ -244,7 +244,9 @@ function showWalkLocation(){
   document.body.classList.toggle('vestibule-walk',vestibule);
   const antichambre=player.footY===EG_Y&&label.endsWith('· Antichambre');
   document.body.classList.toggle('antichambre-walk',antichambre);
-  if(label!==lastLocation){lastLocation=label;ui.textContent=label;hint.textContent=(player.footY===ATTIC.floor||vestibule||antichambre)?'Links gehen · rechts umsehen':underground?'Links gehen · rechts umsehen · Geschosswechsel über „Innenräume“':player.footY>=EG_Y-.14?'Links ziehen: gehen · rechts umsehen · Türen öffnen automatisch':'Links ziehen: gehen · rechts umsehen · Treppen und Türen begehbar';}
+  const escalier=label.endsWith('· Grand escalier');
+  document.body.classList.toggle('escalier-walk',escalier);
+  if(label!==lastLocation){lastLocation=label;ui.textContent=label;hint.textContent=(player.footY===ATTIC.floor||vestibule||antichambre||escalier)?'Links gehen · rechts umsehen':underground?'Links gehen · rechts umsehen · Geschosswechsel über „Innenräume“':player.footY>=EG_Y-.14?'Links ziehen: gehen · rechts umsehen · Türen öffnen automatisch':'Links ziehen: gehen · rechts umsehen · Treppen und Türen begehbar';}
   ui.hidden=false;
 }
 for(const b of document.querySelectorAll('[data-view]'))b.addEventListener('click',()=>view(b.dataset.view));

@@ -1,3 +1,4 @@
+import {createEscalierSoffits} from './grand-escalier-soffits.js?v=roissy371';
 import {addClassicalReliefs,addVestibuleReliefs} from './vestibule-relief.js?v=roissy370';
 import {installVestibuleInlay} from './vestibule-inlay.js?v=roissy368';
 import {buildVestibuleLantern} from './vestibule-lantern.js?v=roissy369';
@@ -11,7 +12,7 @@ import {installFurnishings} from './furnishings-v346.js?v=roissy370';
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy363';
+import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy371';
 import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy363';
 import {resolveStaticFaces} from './surface-cleanup.js?v=roissy363';
 import {addPortalDoors,createOakFinish} from '../wohnzimmer/portal-doors-v2.js';
@@ -144,6 +145,15 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  const stairWalnut=createOakFinish(THREE,0x634432);stairWalnut.name='Roissy_Treppe_Poliertes_Dunkelholz';stairWalnut.roughness=.29;
  Object.assign(cast,{stairWalnut,stairForged:new THREE.MeshStandardMaterial({name:'Roissy_Treppe_Schmiedeeisen_Satin',color:0x242322,metalness:.68,roughness:.32}),stairPatina:new THREE.MeshStandardMaterial({name:'Roissy_Treppe_Messing_Patiniert',color:0xc39a51,metalness:.73,roughness:.29}),intStairMolding:finish('Roissy_Treppe_Geschliffener_Kalkstein',0xfff5e6,.66,stoneMaps,.12),intStairInlay:finish('Roissy_Treppe_Steinfries_Taupe',0xa99a86,.92,stoneMaps,.09)});
  cast.stairScroll=cast.stairForged;
+ cast.intEscalierInset=finish('Roissy_GrandEscalier_Salbeigrauer_Kalkputz',0xc1c5b5,.91,plasterMaps,.075);
+ cast.intEscalierBead=finish('Roissy_GrandEscalier_Stein_Elfenbein',0xece1cd,.88,stoneMaps,.10);
+ cast.intEscalierRebate=finish('Roissy_GrandEscalier_Profilkehle',0xae9d85,.92,paintedFinish);
+ cast.intEscalierSoffit=finish('Roissy_GrandEscalier_Kassettenfeld',0xd8ccb7,.92,stoneMaps,.075);
+ cast.grandRail=createOakFinish(THREE,0x72543c);
+ cast.grandRail.name='Roissy_GrandEscalier_Nussbaum_Satin';
+ cast.grandRail.roughness=.53;
+ cast.grandBrass=new THREE.MeshStandardMaterial({name:'Roissy_GrandEscalier_Bronze_Patiniert',
+   color:0xa68a5e,metalness:.59,roughness:.48});
  const interiorAudit={wallFaces:0,panelFields:0,baseboardRuns:[],dadoRuns:[],doorCrowns:0,floorZones:[],floorRects:[],ceilingFields:0,fixtureCount:0,wallTypes:{},salonDoubleProfiles:0,ceilingDesigns:[],ceilingReliefRects:[],ceilingMedallions:0,domeCount:0,stairDoubleProfiles:0,stairWallCartouches:[],stairCorniceRuns:[],stairCeilingCorners:0,formalWallPanels:[],formalDadoPanels:[],formalReliefs:[],roomFinishAssignments:[],ceilingCorniceRuns:[],plainCeilingFields:[],domeGeometry:null};
  // V3.28: modelled low relief cartouches in the upper panel thirds, in the
  // exact wall-plane coordinate system. Shared merged buffers keep drawcalls low.
@@ -333,6 +343,11 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
        }
        if(stairWall&&type!=='salon'&&pw>1.20){
          const inset=.205,insideW=pw-2*inset,insideH=upper-bottom-2*inset;
+         put('intEscalierInset',m,(bottom+upper)/2,insideW-.036,insideH-.036,.013,.026);
+         for(const sign of [-1,1]){
+           put('intEscalierBead',m+sign*insideW/2,(bottom+upper)/2,.013,insideH,.019,.038);
+           put('intEscalierBead',m,sign<0?bottom+inset:upper-inset,insideW-.013,.013,.019,.038);
+         }
          for(const d of [-1,1]){
            put('intShadow',m+d*insideW/2,(bottom+upper)/2,.014,insideH,.014,.032);
            put('intShadow',m,d<0?bottom+inset:upper-inset,insideW-.014,.014,.014,.032);
@@ -357,7 +372,7 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  }
  function mesh(geo,mat,name,parent=root){const o=new THREE.Mesh(geo,cast[mat]||mat);o.name=name;o.castShadow=true;o.receiveShadow=true;parent.add(o);directMeshes++;return o;}
  function cyl(mat,x,y,z,r,h,segments=22){const a=mesh(new THREE.CylinderGeometry(r,r,h,segments),mat,'Steinrundelement');a.position.set(x,y,z);return a;}
- function beam(mat,from,to,r=.075){const a=new THREE.Vector3(...from),b=new THREE.Vector3(...to),v=b.clone().sub(a),o=mesh(new THREE.CylinderGeometry(r,r,v.length(),mat==='stairWalnut'?20:8),mat,'Dachprofil');o.position.copy(a.add(b).multiplyScalar(.5));o.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),v.normalize());return o;}
+ function beam(mat,from,to,r=.075){const a=new THREE.Vector3(...from),b=new THREE.Vector3(...to),v=b.clone().sub(a),o=mesh(new THREE.CylinderGeometry(r,r,v.length(),mat==='stairWalnut'||mat==='grandRail'?20:8),mat,'Dachprofil');o.position.copy(a.add(b).multiplyScalar(.5));o.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),v.normalize());return o;}
  const apertureWidth=(axis,p,l,door=false)=>door?(p===0?1.98:1.52):axis==='z'?1.65:Math.abs(p)<5?2.15:1.68;
  const shellLevels=[{bottom:EG,top:OG,sill:1.00,glassH:3.73},{bottom:OG,top:CORNICE,sill:.88,glassH:3.43}];
  function wallSegments(axis,fixed,a,b,atLevel,holes,thickness=.46,mat='wall',insideNormal=null){
@@ -872,8 +887,8 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  const stairStone=vestibulePBR.clone();stairStone.name='Roissy_Kalkstein_GrandEscalier_V332';stairStone.color.setHex(0xf5ead6);stairStone.roughness=.43;stairStone.normalScale=new THREE.Vector2(.12,.12);stairStone.envMapIntensity=.78;
  // Reference: honed ivory marble, octagonal slabs with dark corner inserts.
  const polishedMaps=mapsFor('interior/v344_marble');
- Object.assign(stairStone,polishedMaps);stairStone.name='Roissy_Marmor_Oktagon_V344';stairStone.color.setHex(0xfffaf0);stairStone.roughness=.39;stairStone.normalScale.set(.15,.15);stairStone.envMapIntensity=.70;
- const stairBorder=stairStone.clone();Object.assign(stairBorder,mapsFor('interior/v344_marble_border'));stairBorder.name='Roissy_Marmor_Dunkler_Randfries_V344';stairBorder.roughness=.42;
+ Object.assign(stairStone,polishedMaps);stairStone.name='Roissy_Marmor_Oktagon_V344';stairStone.color.setHex(0xf3e6d1);stairStone.roughness=.62;stairStone.normalScale.set(.15,.15);stairStone.envMapIntensity=.42;
+ const stairBorder=stairStone.clone();Object.assign(stairBorder,mapsFor('interior/v344_marble_border'));stairBorder.name='Roissy_Marmor_Dunkler_Randfries_V344';stairBorder.roughness=.67;stairBorder.color.setHex(0xe0cbb0);
  const borderFormal=privateOak.clone();borderFormal.name='Roissy_Randfries_Formal_V332';borderFormal.color.setHex(0xbb9972);borderFormal.roughness=.58; borderFormal.clearcoat=.05;
  const borderPrivate=privateOak.clone();borderPrivate.name='Roissy_Randfries_Privat_V332';borderPrivate.color.setHex(0xb08b64);borderPrivate.roughness=.61; borderPrivate.clearcoat=.04;
  const borderPassage=privateOak.clone();borderPassage.name='Roissy_Randfries_Passage_V332';borderPassage.color.setHex(0xc3a37b);borderPassage.roughness=.60; borderPassage.clearcoat=.04;
@@ -1438,7 +1453,7 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
    for(const {rect,room:r} of finishRegions[f]){
      const spec=floorSpec(r,f),kind=spec.kind;
      for(const d of deck){const b=ceilingIntersection(rect,d);if(ceilingArea(b)<1e-7)continue;let pieces=[b];for(const old of reserved)pieces=pieces.flatMap(p=>subtract(p,old));
-       for(const piece of pieces){if(ceilingArea(piece)<1e-7)continue;if(f==='eg'&&kind==='stairStone'&&/Grand escalier/.test(r.name)){
+       for(const piece of pieces){if(ceilingArea(piece)<1e-7)continue;if(kind==='stairStone'&&/Grand escalier/.test(r.name)){
          // Split the actual finish rectangle: no raised or coplanar overlay.
          const [a,b,c,d]=rect,i=.47,t=.16;
          const strips=[[a+i,a+i+t,c+i,d-i],[b-i-t,b-i,c+i,d-i],[a+i+t,b-i-t,c+i,c+i+t],[a+i+t,b-i-t,d-i-t,d-i]];
@@ -1464,6 +1479,9 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  // as navigation. No rail crosses a stair lane, landing transfer or doorway.
  // This is a historically PLAUSIBLE finish, not documented original decoration.
  const S=GRAND_STAIR, RUN=S.stepsPerFlight, rise=(OG-EG)/(2*RUN), MID=EG+RUN*rise;
+ const soffitWork=createEscalierSoffits(THREE,root,{
+   edge:cast.intEscalierBead,rebate:cast.intEscalierRebate,panel:cast.intEscalierSoffit
+ });
  const stairAudit={roundedStarterTreads:[],closedStoneCores:0,galleryFasciaRuns:0,steps:RUN*2,riser:rise,stairStart:EG,stairMid:MID,stairEnd:OG,
    soffits:0,handrails:0,balusters:0,endPiers:0,landings:2,railClearance:.0,forgedCurves:0,forgedMedallions:0,newelFinials:0,landingInlay:0,innerMedallions:0,landingScrolls:0,landingMedallions:0,upperScrolls:0,upperMedallions:0};
  function stoneSlopedSlab(name,from,to,width,thickness,material='stone'){
@@ -1476,16 +1494,38 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  }
  // V3.46: solid, continuous stair core with a stepped top and planar soffit.
  // A true extruded profile prevents gaps between the stone treads and underside.
+ function flightSoffit(cfg,offset){
+   const base=EG+offset*rise;
+   const low=Math.max(EG-.01,base+rise-.43);
+   // The first flight overlaps the intermediate landing by 26 cm.
+   // Its lower plane meets the landing's soffit at the visible edge.
+   const end=base+RUN*rise-(offset===0?.150:.215);
+   if(offset!==0)return z=>low+(end-low)*(z-cfg.startZ)*cfg.direction/cfg.length;
+   // The three rounded starting treads taper separately into the floor.
+   // Beyond them, keep the structural underside below the complete tread beds.
+   const starterEnd=S.starterWidening.length/RUN;
+   const shoulder=EG+S.starterWidening.length*rise-.134;
+   return z=>{
+     const t=(z-cfg.startZ)*cfg.direction/cfg.length;
+     return t<=starterEnd?low+(shoulder-low)*t/starterEnd:
+       shoulder+(end-shoulder)*(t-starterEnd)/(1-starterEnd);
+   };
+ }
  function solidFlightCore(cfg,offset){
    const dz=cfg.length/RUN,base=EG+offset*rise;
    const shape=new THREE.Shape();
-   shape.moveTo(0,Math.max(EG-.01,base+rise-.43));
+   const yAt=flightSoffit(cfg,offset);
+   shape.moveTo(0,yAt(cfg.startZ));
    shape.lineTo(0,base+rise-.075);
    for(let i=0;i<RUN;i++){
      shape.lineTo((i+1)*dz,base+(i+1)*rise-.075);
      if(i<RUN-1)shape.lineTo((i+1)*dz,base+(i+2)*rise-.075);
    }
-   shape.lineTo(cfg.length,base+RUN*rise-.43);
+   shape.lineTo(cfg.length,yAt(cfg.startZ+cfg.direction*cfg.length));
+   if(offset===0){
+     const starterEnd=cfg.length*S.starterWidening.length/RUN;
+     shape.lineTo(starterEnd,yAt(cfg.startZ+cfg.direction*starterEnd));
+   }
    shape.closePath();
    const g=new THREE.ExtrudeGeometry(shape,{depth:cfg.width-.045,bevelEnabled:false,steps:1});
    // Local x runs along the flight; extrusion spans the width.
@@ -1524,7 +1564,7 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
      samples.push({x:cfg.x,y,z});
      if(offset===0&&i<S.starterWidening.length){roundedStarter(cfg,i,y);continue;}
      // Closed stone tread on a solid structural core; no separate floating riser.
-     addBox('intStairStone',cfg.x,y-.091,z,cfg.width,.182,dz+.006);
+     addBox('intStairStone',cfg.x,y-.060,z,cfg.width,.120,dz+.006);
      const leading=z-cfg.direction*(dz*.486);
      addBox('intStairMolding',cfg.x,y-.021,leading,cfg.width+.018,.036,.038);
      const riserFace=z-cfg.direction*(dz/2+.004);
@@ -1536,11 +1576,14 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
    // Underneath, two narrow raised frames on the actual solid soffit.
    // First flight detail starts after the first three enlarged treads.
    const from=offset===0?samples[3]:first;
-   const base=EG+offset*rise,bottom0=Math.max(EG-.01,base+rise-.43),bottom1=base+RUN*rise-.43;
-   const soffitY=pt=>bottom0+(bottom1-bottom0)*(pt.z-cfg.startZ)*cfg.direction/cfg.length;
-   for(const side of [-1,1])for(const [inset,thick,dep] of [[.23,.052,.018],[.34,.023,.011]]){
-     const x=cfg.x+side*(cfg.width/2-inset);
-     stoneSlopedSlab('Roissy_Treppenuntersicht_Stuckrahmen',[x,soffitY(from)-.008,from.z],[x,soffitY(last)-.008,last.z],thick,dep,'intStucRelief');
+   const yAt=flightSoffit(cfg,offset);
+   const soffitY=pt=>yAt(pt.z);
+   // Coffers are fixed to the plane of the load-bearing flight. Their
+   // visible depth is under 4 cm and stops short of the landings.
+   const runFrom=offset===0?.216:.082,runTo=.928,spacing=(runTo-runFrom)/3;
+   for(let bay=0;bay<3;bay++){
+     const z=cfg.startZ+cfg.direction*cfg.length*(runFrom+(bay+.5)*spacing);
+     soffitWork.panel(cfg.x,z,cfg.width-.47,cfg.length*spacing-.13,yAt);
    }
    stairAudit.soffits++;
    for(const sign of [-1,1]){
@@ -1557,11 +1600,13 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  const firstRun=flight(S.first,0);
  addBox('intStairStone',S.landing.x,MID-.09,S.landing.z,S.landing.width,.18,S.landing.depth);
  addBox('intStucField',S.landing.x,MID-.197,S.landing.z,S.landing.width-.02,.034,S.landing.depth-.02);
- for(const sign of [-1,1]){addBox('intStucRelief',S.landing.x+sign*(S.landing.width/2-.11),MID-.223,S.landing.z,.06,.042,S.landing.depth-.15);addBox('intStucRelief',S.landing.x,MID-.223,S.landing.z+sign*(S.landing.depth/2-.10),S.landing.width-.28,.042,.06);}
+ for(const side of [-1,1])soffitWork.panel(S.landing.x+side*S.landing.width/4,
+   S.landing.z,S.landing.width/2-.22,S.landing.depth-.29,()=>MID-.214);
  // Close the first riser to floor level; no hollow-looking floating edge.
  // The rounded first tread itself extends down to EG; no duplicate front riser.
  // The transfer landing serves both flights, keeping the central turning zone clear.
  const secondRun=flight(S.second,RUN);
+ soffitWork.finish();
  // The new full-width front landing is carried by the main deck; fill
  // only the part of the small upper landing inside the stair aperture.
  const landingStart=S.upperLanding.z-S.upperLanding.depth/2;
@@ -1592,11 +1637,11 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  }
  function railOval(x,z,y,rz=.104,ry=.285){
    const curve=new THREE.CatmullRomCurve3(Array.from({length:32},(_,i)=>{const a=i*Math.PI/16;return new THREE.Vector3(x,y+ry*Math.cos(a),z+rz*Math.sin(a));}),true);
-   decorGeo(new THREE.TubeGeometry(curve,40,.012,8,true),'stairForged');for(const sign of [-1,1])addBox('stairPatina',x,y+sign*ry,z,.038,.045,.038);stairAudit.forgedMedallions++;
+   decorGeo(new THREE.TubeGeometry(curve,40,.012,8,true),'stairForged');for(const sign of [-1,1])addBox('grandBrass',x,y+sign*ry,z,.038,.045,.038);stairAudit.forgedMedallions++;
  }
  function newelFinial(x,y,z,layer='shell'){
    const profile=[[0,0],[.09,0],[.09,.018],[.071,.028],[.061,.047],[.078,.068],[.073,.093],[.045,.112],[.018,.13],[0,.135]].map(([r,h])=>new THREE.Vector2(r,h));
-   const g=new THREE.LatheGeometry(profile,20);g.translate(x,y,z);decorGeo(g,'stairPatina',layer);stairAudit.newelFinials++;
+   const g=new THREE.LatheGeometry(profile,20);g.translate(x,y,z);decorGeo(g,'grandBrass',layer);stairAudit.newelFinials++;
  }
  // A thin, stone-inlaid double line on the turning platform, outside the
  // tread joins. Maximum height 3mm, no raised threshold.
@@ -1623,8 +1668,8 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
    const h=S.railHeight,begin=samples[0],end=samples.at(-1);
    const topA=[x,begin.y+h,begin.z],topB=[x,end.y+h,end.z];
    const lowA=[x,begin.y+.34,begin.z],lowB=[x,end.y+.34,end.z];
-   beam('stairWalnut',topA,topB,.078);stairAudit.handrails++;
-   beam('stairPatina',[x,begin.y+h-.076,begin.z],[x,end.y+h-.076,end.z],.011);
+   beam('grandRail',topA,topB,.078);stairAudit.handrails++;
+   beam('grandBrass',[x,begin.y+h-.076,begin.z],[x,end.y+h-.076,end.z],.011);
    beam('stairForged',[x,begin.y+h-.105,begin.z],[x,end.y+h-.105,end.z],.036);
    beam('stairForged',lowA,lowB,.031);
    for(let i=0;i<samples.length;i++){
@@ -1634,10 +1679,10 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
      if(post){
        addBox('stairForged',x,p.y+.52,p.z,.069,.94,.067);
        addBox('stone',x,p.y+.047,p.z,.19,.094,.19);
-       addBox('stairPatina',x,p.y+.84,p.z,.086,.046,.088);
+       addBox('grandBrass',x,p.y+.84,p.z,.086,.046,.088);
      }else{
        addBox('stairForged',x,p.y+.51,p.z,.041,.91,.044);
-       addBox('stairPatina',x,p.y+.55,p.z,.069,.045,.075);
+       addBox('grandBrass',x,p.y+.55,p.z,.069,.045,.075);
      }
      stairAudit.balusters++;
    }
@@ -1654,10 +1699,14 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
    // A square dressed-stone newel closes each end of the flight. It is
    // on the outer tread edge and does not reduce the walking lane centrally.
    for(const p of [begin,end]){
-     addBox('stairForged',x,p.y+.51,p.z,.205,1.02,.205);for(const yy of [.22,.48,.76])addBox('stairPatina',x,p.y+yy,p.z,.210,.025,.210);
+     addBox('grandRail',x,p.y+.51,p.z,.205,1.02,.205);
+     for(const yy of [.22,.76])addBox('grandBrass',x,p.y+yy,p.z,.208,.019,.208);
+     const plateX=x+edgeSign*.103;
+     addBox('intEscalierBead',plateX,p.y+.52,p.z,.025,.325,.102);
+     addBox('intEscalierRebate',plateX+edgeSign*.012,p.y+.52,p.z,.012,.276,.073);
      addBox('intStairMolding',x,p.y+1.055,p.z,.275,.105,.275);
      addBox('intStairMolding',x,p.y+.10,p.z,.245,.095,.245);
-     addBox('stairPatina',x,p.y+.88,p.z,.211,.024,.211);
+     addBox('grandBrass',x,p.y+.88,p.z,.211,.024,.211);
      newelFinial(x,p.y+1.1075,p.z);
      stairAudit.endPiers++;
    }
@@ -1672,7 +1721,7 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  // transfer landing; the open U-turn remains unobstructed.
  for(const [samples,cfg,sign] of [[firstRun,S.first,1],[secondRun,S.second,-1]]){
    const x=cfg.x+sign*(cfg.width/2-.095),a=samples[0],b=samples.at(-1);
-   beam('stairWalnut',[x,a.y+S.railHeight,a.z],[x,b.y+S.railHeight,b.z],.059);stairAudit.handrails++;
+   beam('grandRail',[x,a.y+S.railHeight,a.z],[x,b.y+S.railHeight,b.z],.059);stairAudit.handrails++;
    beam('stairForged',[x,a.y+.21,a.z],[x,b.y+.21,b.z],.026);
    for(let i=0;i<samples.length-1;i++)for(const t of [0,1/3,2/3]){
      const q=samples[i],n=samples[i+1],z=q.z+(n.z-q.z)*t;
@@ -1684,7 +1733,7 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
    for(let i=0;i<samples.length-1;i++){
      const p=samples[i],q=samples[i+1],y=(p.y+q.y)/2+.58,z=(p.z+q.z)/2;
      const curve=new THREE.CatmullRomCurve3(Array.from({length:32},(_,j)=>{const t=j*Math.PI/16;return new THREE.Vector3(x,y+.275*Math.cos(t),z+.101*Math.sin(t));}),true);
-     decorGeo(new THREE.TubeGeometry(curve,40,.012,8,true),'stairForged');for(const side of [-1,1])addBox('stairPatina',x,y+side*.275,z,.038,.042,.038);stairAudit.innerMedallions++;
+     decorGeo(new THREE.TubeGeometry(curve,40,.012,8,true),'stairForged');for(const side of [-1,1])addBox('grandBrass',x,y+side*.275,z,.038,.042,.038);stairAudit.innerMedallions++;
    }
  }
  // A common scroll vocabulary for the horizontal guards. All curves remain
@@ -1712,17 +1761,17 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  for(let i=0;i<=10;i++){
    const x=lx0+(lx1-lx0)*i/10;
    addBox('stairForged',x,MID+.54,backZ,.053,.98,.056);
-   if(i%2===0)addBox('stairPatina',x,MID+.69,backZ,.073,.045,.076);
+   if(i%2===0)addBox('grandBrass',x,MID+.69,backZ,.073,.045,.076);
    stairAudit.balusters++;
  }
- beam('stairWalnut',[lx0,MID+1.07,backZ],[lx1,MID+1.07,backZ],.075);
+ beam('grandRail',[lx0,MID+1.07,backZ],[lx1,MID+1.07,backZ],.075);
  beam('stairForged',[lx0,MID+.34,backZ],[lx1,MID+.34,backZ],.031);
  beam('stairForged',[lx0,MID+.96,backZ],[lx1,MID+.96,backZ],.023);
  stairAudit.handrails++;
  for(const x of [lx0,lx1]){
    addBox('intStairMolding',x,MID+.50,backZ,.21,1.00,.21);
    addBox('intStairMolding',x,MID+1.05,backZ,.29,.11,.29);
-   addBox('stairPatina',x,MID+.87,backZ,.218,.025,.218);newelFinial(x,MID+1.105,backZ);
+   addBox('grandBrass',x,MID+.87,backZ,.218,.025,.218);newelFinial(x,MID+1.105,backZ);
    stairAudit.endPiers++;
  }
 
@@ -1736,14 +1785,14 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
      else {horizontalScroll(x,z,OG+.02,OG+1.015,i%3===1?-1:1,.023,'og');stairAudit.upperScrolls++;}
      stairAudit.balusters++;
    }
-   for(let i=1;i<n;i+=3){horizontalOval(x0+(x1-x0)*i/n,z,OG+.59,.092,.285,'og');for(const sy of [-1,1])addBox('stairPatina',x0+(x1-x0)*i/n,OG+.59+sy*.285,z,.042,.043,.043,'og');stairAudit.upperMedallions++;}
+   for(let i=1;i<n;i+=3){horizontalOval(x0+(x1-x0)*i/n,z,OG+.59,.092,.285,'og');for(const sy of [-1,1])addBox('grandBrass',x0+(x1-x0)*i/n,OG+.59+sy*.285,z,.042,.043,.043,'og');stairAudit.upperMedallions++;}
    addBox('stairForged',(x0+x1)/2,OG+.95,z,x1-x0,.04,.052,'og');
    addBox('stairForged',(x0+x1)/2,OG+.20,z,x1-x0,.05,.075,'og');
-   addBox('stairWalnut',(x0+x1)/2,OG+1.04,z,x1-x0,.10,.13,'og');
+   addBox('grandRail',(x0+x1)/2,OG+1.04,z,x1-x0,.10,.13,'og');
    for(const x of [x0,x1]){
      addBox('intStairMolding',x,OG+.50,z,.18,1,.18,'og');
      addBox('intStairMolding',x,OG+1.03,z,.24,.10,.24,'og');
-     addBox('stairPatina',x,OG+.86,z,.187,.023,.187,'og');newelFinial(x,OG+1.08,z,'og');stairAudit.endPiers++;
+     addBox('grandBrass',x,OG+.86,z,.187,.023,.187,'og');newelFinial(x,OG+1.08,z,'og');stairAudit.endPiers++;
    }
    // Three profiled bands on the visible vertical slab edge. Their depth is
    // confined to the existing deck side; no trim bridges the open walk lane.
@@ -1752,6 +1801,8 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
      addBox('intStairMolding',(x0+x1)/2,OG+dy,face+side*(depth/2-.012),x1-x0,h,depth);
      stairAudit.galleryFasciaRuns++;
    }
+   addBox('intEscalierRebate',(x0+x1)/2,OG-.095,face-side*.023,x1-x0,.068,.028);
+   addBox('intEscalierBead',(x0+x1)/2,OG-.045,face-side*.036,x1-x0,.021,.037);
    // Dentil strip attached to the gallery's existing lower edge, never in a doorway.
    const dentils=Math.floor((x1-x0)/.12);
    for(let i=0;i<dentils;i++)addBox('intStairMolding',x0+(i+.5)*(x1-x0)/dentils,OG-.145,face-side*.025,.054,.035,.040);
@@ -1771,10 +1822,12 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  for(let i=0;i<=wn;i++){
    const z=wz0+i*(wz1-wz0)/wn;
    addBox('stairForged',wx,OG+.52,z,.043,1,.043,'og');stairAudit.balusters++;
-   if(i%3===1){const g=new THREE.TorusGeometry(1,.12,6,24);g.scale(.09,.285,.11);g.rotateY(Math.PI/2);g.translate(wx,OG+.58,z);decorGeo(g,'stairForged','og');for(const dy of [-.285,.285])addBox('stairPatina',wx,OG+.58+dy,z,.042,.043,.043,'og');}
+   if(i%3===1){const g=new THREE.TorusGeometry(1,.12,6,24);g.scale(.09,.285,.11);g.rotateY(Math.PI/2);g.translate(wx,OG+.58,z);decorGeo(g,'stairForged','og');for(const dy of [-.285,.285])addBox('grandBrass',wx,OG+.58+dy,z,.042,.043,.043,'og');}
  }
- for(const [mat,h,yy,w] of [['stairWalnut',.10,1.04,.13],['stairForged',.05,.20,.065],['stairForged',.04,.95,.052]])addBox(mat,wx,OG+yy,(wz0+wz1)/2,w,h,wz1-wz0,'og');
+ for(const [mat,h,yy,w] of [['grandRail',.10,1.04,.13],['stairForged',.05,.20,.065],['stairForged',.04,.95,.052]])addBox(mat,wx,OG+yy,(wz0+wz1)/2,w,h,wz1-wz0,'og');
  for(const [dy,h,depth] of [[-.038,.052,.08],[-.112,.076,.064],[-.185,.038,.096]])addBox('intStairMolding',stairVoid[0]-depth/2+.012,OG+dy,(wz0+wz1)/2,depth,h,wz1-wz0,'og');
+ addBox('intEscalierRebate',stairVoid[0]+.023,OG-.095,(wz0+wz1)/2,.028,.068,wz1-wz0);
+ addBox('intEscalierBead',stairVoid[0]+.036,OG-.045,(wz0+wz1)/2,.037,.021,wz1-wz0);
  collisionWalls.og.push({x0:wx-.09,x1:wx+.09,z0:wz0,z1:wz1});
  stairAudit.handrails+=3;
  for(const [key,geos] of stairDecor){const [layer,mat]=key.split(':');const combined=mergeGeometries(geos,false);if(!combined)throw Error('Treppenornament merge');combined.computeBoundingSphere();mesh(combined,mat,'Roissy_Treppenhaus_Ornament_'+key,layer==='shell'?root:layers[layer]);for(const g of geos)g.dispose();}

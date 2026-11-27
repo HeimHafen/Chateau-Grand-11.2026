@@ -39,7 +39,7 @@ export function installReferenceFixtures(T,root,layers,stair,EG,OG,CORNICE,wallA
    }
    for(let i=0;i<upper;i++){const a=(i+.5)*2*Math.PI/upper,c=Math.cos(a),s=Math.sin(a),p=(rr,y)=>[c*r*rr,-h*y,s*r*rr];tube(brass,[p(.12,.36),p(.38,.49),p(.59,.45),p(.63,.34)],.011);wax(...p(.63,.34),.11);gem(...p(.58,.53),.025,.095);}
    gem(0,-h*.99,0,.065,.15);
- });const {bounds,triangles}=result;fixtures.push({name,x,z,ceiling,bottom:bounds.min.y,radius:r,candles:arms+upper,triangles,bounds:[bounds.min.toArray(),bounds.max.toArray()]});lights.push({name,position:[x,ceiling-h*.55,z],intensity:name.includes('UnterGalerie')?45:58,distance:6.8,color:0xffdfb3});}
+ });const {bounds,triangles}=result;fixtures.push({name,x,z,ceiling,bottom:bounds.min.y,radius:r,candles:arms+upper,triangles,bounds:[bounds.min.toArray(),bounds.max.toArray()]});lights.push({name,position:[x,ceiling-h*.55,z],intensity:name.includes('UnterGalerie')?22:32,distance:6.8,color:0xffdfb3});}
  chandelier(layers.eg,'Roissy_Kristallleuchter_UnterGalerie',-13.25,-4.95,OG-.2515,1.65,.78,18);
  // Match the existing upper central stucco rosette exactly.
  chandelier(layers.og,'Roissy_Kristallleuchter_GrandEscalier',(-15.00-7.20)/2,(-1.60+8.20)/2,CORNICE-.283-.045,1.72,.84,20);
@@ -69,7 +69,7 @@ export function installReferenceFixtures(T,root,layers,stair,EG,OG,CORNICE,wallA
      gem(0,-.29,.075,.023,.11);
    },rot);
    const normal=[Math.sin(rot),0,Math.cos(rot)],p=[x+normal[0]*.29,site.y+.22,z+normal[2]*.29];
-   sconces.push({name,floor:site.f,axis:w.axis,fixed:w.fixed,at,side:w.side,edge:w.edge,anchor:[x,site.y,z],normal,wall:[w.from,w.to,w.low,w.high],bounds:[result.bounds.min.toArray(),result.bounds.max.toArray()],candles:3,triangles:result.triangles});lights.push({name,position:p,intensity:7.5,distance:2.75,color:0xffd8a5});
+   sconces.push({name,floor:site.f,axis:w.axis,fixed:w.fixed,at,side:w.side,edge:w.edge,anchor:[x,site.y,z],normal,wall:[w.from,w.to,w.low,w.high],bounds:[result.bounds.min.toArray(),result.bounds.max.toArray()],candles:3,triangles:result.triangles});lights.push({name,position:p,intensity:4.6,distance:2.75,color:0xffd8a5});
  }
  return {count,fixtures,sconces:sconces.length,sconcePositions:sconces.filter(s=>s.floor==='eg').map(s=>[s.anchor[0],s.anchor[2]]),sconceDetails:sconces,lights};
 }

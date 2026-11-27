@@ -1,5 +1,5 @@
-CHÂTEAU GRAND · ROISSY V3.70 · Antichambre
+CHÂTEAU GRAND · ROISSY V3.71 · Grand Escalier
 
-ZIP entpacken und den Inhalt in die Wurzel des GitHub-Pages-Repositorys übernehmen. index.html muss auf derselben Ebene wie die Ordner chateau, assets und vendor liegen.
+ZIP entpacken und den Inhalt in die Wurzel des GitHub-Pages-Repositorys übernehmen. index.html muss neben den Ordnern chateau, assets und vendor liegen.
 
-„Innenräume …“ → „Antichambre · Vorzimmer“ führt zur Konsole mit dem Landschaftsbild im Erdgeschoss.
+„Innenräume …“ → „Grand escalier · Treppenhaus“ öffnet den Rundgang im Erdgeschoss. Beide Treppenläufe führen über das Wendepodest auf die obere Galerie. „Antichambre · Vorzimmer“ führt zur angrenzenden Konsole.
