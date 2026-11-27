@@ -1,6 +1,6 @@
 import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {fitModel} from './model-import-v348.js?v=roissy363';
-import {ATTIC} from './attic.js?v=roissy363';
+import {ATTIC} from './attic.js?v=roissy367';
 
 const placements=[
   {file:'polstersessel',name:'Antiker Polstersessel',x:20.20,z:2.45,yaw:-1.28,max:[1.04,1.10,.90]},

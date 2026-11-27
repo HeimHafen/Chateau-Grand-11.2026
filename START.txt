@@ -1,7 +1,5 @@
-CHÂTEAU GRAND · ROISSY V3.65 · Ionische Säulen
+CHÂTEAU GRAND · ROISSY V3.67 · Mansardengalerie
 
 ZIP entpacken und die enthaltenen Dateien in die Wurzel des GitHub-Pages-Repositorys übernehmen. index.html muss auf derselben Ebene wie die Ordner chateau, assets und vendor liegen.
 
-Im Spiel „Übersicht“ wählen. Hof, Park, Westseite und Ostseite zeigen die vier Fassaden. „Überblick“ zeigt Dach und Gauben von oben.
-
-Die vier ionischen Säulen stehen im Erdgeschoss. Direkt erreichbar über „Innenräume …“ → „Vestibule · Eingangshalle“.
+„Innenräume …“ → „Dachgeschoss · Mansardengalerie“ öffnet den Rundgang direkt in der Galerie. Die Mansardentreppe verbindet sie mit dem Obergeschoss.

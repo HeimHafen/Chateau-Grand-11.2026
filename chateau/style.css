@@ -32,3 +32,9 @@ body.walking #qualityControl{display:none;}
 .splashInner{max-height:100%;overflow-y:auto;overscroll-behavior:contain;}
 @media(max-height:540px) and (orientation:landscape){#menu{top:max(64px,env(safe-area-inset-top));bottom:auto;max-height:calc(100dvh - 75px - env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(78px,1fr));gap:4px;max-width:38vw;}#menu button,#menu a,#interiorJump{min-height:44px;font-size:11px;padding:6px;}#interiorJump,#qualityControl{grid-column:1/-1;max-width:none;}body.walking #menu{top:auto;bottom:max(10px,env(safe-area-inset-bottom));display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-end;max-width:56vw;}#splash{align-items:center;padding:12px max(20px,env(safe-area-inset-right)) 12px max(20px,env(safe-area-inset-left));}#splash h1{font-size:clamp(26px,6vh,42px);margin:8px 0;}#splash p{font-size:12px;margin:6px 0;}#walkStick{bottom:60px;width:82px;height:82px;}#controlHint{bottom:10px;font-size:10px;max-width:44vw;}}
 @media(prefers-reduced-motion:reduce){#menu button:active,#start:active{transform:none;}}
+
+@media(max-width:600px) and (orientation:portrait){
+  body.attic-walk #controlHint{left:max(12px,env(safe-area-inset-left));max-width:39vw}
+  body.attic-walk #menu{max-width:52vw}
+  body.attic-walk #interiorJump{max-width:100%}
+}

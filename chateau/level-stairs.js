@@ -1,5 +1,5 @@
 import {EG,OG,STAIR_WEST} from './roissy-config.js?v=roissy363';
-import {ATTIC} from './attic.js?v=roissy363';
+import {ATTIC} from './attic.js?v=roissy367';
 import {CELLAR} from './cellar.js?v=roissy363';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
 
@@ -131,10 +131,22 @@ export function buildLevelStairs(T,parent,materials){
     }
     for(let x=a+.16;x<b-.1;x+=.16)box(iron,x,turnY+.49,c+.12,.03,.98,.029);
     // Guard the upper opening on all sides except the uphill flight.
-    for(const [x0,x1,z0,z1] of [[a,b,c,c],[a,a,c,d],[b,b,c,d],[a,mid+centreGap/2,d,d]]){
+    const guardEnd=mid+centreGap/2;
+    const guardRuns=[[a,b,c,c],[a,a,c,d],[b,b,c,d],[a,guardEnd,d,d]];
+    for(const [x0,x1,z0,z1] of guardRuns){
       const dx=x1-x0,dz=z1-z0,len=Math.hypot(dx,dz),steps=Math.ceil(len/.16);
       box(wood,(x0+x1)/2,stair.high+1.04,(z0+z1)/2,dx||.075,.077,dz||.075);
-      for(let i=0;i<=steps;i++)box(iron,x0+dx*i/steps,stair.high+.54,z0+dz*i/steps,.032,1.04,.033);
+      if(stair.id==='attic'){
+        box(iron,(x0+x1)/2,stair.high+.096,(z0+z1)/2,dx||.041,.034,dz||.041);
+        for(let i=1;i<steps;i++)box(iron,x0+dx*i/steps,stair.high+.552,z0+dz*i/steps,.025,.97,.025);
+      }else{
+        for(let i=0;i<=steps;i++)box(iron,x0+dx*i/steps,stair.high+.54,z0+dz*i/steps,.032,1.04,.033);
+      }
+    }
+    if(stair.id==='attic')for(const [x,z] of [[a,c],[b,c],[a,d],[b,d],[guardEnd,d]]){
+      box(wood,x,stair.high+.532,z,.083,1.064,.083);
+      box(wood,x,stair.high+.057,z,.12,.114,.12);
+      box(brass,x,stair.high+1.083,z,.103,.030,.103);
     }
     // Dressed reveals bridge the underground vault and the opening in the floor above.
     if(stair.id==='cellar'){
