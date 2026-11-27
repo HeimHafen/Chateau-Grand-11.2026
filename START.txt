@@ -1,5 +1,5 @@
-CHÂTEAU GRAND · ROISSY V3.67 · Mansardengalerie
+CHÂTEAU GRAND · ROISSY V3.70 · Antichambre
 
-ZIP entpacken und die enthaltenen Dateien in die Wurzel des GitHub-Pages-Repositorys übernehmen. index.html muss auf derselben Ebene wie die Ordner chateau, assets und vendor liegen.
+ZIP entpacken und den Inhalt in die Wurzel des GitHub-Pages-Repositorys übernehmen. index.html muss auf derselben Ebene wie die Ordner chateau, assets und vendor liegen.
 
-„Innenräume …“ → „Dachgeschoss · Mansardengalerie“ öffnet den Rundgang direkt in der Galerie. Die Mansardentreppe verbindet sie mit dem Obergeschoss.
+„Innenräume …“ → „Antichambre · Vorzimmer“ führt zur Konsole mit dem Landschaftsbild im Erdgeschoss.

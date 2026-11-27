@@ -77,5 +77,5 @@ export function buildVestibuleLantern(T, parent, x, ceiling, z) {
     mesh.receiveShadow = material !== glass && material !== flame;
     for (const geo of geometries) geo.dispose();
   }
-  return {name:lantern.name, position:[x,ceiling-1.27,z], color:0xffdbab, intensity:19, distance:6.2};
+  return {name:lantern.name, position:[x,ceiling-1.27,z], color:0xffdbab, intensity:11.8, distance:6.2};
 }

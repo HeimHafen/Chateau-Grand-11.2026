@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#18232a">
-<title>CHÂTEAU GRAND 2027 · Roissy 3.67 · Mansardengalerie</title>
-<link rel="stylesheet" href="chateau/style.css?v=roissy367">
+<title>CHÂTEAU GRAND 2027 · Roissy 3.70 · Antichambre</title>
+<link rel="stylesheet" href="chateau/style.css?v=roissy370">
 </head>
 <body>
 <canvas id="world" aria-label="Château Grand: historischer Roissy-Grundriss-Rundgang"></canvas>
 <header><div class="wordmark">CHÂTEAU</div><small>GRAND · 2027</small></header>
-<div id="version">ROISSY · V3.67</div>
+<div id="version">ROISSY · V3.70</div>
 <div id="menu" aria-label="Ansichten und Rundgang">
   <button data-view="front">Hof</button>
   <button data-view="park">Park</button>
@@ -22,7 +22,7 @@
   <button data-view="above">Überblick</button>
   <button data-view="eg">EG · Grundriss</button>
   <button data-view="og">1. OG · Grundriss</button>
-  <select id="interiorJump" aria-label="Innenräume direkt betreten"><option value="">Innenräume …</option><option value="cellar">Keller · Gewölbegalerie</option><option value="hall">Vestibule · Eingangshalle</option><option value="salon">Salon · Festsaal</option><option value="stair">Grand escalier · Treppenhaus</option><option value="gallery">Galerie · 1. OG</option><option value="attic">Dachgeschoss · Mansardengalerie</option></select>
+  <select id="interiorJump" aria-label="Innenräume direkt betreten"><option value="">Innenräume …</option><option value="cellar">Keller · Gewölbegalerie</option><option value="hall">Vestibule · Eingangshalle</option><option value="salon">Salon · Festsaal</option><option value="antichambre">Antichambre · Vorzimmer</option><option value="stair">Grand escalier · Treppenhaus</option><option value="gallery">Galerie · 1. OG</option><option value="attic">Dachgeschoss · Mansardengalerie</option></select>
   <button id="walk">Erkunden</button>
   <button id="reset">Übersicht</button>
   <label id="qualityControl">Grafik <select id="quality" aria-label="Grafikqualität"><option value="auto">Automatisch</option><option value="detail">Details</option><option value="smooth">Flüssig</option></select><span id="qualityStatus"></span></label>
@@ -43,6 +43,6 @@
     <div id="status" role="status">Historische Fassaden und Raumstruktur werden aufgebaut.</div>
   </div>
 </section>
-<script type="module" src="chateau/main.js?v=roissy367"></script>
+<script type="module" src="chateau/main.js?v=roissy370"></script>
 </body>
 </html>

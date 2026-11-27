@@ -1,8 +1,10 @@
-import {buildVestibuleLantern} from './vestibule-lantern.js?v=roissy366';
+import {addClassicalReliefs,addVestibuleReliefs} from './vestibule-relief.js?v=roissy370';
+import {installVestibuleInlay} from './vestibule-inlay.js?v=roissy368';
+import {buildVestibuleLantern} from './vestibule-lantern.js?v=roissy369';
 import {ATTIC_SHAFT,CELLAR_SHAFT,ATTIC_PORTAL,CELLAR_PORTAL,buildLevelStairs} from './level-stairs.js?v=roissy367';
 import {buildCellar} from './cellar.js?v=roissy363';
 import {buildAttic} from './attic.js?v=roissy367';
-import {installFurnishings} from './furnishings-v346.js?v=roissy363';
+import {installFurnishings} from './furnishings-v346.js?v=roissy370';
 /**
  * CHÂTEAU GRAND V3.53 – Architekturfinish mit Gewölbekeller und Mansarde.
  * Geometry + room register share one unit/metre plan with navigation.
@@ -73,7 +75,11 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
    intStucRecess:finish('Roissy_Stuck_Kehle_Warmgrau',0xe1d4c0,.90,plasterMaps,.06),
    intBrass:new THREE.MeshStandardMaterial({name:'Roissy_Patinierte_Messingdetails',color:0xb39a6b,roughness:.48,metalness:.45})
  });
+ cast.intAntichambreField=finish('Roissy_Antichambre_Salbeigraue_Boiserie',0xaeb5a5,.90,plasterMaps,.06);
+ cast.intAntichambreProfile=finish('Roissy_Antichambre_Kalkweisse_Profile',0xe5dac4,.86,paintedFinish);
+ cast.intAntichambreBead=finish('Roissy_Antichambre_Messingfaden',0xb29769,.88,paintedFinish);
  const finishRegions={eg:[],og:[]},pendingWallFinishes=[];
+ let antichambreDisplay;
  function roomAt(f,x,z){
    const cell=finishRegions[f].find(c=>x>=c.rect[0]-1e-6&&x<=c.rect[1]+1e-6&&z>=c.rect[2]-1e-6&&z<=c.rect[3]+1e-6);if(cell)return cell.room;
    const rooms=ROOMDATA[f];const distance=r=>Math.hypot(Math.max(0,Math.abs(x-r.x)-r.w/2),Math.max(0,Math.abs(z-r.z)-r.d/2));
@@ -235,11 +241,44 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
    // V3.46: the continuous soffit cornice is generated once after all walls.
    // Do not install disconnected decorative bars at each window/door segment.
    if(service||w<.70)return;
-   const n=Math.max(1,Math.round(w/2.2)),bay=w/n;
+   const vestibule=f==='eg'&&selected.name==='Vestibule';
+   const portalFlank=vestibule&&axis==='x'&&side>0&&Math.abs(fixed-CROSS_WALL_Z)<.001;
+   // Match the full solid section beside the doorway shown in the screenshot.
+   const display=f==='eg'&&axis==='z'&&side===-1&&stairAntechamber(selected)&&
+     Math.abs(fixed-FRONT_X_CUTS[3])<.001&&p<-8.85&&q>-8.85;
+   const n=portalFlank||display?1:Math.max(1,Math.round(w/2.2)),bay=w/n;
    for(let i=0;i<n;i++){
      const m=a+(i+.5)*bay,pw=bay-.20, bottom=low+1.38, upper=top-.40;
      if(pw<.40||upper-bottom<.65)continue;
      put(roomFinish(m).panel,m,(bottom+upper)/2,pw,upper-bottom,.018,.022);
+     if(display){
+       const fieldWidth=2.20,lo=bottom+.13,hi=upper-.16,centreY=(lo+hi)/2;
+       const fieldHeight=hi-lo;
+       put('intAntichambreField',m,centreY,fieldWidth,fieldHeight,.019,.036);
+       for(const sign of [-1,1]){
+         put('intAntichambreProfile',m+sign*fieldWidth/2,centreY,.066,fieldHeight+.066,.052,.038);
+         put('intAntichambreProfile',m,sign<0?lo:hi,fieldWidth-.066,.066,.052,.038);
+         put('intAntichambreBead',m+sign*(fieldWidth/2-.065),centreY,.013,fieldHeight-.13,.018,.053);
+         put('intAntichambreBead',m,(sign<0?lo+.065:hi-.065),fieldWidth-.143,.013,.018,.053);
+         const pilaster=m+sign*(fieldWidth/2+.245);
+         put('intAntichambreProfile',pilaster,centreY,.082,fieldHeight-.27,.045,.044);
+         put('intAntichambreProfile',pilaster,lo+.115,.158,.072,.066,.044);
+         put('intAntichambreProfile',pilaster,hi-.115,.158,.072,.066,.044);
+       }
+       const upperRail=hi-.94;
+       put('intAntichambreProfile',m,upperRail,fieldWidth-.136,.027,.027,.046);
+       put('intAntichambreBead',m,upperRail-.024,fieldWidth-.136,.011,.019,.052);
+       antichambreDisplay={wall:fixed+side*edge,centre:m,reliefY:hi-.46};
+     }
+     if(vestibule){
+       // Recessed plaster and a fine stone bead on the inner edge of the panel.
+       put('intVestibuleInset',m,(bottom+upper)/2,pw-.235,upper-bottom-.235,.012,.028);
+       const margin=portalFlank?.19:.145;
+       if(pw>2*margin+.14)for(const sign of [-1,1]){
+         put('hallFillet',m+sign*(pw/2-margin),(bottom+upper)/2,.012,upper-bottom-2*margin,.016,.038);
+         put('hallFillet',m,sign<0?bottom+margin:upper-margin,pw-2*margin-.012,.012,.016,.038);
+       }
+     }
      for(const d of [-1,1]){
        put('intShadow',m+d*(pw/2-.035),(bottom+upper)/2,.07,upper-bottom,.027,.034);
        put('intFrame',m+d*(pw/2-.035),(bottom+upper)/2,.034,upper-bottom-.035,.042,.045);
@@ -710,8 +749,8 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  const vestibulePBR=new THREE.MeshStandardMaterial({
    name:'Roissy_Vestibule_Kalkstein_Matt_Geschliffen',
    map:floorTexture('albedo',true),normalMap:floorTexture('normal'),
-   roughnessMap:floorTexture('roughness'),roughness:.65,metalness:0,
-   normalScale:new THREE.Vector2(.22,.22),color:0xf5efe6,polygonOffset:false
+   roughnessMap:floorTexture('roughness'),roughness:.78,metalness:0,
+   normalScale:new THREE.Vector2(.16,.16),color:0xf1dfc6,polygonOffset:false
  });
  const hallLeft=FRONT_X_CUTS[3]+.155,hallRight=FRONT_X_CUTS[4]-.155;
  const hallBack=CROSS_WALL_Z+.155,hallFront=HALF_D-.23;
@@ -724,7 +763,7 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  layers.eg.add(centralFloor);directMeshes++;
  // A restrained inset frame on the stone plane, flush with the walking surface.
  // Door thresholds remain open; these borders are 7mm thick, not collision walls.
- const vestibuleEdge=new THREE.MeshStandardMaterial({color:0x948572,roughness:.91,metalness:0,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4});
+ const vestibuleEdge=new THREE.MeshStandardMaterial({color:0x918071,roughness:.91,metalness:0,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4});
  function floorInlay(x,z,w,d,mat=vestibuleEdge){
    const obj=new THREE.Mesh(new THREE.BoxGeometry(w,.006,d),mat);
    obj.position.set(x,EG+.013,z);obj.receiveShadow=true;obj.castShadow=false;
@@ -739,14 +778,27 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
      floorInlay(0,vestibuleZ+sign*d/2,w-th,th);
    }
  }
+ const umberMap=typeof document==='undefined'?null:tileLoader.load('./assets/interior/v344_marble_border_albedo.jpg');
+ if(umberMap){
+   umberMap.wrapS=umberMap.wrapT=THREE.RepeatWrapping;
+   umberMap.colorSpace=THREE.SRGBColorSpace;
+   umberMap.anisotropy=4;
+ }
+ installVestibuleInlay(THREE,layers.eg,EG+.010,4.30,umberMap);
+ cast.intVestibuleInset=finish('Roissy_Vestibule_Kalkputz_Warmes_Greige',0xdad1c3,.88,plasterMaps,.10);
  // Vestibule trim is generated from the actual partition segments below.
  // Four free-standing piers (two rows of two) follow the central supports in
  // Le Rouge's drawing, at estimated positions within the present room envelope.
  const hallSupports=[];
+ const vestibuleCentre=(2.15+6.45)/2;
+ cast.hallRosette=finish('Roissy_Vestibule_Rosette_Elfenbein_und_Kalk',0xe4d6be,.94,paintedFinish);
+ cast.hallCarving=finish('Roissy_Vestibule_Geschliffenes_Relief',0xe8dfcf,.88,paintedFinish);
+ cast.hallFrieze=finish('Roissy_Vestibule_Fries_Heller_Kalkstein',0xded2bf,.93,plasterMaps,.065);
+ cast.hallFillet=finish('Roissy_Vestibule_Feines_Lichtprofil',0xf5ebd9,.94,paintedFinish);
  cast.hallBeam=finish('Roissy_Vestibule_Balken_Kalkstein',0xe5dbca,.84,stoneMaps,.12);
  cast.hallBeamTrim=finish('Roissy_Vestibule_Balken_Elfenbein',0xf5ede1,.86,paintedFinish);
  cast.hallCoffer=finish('Roissy_Vestibule_Kassetten_Elfenbein',0xf4ece0,.91,plasterMaps,.06);
- if(vestibuleColumn)cast.ionicStone=finish('Roissy_Ionische_Saeule_Kalkstein',0xece3d3,.82,paintedFinish);
+ if(vestibuleColumn)cast.ionicStone=finish('Roissy_Ionische_Saeule_Kalkstein',0xe5d9c5,.91,paintedFinish);
  for(const f of ['eg','og']){
    const y=f==='eg'?EG:OG,top=f==='eg'?OG-.19:CORNICE-.245;
    for(const x of [-2.24,2.24])for(const z of [2.15,6.45]){
@@ -1050,19 +1102,37 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
 
  // V3.38: restrained carved rosettes in the flat vestibule coffers and
  // paired axial reserves of the stair ceiling. All backs intersect plaster.
- const hallCeilingParts={eg:[],og:[]};
+ const hallCeilingParts={eg:[],og:[]},lanternRosetteParts=[];
  interiorAudit.hallCeilingOrnaments=[];
  function hallCeilingMedallion(f,rect,upper,kind){
-   const [a,b,c,d]=rect,x=(a+b)/2,z=(c+d)/2,r=Math.min(.40,(b-a)*.19,(d-c)*.19);
+   const [a,b,c,d]=rect,x=(a+b)/2,z=(c+d)/2;
+   const lanternMedallion=f==='eg'&&kind==='vestibule'&&Math.abs(x)<.01&&Math.abs(z-vestibuleCentre)<.01;
+   const r=Math.min(lanternMedallion?.66:.40,(b-a)*.19,(d-c)*.19);
    if(r<.13)return;
-   const parts=hallCeilingParts[f];
+   const parts=lanternMedallion?lanternRosetteParts:hallCeilingParts[f];
    const push=g=>{parts.push(g.index?g.toNonIndexed():g);if(g.index)g.dispose();};
-   const ring=new THREE.TorusGeometry(r*.96,.013,8,48);ring.rotateX(Math.PI/2);ring.translate(x,upper-.022,z);push(ring);
-   const boss=new THREE.SphereGeometry(1,16,8);boss.scale(r*.22,.046,r*.22);boss.translate(x,upper-.023,z);push(boss);
-   const n=kind==='stair'?12:8;
+   const carvingY=upper-(lanternMedallion?.043:.022);
+   const ring=new THREE.TorusGeometry(r*.96,.013,8,48);ring.rotateX(Math.PI/2);ring.translate(x,carvingY,z);push(ring);
+   const boss=new THREE.SphereGeometry(1,16,8);boss.scale(r*.22,.046,r*.22);boss.translate(x,carvingY-.001,z);push(boss);
+   if(lanternMedallion){
+     const plate=new THREE.CylinderGeometry(r,r*.977,.024,64);
+     plate.translate(x,upper-.024,z);push(plate);
+     for(const [rel,tube] of [[.73,.011],[.83,.013],[.27,.013]]){
+       const fillet=new THREE.TorusGeometry(r*rel,tube,8,64);
+       fillet.rotateX(Math.PI/2);fillet.translate(x,carvingY-.002,z);push(fillet);
+     }
+     for(let i=0;i<24;i++){
+       const angle=i*Math.PI/12;
+       const bead=new THREE.SphereGeometry(.021,9,6);
+       bead.scale(1,.72,1);
+       bead.translate(x+Math.sin(angle)*r*.89,carvingY+.001,z+Math.cos(angle)*r*.89);
+       push(bead);
+     }
+   }
+   const n=lanternMedallion?16:kind==='stair'?12:8;
    for(let i=0;i<n;i++){
      const t=i*2*Math.PI/n,g=new THREE.SphereGeometry(1,12,8);
-     g.scale(r*.14,.034,r*.31);g.rotateY(t);g.translate(x+Math.sin(t)*r*.50,upper-.020,z+Math.cos(t)*r*.50);push(g);
+     g.scale(r*.14,.034,r*.31);g.rotateY(t);g.translate(x+Math.sin(t)*r*.50,carvingY+.002,z+Math.cos(t)*r*.50);push(g);
    }
    interiorAudit.hallCeilingOrnaments.push({floor:f,kind,rect:rect.slice(),centre:[x,z],upper,radius:r,petals:n});
  }
@@ -1090,6 +1160,10 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
    const o=mesh(g,'intStucRelief','Roissy_Hallendecken_Rosetten_V338_'+f,layers[f]);o.castShadow=false;
    for(const p of hallCeilingParts[f])p.dispose();
  }
+ const lanternRosette=mesh(mergeGeometries(lanternRosetteParts,false),'hallRosette',
+   'Roissy_Vestibule_Laternenrosette',layers.eg);
+ lanternRosette.castShadow=false;
+ for(const part of lanternRosetteParts)part.dispose();
  // V3.4 Salon gallery: the garden-side salon has a two-storey void.
  // The dividing wall on z=CROSS_WALL_Z has a single 4.9m opening at x=-2.45..2.45.
  // A 13-m railing behind/through that wall was geometrically WRONG and partly
@@ -1099,17 +1173,49 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  const galleryW=galleryR-galleryL;
  // A dressed lintel spans the lower portal and seals the deck/void transition.
  addBox('wall',0,OG-.37,CROSS_WALL_Z,4.90,.75,.46,'eg');
- addBox('trim',0,OG-.80,CROSS_WALL_Z,5.08,.11,.58,'eg');
- addBox('trim',0,OG-.69,CROSS_WALL_Z,5.16,.12,.61,'eg');
+ addBox('hallBeamTrim',0,OG-.80,CROSS_WALL_Z,5.08,.11,.58,'eg');
+ addBox('hallBeam',0,OG-.69,CROSS_WALL_Z,5.16,.12,.61,'eg');
+ // Hall-facing pilasters and entablature share the jamb width and
+ // leave the complete salon opening clear for the walking route.
+ const portalFace=CROSS_WALL_Z+.287,portalHead=OG-.855;
+ const hallPortalRelief={y:OG-.45,z:portalFace+.139};
+ for(const [mat,y,w,h,depth,offset] of [
+   ['hallFillet',OG-.775,5.76,.039,.155,.037],
+   ['hallBeamTrim',OG-.698,5.94,.115,.174,.046],
+   ['hallFrieze',OG-.474,5.87,.329,.173,.063],
+   ['hallBeamTrim',OG-.288,6.02,.048,.206,.064],
+   ['hallFillet',OG-.248,6.11,.032,.224,.072]
+ ])addBox(mat,0,y,portalFace+offset,w,h,depth,'eg');
+ const vestibuleFlanks=[(hallLeft+galleryL)/2,(galleryR+hallRight)/2];
+ for(const side of [-1,1]){
+   const x=side*2.738,bottom=EG+.50,capital=portalHead+.018;
+   addBox('hallBeam',x,(bottom+capital)/2,portalFace,.348,capital-bottom,.255,'eg');
+   for(const [mat,y,w,h,depth,offset] of [
+     ['hallBeam',EG+.145,.492,.29,.295,.015],
+     ['hallBeamTrim',EG+.308,.460,.061,.335,.013],
+     ['hallFrieze',EG+.408,.405,.139,.293,.007],
+     ['hallFillet',bottom,.422,.046,.322,.022],
+     ['hallFrieze',capital-.075,.414,.165,.326,.022],
+     ['hallBeamTrim',capital+.034,.495,.066,.362,.026],
+     ['hallFillet',capital+.085,.528,.038,.393,.036]
+   ])addBox(mat,x,y,portalFace+offset,w,h,depth,'eg');
+   // Fine convex fillets suggest the fluting without hollows across the piers.
+   for(const u of [-.102,-.051,0,.051,.102]){
+     const shaftTop=capital-.186,shaftBottom=bottom+.058;
+     const g=new THREE.CylinderGeometry(.012,.015,shaftTop-shaftBottom,8);
+     g.translate(x+u,(shaftTop+shaftBottom)/2,portalFace+.126);
+     mesh(g,'hallFillet','Roissy_Vestibule_Salonportal_Kannelur',layers.eg);
+   }
+ }
  // Upper portal head: the guard belongs to a framed opening, not a loose bar.
  addBox('wall',0,CORNICE-.89,CROSS_WALL_Z,4.90,1.34,.46,'og');
  addBox('trim',0,CORNICE-1.61,CROSS_WALL_Z,5.08,.10,.57,'og');
  for(const f of ['eg','og']){
    const y=f==='eg'?EG:OG,head=f==='eg'?OG-.86:CORNICE-1.66;
    for(const x of [-2.52,2.52]){
-     addBox('stone',x,(y+head)/2,CROSS_WALL_Z,.14,head-y,.51,f);
-     addBox('trim',x,y+.18,CROSS_WALL_Z,.23,.36,.58,f);
-     addBox('trim',x,head-.09,CROSS_WALL_Z,.23,.18,.58,f);
+     addBox(f==='eg'?'hallBeam':'stone',x,(y+head)/2,CROSS_WALL_Z,.14,head-y,.51,f);
+     addBox(f==='eg'?'hallBeamTrim':'trim',x,y+.18,CROSS_WALL_Z,.23,.36,.58,f);
+     addBox(f==='eg'?'hallBeamTrim':'trim',x,head-.09,CROSS_WALL_Z,.23,.18,.58,f);
    }
  }
  addBox('stone',0,OG+.065,galleryZ,galleryW,.13,.24,'og');
@@ -2102,10 +2208,36 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  const gx=-13.25,gz=-4.95;
  for(const [rr,tube] of [[.78,.020],[.68,.015],[.53,.010],[.13,.015]]){const g=new THREE.TorusGeometry(rr,tube,8,64);g.rotateX(Math.PI/2);g.translate(gx,galleryUpper-.037,gz);mesh(g,'intStucRelief','Roissy_Galerie_Leuchterrosette',layers.eg);}
  for(let i=0;i<24;i++){const a=i*Math.PI/12,g=new THREE.SphereGeometry(1,14,8);g.scale(.045,.025,.15);g.rotateY(a);g.translate(gx+Math.sin(a)*.45,galleryUpper-.039,gz+Math.cos(a)*.45);mesh(g,'intStucRelief','Roissy_Galerie_Rosettenblatt',layers.eg);}
- const vestibuleLight=buildVestibuleLantern(THREE,layers.eg,0,OG-.25,(2.15+6.45)/2);
+ const vestibuleLight=buildVestibuleLantern(THREE,layers.eg,0,OG-.25,vestibuleCentre);
+ addVestibuleReliefs(THREE,layers.eg,cast.hallCarving,hallPortalRelief,{
+   x:vestibuleFlanks,y:EG+3.31,z:hallBack+.028
+ });
  const referenceFixtures=installReferenceFixtures(THREE,root,layers,S,EG,OG,CORNICE,interiorAudit.roomFinishAssignments);
  interiorAudit.fixtureCount=referenceFixtures.count;interiorAudit.referenceFixtures=referenceFixtures;
- interiorAudit.furnishings=installFurnishings(THREE,layers,EG,OG,collisionWalls);
+ if(antichambreDisplay){
+   const {wall,centre,reliefY}=antichambreDisplay;
+   const door=interiorDoorways.find(d=>d.floor==='eg'&&d.axis==='z'&&
+     Math.abs(d.fixed-FRONT_X_CUTS[3])<.001&&d.at>centre&&d.at<centre+3.5);
+   const reliefs=[{x:0,y:reliefY,z:0,width:.44,scale:1.14}];
+   if(door){
+     const y=door.baseY+door.clearHeight+.59;
+     addBox('intAntichambreField',wall-.020,y,door.at,.036,.370,1.16,'eg');
+     for(const sign of [-1,1]){
+       addBox('intAntichambreProfile',wall-.030,y+sign*.185,door.at,.047,.041,1.20,'eg');
+       addBox('intAntichambreProfile',wall-.030,y,door.at+sign*.582,.047,.343,.041,'eg');
+     }
+     reliefs.push({x:door.at-centre,y,z:-.010,width:.30,scale:.85});
+   }
+   const wallRelief=new THREE.Group();
+   wallRelief.name='Roissy_Antichambre_Lorbeerreliefs';
+   wallRelief.position.set(wall-.043,0,centre);
+   wallRelief.rotation.y=-Math.PI/2;
+   layers.eg.add(wallRelief);
+   addClassicalReliefs(THREE,wallRelief,cast.hallCarving,'Roissy_Antichambre_Geschnitzte_Felder',reliefs);
+ }
+ interiorAudit.furnishings=installFurnishings(THREE,layers,EG,OG,collisionWalls,{
+   wall:hallBack,flanks:vestibuleFlanks
+ },antichambreDisplay);
  // Instanced stone geometry: one draw call per material and floor layer.
  const surfaceCleanup=resolveStaticFaces(THREE,batch,cast);
  const dummy=new THREE.Object3D();let renderBatches=0;
