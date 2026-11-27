@@ -1,3 +1,4 @@
+import {installStairPortal} from './stair-portal.js?v=roissy373';
 import {createEscalierSoffits} from './grand-escalier-soffits.js?v=roissy371';
 import {addClassicalReliefs,addVestibuleReliefs} from './vestibule-relief.js?v=roissy370';
 import {installVestibuleInlay} from './vestibule-inlay.js?v=roissy368';
@@ -5,14 +6,14 @@ import {buildVestibuleLantern} from './vestibule-lantern.js?v=roissy369';
 import {ATTIC_SHAFT,CELLAR_SHAFT,ATTIC_PORTAL,CELLAR_PORTAL,buildLevelStairs} from './level-stairs.js?v=roissy367';
 import {buildCellar} from './cellar.js?v=roissy363';
 import {buildAttic} from './attic.js?v=roissy367';
-import {installFurnishings} from './furnishings-v346.js?v=roissy370';
+import {installFurnishings} from './furnishings-v346.js?v=roissy373';
 /**
  * CHÂTEAU GRAND V3.53 – Architekturfinish mit Gewölbekeller und Mansarde.
  * Geometry + room register share one unit/metre plan with navigation.
  * Interior reproduces legible room sequences; not a documented survey in cm.
  * Historical elevations interpreted from Le Rouge, 1776; exact sculpture and dimensions not documented.
  */
-import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy371';
+import {installReferenceFixtures} from './reference-fixtures-v342.js?v=roissy373';
 import {createInteriorDoorKit} from './interior-doors-v324.js?v=roissy363';
 import {resolveStaticFaces} from './surface-cleanup.js?v=roissy363';
 import {addPortalDoors,createOakFinish} from '../wohnzimmer/portal-doors-v2.js';
@@ -20,7 +21,7 @@ import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometry
 import {addRoissyPortal} from './portal-doors-v321.js?v=roissy363';
 import {PLAN,STAIR_WEST,HALF_W,HALF_D,EG,OG,CORNICE,ROOMDATA,FRONT_DOORS,FRONT_WINDOW_AXES,REAR_WINDOW_AXES,SIDE_WINDOW_AXES,REAR_X_CUTS,REAR_X_CUTS_OG,FRONT_X_CUTS,CROSS_WALL_Z,GRAND_STAIR,PERRON,AXIS_AUDIT,SECONDARY_ROOM_WALLS,EXTERIOR,FACADE_SEGMENTS,frontAt,rearAt} from './roissy-config.js?v=roissy363';
 
-export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
+export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null,hallDecor={}){
  const root=new THREE.Group();root.name='CHATEAU_ROISSY_V345_GRAND_ESCALIER';scene.add(root);
  const layers={eg:new THREE.Group(),og:new THREE.Group()};
  layers.eg.name='ROISSY_REZ_DE_CHAUSSEE_LE_ROUGE_1776';layers.og.name='ROISSY_PREMIER_ETAGE_LE_ROUGE_1776';root.add(layers.eg,layers.og);
@@ -145,10 +146,10 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  const stairWalnut=createOakFinish(THREE,0x634432);stairWalnut.name='Roissy_Treppe_Poliertes_Dunkelholz';stairWalnut.roughness=.29;
  Object.assign(cast,{stairWalnut,stairForged:new THREE.MeshStandardMaterial({name:'Roissy_Treppe_Schmiedeeisen_Satin',color:0x242322,metalness:.68,roughness:.32}),stairPatina:new THREE.MeshStandardMaterial({name:'Roissy_Treppe_Messing_Patiniert',color:0xc39a51,metalness:.73,roughness:.29}),intStairMolding:finish('Roissy_Treppe_Geschliffener_Kalkstein',0xfff5e6,.66,stoneMaps,.12),intStairInlay:finish('Roissy_Treppe_Steinfries_Taupe',0xa99a86,.92,stoneMaps,.09)});
  cast.stairScroll=cast.stairForged;
- cast.intEscalierInset=finish('Roissy_GrandEscalier_Salbeigrauer_Kalkputz',0xc1c5b5,.91,plasterMaps,.075);
+ cast.intEscalierInset=finish('Roissy_GrandEscalier_Salbeigrauer_Kalkputz',0x9ba99a,.91,plasterMaps,.075);
  cast.intEscalierBead=finish('Roissy_GrandEscalier_Stein_Elfenbein',0xece1cd,.88,stoneMaps,.10);
  cast.intEscalierRebate=finish('Roissy_GrandEscalier_Profilkehle',0xae9d85,.92,paintedFinish);
- cast.intEscalierSoffit=finish('Roissy_GrandEscalier_Kassettenfeld',0xd8ccb7,.92,stoneMaps,.075);
+ cast.intEscalierSoffit=finish('Roissy_GrandEscalier_Kassettenfeld',0xb9b19d,.89,stoneMaps,.075);
  cast.grandRail=createOakFinish(THREE,0x72543c);
  cast.grandRail.name='Roissy_GrandEscalier_Nussbaum_Satin';
  cast.grandRail.roughness=.53;
@@ -2261,6 +2262,13 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  const gx=-13.25,gz=-4.95;
  for(const [rr,tube] of [[.78,.020],[.68,.015],[.53,.010],[.13,.015]]){const g=new THREE.TorusGeometry(rr,tube,8,64);g.rotateX(Math.PI/2);g.translate(gx,galleryUpper-.037,gz);mesh(g,'intStucRelief','Roissy_Galerie_Leuchterrosette',layers.eg);}
  for(let i=0;i<24;i++){const a=i*Math.PI/12,g=new THREE.SphereGeometry(1,14,8);g.scale(.045,.025,.15);g.rotateY(a);g.translate(gx+Math.sin(a)*.45,galleryUpper-.039,gz+Math.cos(a)*.45);mesh(g,'intStucRelief','Roissy_Galerie_Rosettenblatt',layers.eg);}
+ const portalVerde=finish('Roissy · Grüner Sockelmarmor',0x455b51,.47,mapsFor('interior/v344_marble'),.07);
+ const portalFrieze=finish('Roissy · Kalksteinfries in Taupe',0xafa08c,.80,stoneMaps,.09);
+ interiorAudit.stairPortal=installStairPortal(THREE,layers.eg,collisionWalls.eg,EG,galleryUpper,
+   vestibuleColumn,{
+     stone:cast.hallBeam,trim:cast.hallBeamTrim,shaft:cast.ionicStone,
+     verde:portalVerde,bronze:cast.grandBrass,frieze:portalFrieze
+   },hallDecor.lion);
  const vestibuleLight=buildVestibuleLantern(THREE,layers.eg,0,OG-.25,vestibuleCentre);
  addVestibuleReliefs(THREE,layers.eg,cast.hallCarving,hallPortalRelief,{
    x:vestibuleFlanks,y:EG+3.31,z:hallBack+.028
@@ -2290,7 +2298,7 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null){
  }
  interiorAudit.furnishings=installFurnishings(THREE,layers,EG,OG,collisionWalls,{
    wall:hallBack,flanks:vestibuleFlanks
- },antichambreDisplay);
+ },antichambreDisplay,hallDecor.candelabra);
  // Instanced stone geometry: one draw call per material and floor layer.
  const surfaceCleanup=resolveStaticFaces(THREE,batch,cast);
  const dummy=new THREE.Object3D();let renderBatches=0;

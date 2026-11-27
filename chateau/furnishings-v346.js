@@ -1,6 +1,7 @@
+import {fitHallModel} from './stair-portal.js?v=roissy373';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
 // Original procedural furniture, dimensioned to the actual Roissy room axes.
-export function installFurnishings(T,layers,EG,OG,collisionWalls,vestibule,antichambre){
+export function installFurnishings(T,layers,EG,OG,collisionWalls,vestibule,antichambre,candelabra){
  const tex=(n)=>{if(typeof document==='undefined')return null;const t=new T.TextureLoader().load('./assets/furnishing/'+n+'.jpg');t.colorSpace=T.SRGBColorSpace;t.anisotropy=8;return t;};
  const mat=(name,color,roughness,metalness=0,opts={})=>new T.MeshStandardMaterial({name,color,roughness,metalness,...opts});
  const gilt=mat('V346_vergoldetes_Holz',0xc59a45,.32,.64),shade=mat('V346_Goldpatina',0x86602b,.48,.52),cream=mat('V346_Seidendamast',0xfff3df,.82,0,{map:tex('damask')}),blue=mat('V346_Blau_Samt',0x6e8796,.94),welt=mat('V346_Paspel',0xb5a17c,.78),stone=mat('V346_Kalkstein',0xe4d2b4,.60),marble=mat('V346_Konsolenmarmor',0xe8e0ce,.26),porcelain=mat('V346_Porzellan',0xf5eee2,.20),ink=mat('V346_Kobaltblau',0x254c78,.30),green=mat('V346_Blaetter',0x42622b,.83),green2=mat('V346_Blaetter_hell',0x738444,.82),stem=mat('V346_Staengel',0x526138,.88),white=mat('V346_Blume_Elfenbein',0xffeee0,.82),pink=mat('V346_Blume_Rosa',0xc88784,.82),paper=mat('V346_Buchpapier',0xd9c5a2,.92),leather=mat('V346_Leder',0x78432d,.78),leather2=mat('V346_Leder_gruen',0x4e5945,.78),lampShade=mat('V346_Pleated_Silk',0xf7d8a7,.76,0,{emissive:0xffbb6b,emissiveIntensity:.18,side:T.DoubleSide}),mirror=mat('V346_Mirror',0xc5ccd0,.065,.96),bronze=mat('V346_Bronze',0x563c2b,.37,.66);
@@ -76,9 +77,15 @@ export function installFurnishings(T,layers,EG,OG,collisionWalls,vestibule,antic
      k.cushion(creamStone,0,.878,0,width,.064,depth,.024);
      vase(k,-.48,.912,.008,.139,.30,true);
      horse(k,-.025,.912,.055);
-     tableLamp(k,.48,.912,-.030);
+     if(!candelabra)tableLamp(k,.48,.912,-.030);
    });
-   lights.push({name:'Antichambre_Konsolenlampe',position:[deskX+.030,EG+1.477,centre+.48],color:0xffdfb7,intensity:.94,distance:2.8});
+   if(candelabra){
+     const model=fitHallModel(T,candelabra,[deskX+.030,EG+.919,centre+.48],.56,
+       angle,'Roissy · Kandelaber Golden Glow');
+     layers.eg.add(model);
+   }else{
+     lights.push({name:'Antichambre_Konsolenlampe',position:[deskX+.030,EG+1.477,centre+.48],color:0xffdfb7,intensity:.94,distance:2.8});
+   }
 
    const pictureX=wall-.089,pictureY=EG+2.43;
    frame('Landschaft_Ost','eg',pictureX,centre,angle,pictureY,1.45,1.03,art2);

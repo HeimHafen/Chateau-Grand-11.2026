@@ -1,3 +1,4 @@
+import {loadHallDecor} from './stair-portal.js?v=roissy373';
 import {loadVestibuleColumn} from './vestibule-column.js?v=roissy365';
 import {loadAtticSeating} from './attic-seating.js?v=roissy367';
 import {CELLAR_SHAFT} from './level-stairs.js?v=roissy367';
@@ -10,7 +11,7 @@ import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from './daylight-v342.js?v=roissy363';
 import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {loadGardenMaple} from '../wohnzimmer/garden-maple.js';
-import {buildChateau} from './architecture.js?v=roissy371';
+import {buildChateau} from './architecture.js?v=roissy373';
 import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy367';
 import {planSectionY} from './roissy-config.js?v=roissy363';
 
@@ -70,16 +71,23 @@ async function run(){
   surfaceLighting=new THREE.Group();
   surfaceLighting.add(sun,skyFill,ambient);
   scene.add(surfaceLighting);
-  const vestibuleColumn=await loadVestibuleColumn(THREE);
+
   // Register the texture load barrier before starting any asynchronous asset loads.
   const missingAssets=[];let resolveAssets;
+  const [vestibuleColumn,hallDecor]=await Promise.all([
+    loadVestibuleColumn(THREE),
+    loadHallDecor(THREE,(url,error)=>{
+      missingAssets.push(url);
+      console.warn('Roissy Asset nicht geladen:',url,error);
+    })
+  ]);
   const assetsReady=new Promise(resolve=>{resolveAssets=resolve;});
   THREE.DefaultLoadingManager.onLoad=()=>resolveAssets();
   THREE.DefaultLoadingManager.onError=url=>{missingAssets.push(url);console.warn('Roissy Asset nicht geladen:',url);};
   const mats=createExteriorMaterialLibrary(THREE);
   const glass=createRealisticExteriorGlass(THREE,renderer);
   buildLandscape(mats);
-  const chateau=buildChateau(THREE,scene,null,mats,glass,vestibuleColumn);
+  const chateau=buildChateau(THREE,scene,null,mats,glass,vestibuleColumn,hallDecor);
   historicalChateau=chateau;
   loadAtticSeating(THREE,chateau.attic,markShadowDirty);
   chateau.cellar.root.visible=true;
@@ -103,8 +111,8 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.71',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.71';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.73',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.73';
   window.__CHATEAU_MAXGAME.importedFurniture=setupModelImport(THREE,chateau,scene,renderer);
   resize();view('angle');
   status.textContent='Architektur aufgebaut. Materialien und Texturen werden geladen …';
@@ -206,7 +214,9 @@ function setWalk(entry=null){
   player.access=undefined;
   let entryYaw=0;
   if(typeof entry==='string'){
-    const starts={hall:[0,10.32,EG_Y,0],antichambre:[-12.32,-8.90,EG_Y,-Math.PI/2],salon:[0,-3.65,EG_Y,0],stair:[-15.65,9.15,EG_Y,0],gallery:[0,4.5,OG_Y,0],attic:[ATTIC.entry.x,ATTIC.entry.z,ATTIC.floor,ATTIC.entry.yaw],cellar:[CELLAR.entry.x,CELLAR.entry.z,CELLAR.floor,CELLAR.entry.yaw]};
+    const stairEntry=historicalChateau.validations.interiorFinish.stairPortal
+      ?[-15.25,-8.90,EG_Y,-2.70]:[-15.65,9.15,EG_Y,0];
+    const starts={hall:[0,10.32,EG_Y,0],antichambre:[-12.32,-8.90,EG_Y,-Math.PI/2],salon:[0,-3.65,EG_Y,0],stair:stairEntry,gallery:[0,4.5,OG_Y,0],attic:[ATTIC.entry.x,ATTIC.entry.z,ATTIC.floor,ATTIC.entry.yaw],cellar:[CELLAR.entry.x,CELLAR.entry.z,CELLAR.floor,CELLAR.entry.yaw]};
     const [x,z,foot,yaw]=starts[entry]||starts.hall;
     Object.assign(player,{x,z,footY:foot});
     entryYaw=yaw;
@@ -222,7 +232,7 @@ function setWalk(entry=null){
   setUnderground(player.footY===CELLAR.floor);
   if(underground)historicalChateau.cellar.updateLights(player.x,player.z);
   player.y=player.footY+EYE_Y;
-  player.yaw=entryYaw;player.pitch=entry==='hall'?.10:.025;
+  player.yaw=entryYaw;player.pitch=entry==='stair' ? .16 : entry==='hall' ? .10 : .025;
   markShadowDirty();
   forward=strafe=0;
   document.getElementById('walk').textContent='Rundgang neu';
