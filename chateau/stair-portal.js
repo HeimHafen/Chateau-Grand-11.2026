@@ -11,8 +11,8 @@ export async function loadHallDecor(THREE, onError) {
       return null;
     }
   };
-  const [lion, candelabra] = await Promise.all([
-    load('marble-lion.glb'), load('golden-glow-candelabra.glb')
+  const [lion, candelabra, faience] = await Promise.all([
+    load('marble-lion.glb'), load('golden-glow-candelabra.glb'), load('faience-urn.glb')
   ]);
   if (lion) lion.traverse(object => {
     if (!object.isMesh) return;
@@ -21,7 +21,7 @@ export async function loadHallDecor(THREE, onError) {
       roughness: .44, metalness: 0
     });
   });
-  return {lion, candelabra};
+  return {lion, candelabra, faience};
 }
 
 export function fitHallModel(THREE, source, position, height, yaw, name) {

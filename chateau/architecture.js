@@ -1,12 +1,12 @@
-import {installStairPortal} from './stair-portal.js?v=roissy373';
+import {installStairPortal} from './stair-portal.js?v=roissy377';
 import {createEscalierSoffits} from './grand-escalier-soffits.js?v=roissy371';
 import {addClassicalReliefs,addVestibuleReliefs} from './vestibule-relief.js?v=roissy370';
-import {installVestibuleInlay} from './vestibule-inlay.js?v=roissy368';
-import {buildVestibuleLantern} from './vestibule-lantern.js?v=roissy369';
+import {installVestibuleInlay} from './vestibule-inlay.js?v=roissy377';
+import {buildVestibuleLantern} from './vestibule-lantern.js?v=roissy376';
 import {ATTIC_SHAFT,CELLAR_SHAFT,ATTIC_PORTAL,CELLAR_PORTAL,buildLevelStairs} from './level-stairs.js?v=roissy367';
 import {buildCellar} from './cellar.js?v=roissy363';
 import {buildAttic} from './attic.js?v=roissy367';
-import {installFurnishings} from './furnishings-v346.js?v=roissy373';
+import {installFurnishings} from './furnishings-v346.js?v=roissy377';
 /**
  * CHÂTEAU GRAND V3.53 – Architekturfinish mit Gewölbekeller und Mansarde.
  * Geometry + room register share one unit/metre plan with navigation.
@@ -285,9 +285,14 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null,h
        // Recessed plaster and a fine stone bead on the inner edge of the panel.
        put('intVestibuleInset',m,(bottom+upper)/2,pw-.235,upper-bottom-.235,.012,.028);
        const margin=portalFlank?.19:.145;
-       if(pw>2*margin+.14)for(const sign of [-1,1]){
-         put('hallFillet',m+sign*(pw/2-margin),(bottom+upper)/2,.012,upper-bottom-2*margin,.016,.038);
-         put('hallFillet',m,sign<0?bottom+margin:upper-margin,pw-2*margin-.012,.012,.016,.038);
+       if(pw>2*margin+.14){
+         const midY=(bottom+upper)/2,width=pw-2*margin,height=upper-bottom-2*margin;
+         for(const sign of [-1,1]){
+           put('intVestibuleReveal',m+sign*width/2,midY,.047,height+.047,.016,.040);
+           put('intVestibuleReveal',m,midY+sign*height/2,width-.047,.047,.016,.040);
+           put('intVestibuleBead',m+sign*width/2,midY,.021,height+.021,.026,.046);
+           put('intVestibuleBead',m,midY+sign*height/2,width-.021,.021,.026,.046);
+         }
        }
      }
      for(const d of [-1,1]){
@@ -771,37 +776,17 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null,h
  const hallLeft=FRONT_X_CUTS[3]+.155,hallRight=FRONT_X_CUTS[4]-.155;
  const hallBack=CROSS_WALL_Z+.155,hallFront=HALF_D-.23;
  const vestibuleW=hallRight-hallLeft,vestibuleD=hallFront-hallBack,vestibuleZ=(hallBack+hallFront)/2;
- const centralFloor=new THREE.Mesh(new THREE.PlaneGeometry(vestibuleW,vestibuleD),vestibulePBR);
- const hallUV=centralFloor.geometry.attributes.uv;const hallPos=centralFloor.geometry.attributes.position;for(let i=0;i<hallUV.count;i++)hallUV.setXY(i,hallPos.getX(i)/3.2,(hallPos.getY(i)-vestibuleZ)/3.2);hallUV.needsUpdate=true;
- centralFloor.rotation.x=-Math.PI/2;
- centralFloor.position.set(0,EG+.008,vestibuleZ);
- centralFloor.receiveShadow=true;centralFloor.name='Roissy_Vestibule_Natursteinboden_Grossformat';
- layers.eg.add(centralFloor);directMeshes++;
- // A restrained inset frame on the stone plane, flush with the walking surface.
- // Door thresholds remain open; these borders are 7mm thick, not collision walls.
- const vestibuleEdge=new THREE.MeshStandardMaterial({color:0x918071,roughness:.91,metalness:0,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4});
- function floorInlay(x,z,w,d,mat=vestibuleEdge){
-   const obj=new THREE.Mesh(new THREE.BoxGeometry(w,.006,d),mat);
-   obj.position.set(x,EG+.013,z);obj.receiveShadow=true;obj.castShadow=false;
-   obj.name='Roissy_Vestibule_Eingelassener_Steinfries';
-   layers.eg.add(obj);directMeshes++;
- }
- const border=.48, lineW=.065, secondBorder=.66;
- for(const inset of [border,secondBorder]){
-   const w=vestibuleW-2*inset,d=vestibuleD-2*inset,th=inset===border?lineW:.025;
-   for(const sign of [-1,1]){
-     floorInlay(sign*w/2,vestibuleZ,th,d+th);
-     floorInlay(0,vestibuleZ+sign*d/2,w-th,th);
-   }
- }
  const umberMap=typeof document==='undefined'?null:tileLoader.load('./assets/interior/v344_marble_border_albedo.jpg');
  if(umberMap){
    umberMap.wrapS=umberMap.wrapT=THREE.RepeatWrapping;
    umberMap.colorSpace=THREE.SRGBColorSpace;
    umberMap.anisotropy=4;
  }
- installVestibuleInlay(THREE,layers.eg,EG+.010,4.30,umberMap);
- cast.intVestibuleInset=finish('Roissy_Vestibule_Kalkputz_Warmes_Greige',0xdad1c3,.88,plasterMaps,.10);
+ installVestibuleInlay(THREE,layers.eg,EG+.008,
+   {width:vestibuleW,depth:vestibuleD,z:vestibuleZ,medallionZ:4.30},vestibulePBR,umberMap);
+ cast.intVestibuleInset=finish('Roissy_Vestibule_Kalkputz_Salbeigrau',0xa8b0a0,.93,plasterMaps,.085);
+ cast.intVestibuleReveal=finish('Roissy_Vestibule_Schattenkehle',0xbab3a3,.91,paintedFinish);
+ cast.intVestibuleBead=finish('Roissy_Vestibule_Profil_Elfenbein',0xf3ebdc,.82,paintedFinish);
  // Vestibule trim is generated from the actual partition segments below.
  // Four free-standing piers (two rows of two) follow the central supports in
  // Le Rouge's drawing, at estimated positions within the present room envelope.
@@ -814,14 +799,17 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null,h
  cast.hallBeam=finish('Roissy_Vestibule_Balken_Kalkstein',0xe5dbca,.84,stoneMaps,.12);
  cast.hallBeamTrim=finish('Roissy_Vestibule_Balken_Elfenbein',0xf5ede1,.86,paintedFinish);
  cast.hallCoffer=finish('Roissy_Vestibule_Kassetten_Elfenbein',0xf4ece0,.91,plasterMaps,.06);
- if(vestibuleColumn)cast.ionicStone=finish('Roissy_Ionische_Saeule_Kalkstein',0xe5d9c5,.91,paintedFinish);
+ if(vestibuleColumn){
+   cast.ionicStone=finish('Roissy_Ionische_Saeule_Kalkstein',0xe5d9c5,.91,paintedFinish);
+   cast.vestibuleShaft=finish('Roissy_Vestibule_Ionischer_Feinkalkstein',0xe7dac4,.70,stoneMaps,.115);
+ }
  for(const f of ['eg','og']){
    const y=f==='eg'?EG:OG,top=f==='eg'?OG-.19:CORNICE-.245;
    for(const x of [-2.24,2.24])for(const z of [2.15,6.45]){
      if(f==='eg'&&vestibuleColumn){
        const floor=y+.008,beamUnderside=top-.41;
        const height=beamUnderside-floor;
-       const column=mesh(vestibuleColumn,'ionicStone','Roissy_Vestibule_Ionische_Originalsaeule',layers[f]);
+       const column=mesh(vestibuleColumn,'vestibuleShaft','Roissy_Vestibule_Ionische_Originalsaeule',layers[f]);
        column.position.set(x,floor,z);
        column.scale.setScalar(height);
        const {min,max}=vestibuleColumn.boundingBox;
@@ -2270,6 +2258,15 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null,h
      verde:portalVerde,bronze:cast.grandBrass,frieze:portalFrieze
    },hallDecor.lion);
  const vestibuleLight=buildVestibuleLantern(THREE,layers.eg,0,OG-.25,vestibuleCentre);
+ // Supplemental daylight enters from the two court-facing vestibule windows.
+ // Stronger west fill gives the fluting a lit side and a shaded side.
+ const vestibuleDaylight=[-1,1].map(side=>({
+   name:side<0?'Vestibule_Tageslicht_West':'Vestibule_Tageslicht_Ost',
+   position:[side*3.60,EG+2.85,hallFront-.17],
+   target:[side*1.80,EG+1.45,4.62],
+   color:side<0?0xffefd9:0xdde7ff,
+   intensity:side<0?33:17, distance:9.1, angle:.48, penumbra:.78
+ }));
  addVestibuleReliefs(THREE,layers.eg,cast.hallCarving,hallPortalRelief,{
    x:vestibuleFlanks,y:EG+3.31,z:hallBack+.028
  });
@@ -2297,7 +2294,7 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null,h
    addClassicalReliefs(THREE,wallRelief,cast.hallCarving,'Roissy_Antichambre_Geschnitzte_Felder',reliefs);
  }
  interiorAudit.furnishings=installFurnishings(THREE,layers,EG,OG,collisionWalls,{
-   wall:hallBack,flanks:vestibuleFlanks
+   wall:hallBack,flanks:vestibuleFlanks,faience:hallDecor.faience
  },antichambreDisplay,hallDecor.candelabra);
  // Instanced stone geometry: one draw call per material and floor layer.
  const surfaceCleanup=resolveStaticFaces(THREE,batch,cast);
@@ -2459,7 +2456,7 @@ export function buildChateau(THREE,scene,donor,mats,glass,vestibuleColumn=null,h
  }
  const cellar=buildCellar(THREE,root,mats,CELLAR_SHAFT);
  const levelStairs=buildLevelStairs(THREE,root,{stone:cast.intStairMolding,wood:cast.stairWalnut,iron:cast.stairForged,brass:cast.stairPatina});
- return {front:root,facadeWidth:54,cellar,levelStairs,vestibuleLight,
+ return {front:root,facadeWidth:54,cellar,levelStairs,vestibuleLight,vestibuleDaylight,
    palaceDimensions:{width:54,depth:X.wingFront-X.parkBack,height:18.46,calibration:'approximate; existing core preserved and extended to represent historical setbacks'},
    buildings:['Château de Roissy – Hauptgebäude'],historicalFloors:ROOMDATA,historicalLayers:layers,finishRegions,roomAt,
    attic:atticGallery,interiorCollision:collisionWalls,upperDeckRectangles:slabAudit[1].rectangles,roofDeckRectangles:slabAudit[2].rectangles,hallSupports,interiorDoorways,planPartitions:partitionRegister,entranceDoors:doors,interiorDoors,

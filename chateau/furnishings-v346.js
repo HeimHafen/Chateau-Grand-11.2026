@@ -1,4 +1,4 @@
-import {fitHallModel} from './stair-portal.js?v=roissy373';
+import {fitHallModel} from './stair-portal.js?v=roissy377';
 import {mergeGeometries} from '../vendor/three/examples/jsm/utils/BufferGeometryUtils.js';
 // Original procedural furniture, dimensioned to the actual Roissy room axes.
 export function installFurnishings(T,layers,EG,OG,collisionWalls,vestibule,antichambre,candelabra){
@@ -31,7 +31,7 @@ export function installFurnishings(T,layers,EG,OG,collisionWalls,vestibule,antic
  function horse(k,x,y,z){ // small rearing bronze, decorative approximation
  k.box(shade,x,y+.013,z,.20,.026,.13);k.ball(bronze,x,y+.147,z,.054,.076,.037);k.tube(bronze,[[x-.022,y+.15,z],[x+.008,y+.21,z],[x+.044,y+.265,z]],.031);k.ball(bronze,x+.057,y+.274,z,.043,.025,.025);k.ball(bronze,x+.087,y+.259,z,.020,.017,.021);for(const side of [-1,1]){k.tube(bronze,[[x-.018,y+.122,z+side*.023],[x-.052,y+.076,z+side*.030],[x-.047,y+.027,z+side*.035]],.012);k.tube(bronze,[[x+.026,y+.193,z+side*.024],[x+.084,y+.175,z+side*.029],[x+.101,y+.205,z+side*.035]],.010);k.tube(bronze,[[x+.041,y+.288,z+side*.013],[x+.030,y+.313,z+side*.015]],.007);}k.tube(bronze,[[x-.047,y+.135,z],[x-.088,y+.13,z+.018],[x-.100,y+.072,z+.03],[x-.075,y+.050,z+.03]],.012);
  }
- function console(name,x,z,rot,w=1.22,d=.40,decor='flowers'){build(name,'eg',x,z,rot,EG+.010,k=>{for(const sx of [-1,1])for(const sz of [-1,1])leg(k,sx*w*.40,sz*d*.34,.77);apron(k,w-.04,d-.04,.78);k.cushion(marble,0,.865,0,w,.065,d,.028);k.tube(gilt,[[-w*.39,.28,-d*.34],[0,.36,0],[w*.39,.28,d*.34]],.022);k.tube(gilt,[[-w*.39,.28,d*.34],[0,.36,0],[w*.39,.28,-d*.34]],.022);vase(k,-w*.22,.90,0,.12,.29,true);if(decor==='lamp'){tableLamp(k,w*.28,.90,-.04);horse(k,.025,.90,.08);}else{for(let j=0;j<3;j++)book(k,w*.23,.90+j*.038,0,.18,.20,.038,j%2);}},true);}
+ function console(name,x,z,rot,w=1.22,d=.40,decor='flowers'){build(name,'eg',x,z,rot,EG+.010,k=>{for(const sx of [-1,1])for(const sz of [-1,1])leg(k,sx*w*.40,sz*d*.34,.77);apron(k,w-.04,d-.04,.78);k.cushion(marble,0,.865,0,w,.065,d,.028);k.tube(gilt,[[-w*.39,.28,-d*.34],[0,.36,0],[w*.39,.28,d*.34]],.022);k.tube(gilt,[[-w*.39,.28,d*.34],[0,.36,0],[w*.39,.28,-d*.34]],.022);if(decor==='bare')return;if(decor==='posy'){vase(k,0,.90,0,.104,.24,true);return;}vase(k,-w*.22,.90,0,.12,.29,true);if(decor==='lamp'){tableLamp(k,w*.28,.90,-.04);horse(k,.025,.90,.08);}else{for(let j=0;j<3;j++)book(k,w*.23,.90+j*.038,0,.18,.20,.038,j%2);}},true);}
  function sofa(x,z){build('Salonbank_Louis_XV','eg',x,z,0,EG+.010,k=>{const w=2.06,d=.73;for(const sx of [-1,1])for(const sz of [-1,1])leg(k,sx*.85,sz*.26,.34);for(const z0 of [-.28,.28])leg(k,0,z0,.34);apron(k,w-.10,d-.10,.36);k.cushion(cream,0,.49,0,w-.17,.20,.62,.085);for(let i=-1;i<=1;i++)k.cushion(cream,i*.61,.57,.02,.59,.13,.58,.06);k.cushion(cream,0,.93,-.295,1.85,.70,.19,.09);k.tube(gilt,[[-.96,.59,-.30],[-.98,1.10,-.30],[-.77,1.21,-.31],[-.40,1.25,-.32],[0,1.32,-.32],[.40,1.25,-.32],[.77,1.21,-.31],[.98,1.10,-.30],[.96,.59,-.30]],.035);for(const sx of [-1,1]){k.tube(gilt,[[sx*.91,.36,.27],[sx*.99,.59,.33],[sx*.92,.73,.18],[sx*.94,.82,-.17],[sx*.96,.92,-.30]],.035);k.cushion(cream,sx*.91,.79,.04,.15,.12,.48,.05);k.cushion(blue,sx*.60,.80,-.17,.35,.34,.15,.07,sx*.21);}k.ball(gilt,0,1.33,-.30,.10,.041,.035);for(let j=-1;j<=1;j++)k.ball(welt,j*.52,.95,-.185,.019,.019,.010);});}
  function sideTable(name,x,z){build(name,'eg',x,z,0,EG+.010,k=>{for(let i=0;i<3;i++){const a=i*Math.PI*2/3;leg(k,.21*Math.cos(a),.21*Math.sin(a),.65);}k.lathe(shade,0,.60,0,[[.22,0],[.24,.03],[.25,.11]]);k.lathe(marble,0,.71,0,[[.265,0],[.27,.02],[.255,.045],[0,.045]]);k.ring(gilt,0,.71,0,.261,.012);});build(name+'_Lampe','eg',x,z,0,EG+.010,k=>tableLamp(k,0,.76,0),false);lights.push({name,position:[x,EG+1.27,z],color:0xffd5a0,intensity:2.2,distance:2.8});}
  function bench(x,z,rot){build('Polsterbank','eg',x,z,rot,EG+.010,k=>{for(const sx of [-1,1])for(const sz of [-1,1])leg(k,sx*.56,sz*.17,.34);apron(k,1.40,.41,.35);k.cushion(cream,0,.48,0,1.44,.22,.46,.095);for(const sx of [-1,1]){const g=new T.CylinderGeometry(.105,.105,.40,24);g.rotateX(Math.PI/2);k.add(cream,g,sx*.61,.64,0);k.ball(gilt,sx*.61,.64,.20,.058,.058,.016);}const g=new T.PlaneGeometry(.31,.70,24,28),a=g.attributes.position;for(let i=0;i<a.count;i++){const u=a.getX(i),t=(a.getY(i)+.35)/.70;const z=t<.48?-.10+t*.70:.236+.015*Math.sin((t-.48)*Math.PI),y=t<.48?.60:.60-(t-.48)*.87;a.setXYZ(i,.35+u,y+.009*Math.cos(u*90),z+.007*Math.sin(u*75));}g.computeVertexNormals();const cloth=cream.clone();cloth.name='V346_Seidendecke';cloth.side=T.DoubleSide;k.add(cloth,g);for(let i=0;i<17;i++){const xx=.20+i*.30/16;k.tube(welt,[[xx,.145,.25],[xx+.005,.11,.25]],.003);}});}
@@ -42,6 +42,20 @@ export function installFurnishings(T,layers,EG,OG,collisionWalls,vestibule,antic
  sofa(-13.25,-10.70);sideTable('Beistelltisch_West',-14.95,-10.70);sideTable('Beistelltisch_Ost',-11.55,-10.70);
  console('Konsole_West',-17.05,3.0,Math.PI/2,1.30,.43);if(!antichambre)console('Konsole_Ost',-7.27,-8.85,-Math.PI/2,1.34,.45,'lamp');
  bench(-7.27,-3.7,-Math.PI/2);urn('Pflanzvase_EG','eg',-13.85,8.4,EG+.010);console('Konsole_Treppenantritt',-10.15,10.86,Math.PI,.84,.32);
+ const pictureDiffuser=mat('Bilderleuchte · mattes Leuchtglas',0xffe5bb,.55,0,{emissive:0xffd19a,emissiveIntensity:.35});
+ function pictureLamp(name,x,z,angle,y,metal){
+   build(name,'eg',x,z,angle,y,k=>{
+     const canopy=new T.CylinderGeometry(.055,.059,.026,24);
+     canopy.rotateX(Math.PI/2);
+     k.add(metal,canopy,0,0,.005);
+     k.tube(metal,[[0,-.001,.018],[0,.062,.101],[0,.038,.187]],.013);
+     const housing=new T.CylinderGeometry(.035,.035,.56,22);
+     housing.rotateZ(Math.PI/2);
+     k.add(metal,housing,0,.026,.200);
+     k.box(pictureDiffuser,0,-.004,.200,.514,.008,.033);
+     for(const sign of [-1,1])k.ball(metal,sign*.285,.026,.200,.024,.038,.037);
+   },false);
+ }
  const art1=mat('V346_Landschaft_1',0xffffff,.87,0,{map:tex('landscape_1')}),art2=mat('V346_Landschaft_2',0xffffff,.87,0,{map:tex('landscape_2')});
  frame('Landschaft_Nord','eg',-13.25,-11.22,0,EG+2.26,.86,1.20,art1);if(!antichambre)frame('Landschaft_Ost','eg',-7.003,-8.85,-Math.PI/2,EG+2.16,1.12,.85,art2);frame('Goldspiegel_West','eg',-17.38,3.0,Math.PI/2,EG+2.28,.86,1.52,mirror);
  if(antichambre){
@@ -89,26 +103,22 @@ export function installFurnishings(T,layers,EG,OG,collisionWalls,vestibule,antic
 
    const pictureX=wall-.089,pictureY=EG+2.43;
    frame('Landschaft_Ost','eg',pictureX,centre,angle,pictureY,1.45,1.03,art2);
-   build('Antichambre_Bilderleuchte','eg',wall-.082,centre,angle,pictureY+.86,k=>{
-     const diffuser=mat('Antichambre · mattes Leuchtglas',0xffe5bb,.55,0,{emissive:0xffd19a,emissiveIntensity:.35});
-     const canopy=new T.CylinderGeometry(.055,.059,.026,24);
-     canopy.rotateX(Math.PI/2);
-     k.add(oldGold,canopy,0,0,.005);
-     k.tube(oldGold,[[0,-.001,.018],[0,.062,.101],[0,.038,.187]],.013);
-     const housing=new T.CylinderGeometry(.035,.035,.56,22);
-     housing.rotateZ(Math.PI/2);
-     k.add(oldGold,housing,0,.026,.200);
-     k.box(diffuser,0,-.004,.200,.514,.008,.033);
-     for(const sign of [-1,1])k.ball(oldGold,sign*.285,.026,.200,.024,.038,.037);
-   },false);
+   pictureLamp('Antichambre_Bilderleuchte',wall-.082,centre,angle,pictureY+.86,oldGold);
    lights.push({name:'Antichambre_Bilderleuchte',position:[wall-.38,pictureY+.24,centre],color:0xffe5c7,intensity:.37,distance:1.7});
  }
  if(vestibule)for(const [i,x] of vestibule.flanks.entries()){
    const name='Vestibule_Konsole_'+(i?'Ost':'West');
    const z=vestibule.wall+.47;
-   console(name,x,z,0,1.36,.47,'lamp');
-   frame('Vestibule_Landschaft_'+(i?'Ost':'West'),'eg',x,vestibule.wall+.087,0,EG+2.30,1.19,1.34,i?art2:art1);
-   lights.push({name,position:[x+.38,EG+1.46,z-.04],color:0xffe0bc,intensity:1.55,distance:3.2});
+   const showFaience=!i && vestibule.faience;
+   console(name,x,z,0,1.36,.50,showFaience?'bare':'posy');
+   if(showFaience)layers.eg.add(fitHallModel(T,vestibule.faience,[x,EG+.9075,z],.49,.15,'Roissy_Vestibule_Fayenceurne'));
+   const side=i?'Ost':'West', pictureY=EG+2.30, pictureZ=vestibule.wall+.087;
+   frame('Vestibule_Landschaft_'+side,'eg',x,pictureZ,0,pictureY,1.19,1.34,i?art2:art1);
+   const pictureLight='Vestibule_Bilderleuchte_'+side;
+   pictureLamp(pictureLight,x,vestibule.wall+.070,0,pictureY+.96,bronze);
+   lights.push({name:pictureLight,position:[x,pictureY+.95,vestibule.wall+.27],
+     target:[x,pictureY+.13,pictureZ+.02],color:0xffe3bd,intensity:.73,distance:1.7,angle:.61,penumbra:.76});
+
  }
  urn('Pflanzvase_Galerie','og',-16.45,10.68,OG+.010);
  // Sculpted classical bust on plinth, stylised original geometry rather than a scan.

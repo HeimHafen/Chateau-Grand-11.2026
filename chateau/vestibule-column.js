@@ -23,6 +23,25 @@ export function prepareVestibuleColumn(THREE, source) {
   if (!(height > 0 && Number.isFinite(height))) throw new Error('Ungültige Säulenhöhe.');
   column.translate(-(min.x + max.x) / 2, -min.y, -(min.z + max.z) / 2);
   column.scale(1 / height, 1 / height, 1 / height);
+  // Project each triangle on the plane where its face has the most area.
+  // This keeps the texture scale consistent across flutes, volutes and bases.
+  const positions = column.getAttribute('position');
+  const uv = new Float32Array(positions.count * 2);
+  const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+  for (let i = 0; i < positions.count; i += 3) {
+    a.fromBufferAttribute(positions, i);
+    b.fromBufferAttribute(positions, i + 1).sub(a);
+    c.fromBufferAttribute(positions, i + 2).sub(a);
+    b.cross(c);
+    const nx = Math.abs(b.x), ny = Math.abs(b.y), nz = Math.abs(b.z);
+    const axes = ny >= nx && ny >= nz ? [0, 2] : nx >= nz ? [2, 1] : [0, 1];
+    for (let j = i; j < i + 3; j++) {
+      a.fromBufferAttribute(positions, j);
+      uv[j * 2] = a.getComponent(axes[0]) * 5.4;
+      uv[j * 2 + 1] = a.getComponent(axes[1]) * 5.4;
+    }
+  }
+  column.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
   column.computeBoundingBox();
   return column;
 }

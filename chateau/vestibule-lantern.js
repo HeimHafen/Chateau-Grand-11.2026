@@ -9,7 +9,7 @@ export function buildVestibuleLantern(T, parent, x, ceiling, z) {
   const bronze = new T.MeshStandardMaterial({color:0x514135, metalness:.72, roughness:.43, envMapIntensity:.8});
   const edges = new T.MeshStandardMaterial({color:0xa78960, metalness:.63, roughness:.43});
   const wax = new T.MeshStandardMaterial({color:0xe7d5b5, roughness:.57});
-  const flame = new T.MeshStandardMaterial({color:0xffd6a0, emissive:0xffa652, emissiveIntensity:2.25});
+  const flame = new T.MeshStandardMaterial({color:0xffd6a0, emissive:0xffa652, emissiveIntensity:1.53});
   const glass = new T.MeshPhysicalMaterial({
     color:0xe8edf0, roughness:.16, metalness:0, clearcoat:.23,
     transparent:true, opacity:.11, depthWrite:false, side:T.DoubleSide, forceSinglePass:true
@@ -77,5 +77,5 @@ export function buildVestibuleLantern(T, parent, x, ceiling, z) {
     mesh.receiveShadow = material !== glass && material !== flame;
     for (const geo of geometries) geo.dispose();
   }
-  return {name:lantern.name, position:[x,ceiling-1.27,z], color:0xffdbab, intensity:11.8, distance:6.2};
+  return {name:lantern.name, position:[x,ceiling-1.16,z], color:0xffd8a2, intensity:5.1, distance:3.9};
 }
