@@ -1,4 +1,4 @@
-CHÂTEAU GRAND · ROISSY V3.71 · Grand Escalier
+CHÂTEAU GRAND · ROISSY V3.80 · Grand Escalier
 
 ZIP entpacken und den Inhalt in die Wurzel des GitHub-Pages-Repositorys übernehmen. index.html muss neben den Ordnern chateau, assets und vendor liegen.
 

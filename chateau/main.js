@@ -1,5 +1,5 @@
 import {VESTIBULE_ENTRY, walkFieldOfView} from './vestibule-view.js?v=roissy374';
-import {loadHallDecor} from './stair-portal.js?v=roissy377';
+import {loadHallDecor} from './stair-portal.js?v=roissy379';
 import {loadVestibuleColumn} from './vestibule-column.js?v=roissy375';
 import {loadAtticSeating} from './attic-seating.js?v=roissy367';
 import {CELLAR_SHAFT} from './level-stairs.js?v=roissy367';
@@ -12,7 +12,7 @@ import {createRealisticExteriorGlass} from '../wohnzimmer/window-glass.js';
 import {buildSky} from './daylight-v342.js?v=roissy363';
 import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
 import {loadGardenMaple} from '../wohnzimmer/garden-maple.js';
-import {buildChateau} from './architecture.js?v=roissy377';
+import {buildChateau} from './architecture.js?v=roissy380';
 import {candidateStep,describePlace,EG_Y,OG_Y,EYE_Y} from './navigation.js?v=roissy367';
 import {planSectionY} from './roissy-config.js?v=roissy363';
 
@@ -98,7 +98,8 @@ async function run(){
   new THREE.TextureLoader().load('./assets/glass/v342_daylight_env.jpg',t=>{t.colorSpace=THREE.SRGBColorSpace;t.mapping=THREE.EquirectangularReflectionMapping;scene.environment=t;scene.environmentIntensity=underground?.15:.47;},undefined,()=>{});
   // Physical fixture positions and short-range warm pools of light. No extra shadow passes.
   const fixtures=[...chateau.validations.interiorFinish.referenceFixtures.lights,
-    ...chateau.validations.interiorFinish.furnishings.lights,...chateau.attic.lights,
+    ...chateau.validations.interiorFinish.furnishings.lights,
+    ...chateau.validations.interiorFinish.stairArt.lights,...chateau.attic.lights,
     chateau.vestibuleLight,...chateau.vestibuleDaylight];
   for(const f of fixtures){
     const lamp=f.target
@@ -126,8 +127,8 @@ async function run(){
   glass.side=THREE.DoubleSide;glass.transparent=true;glass.opacity=.12;glass.depthWrite=false;
   glass.needsUpdate=true;
   // Expose the actual reconstruction and construction diagnostics for testing.
-  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.77',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
-  document.getElementById('version').textContent='ROISSY · V3.77';
+  window.__CHATEAU_MAXGAME={engine:'Three.js',scene,version:'3.80',dimensions:chateau.palaceDimensions,instances:chateau.instancedElements,drawcalls:chateau.instancedDrawcalls,automaticDoors:chateau.entranceDoors.length+chateau.interiorDoors.length,constructionQA:chateau.validations};
+  document.getElementById('version').textContent='ROISSY · V3.80';
   window.__CHATEAU_MAXGAME.importedFurniture=setupModelImport(THREE,chateau,scene,renderer);
   resize();view('angle');
   status.textContent='Architektur aufgebaut. Materialien und Texturen werden geladen …';
@@ -229,9 +230,7 @@ function setWalk(entry=null){
   player.access=undefined;
   let entryYaw=0;
   if(typeof entry==='string'){
-    const stairEntry=historicalChateau.validations.interiorFinish.stairPortal
-      ?[-15.25,-8.90,EG_Y,-2.70]:[-15.65,9.15,EG_Y,0];
-    const starts={hall:[VESTIBULE_ENTRY.x,VESTIBULE_ENTRY.z,EG_Y,0],antichambre:[-12.32,-8.90,EG_Y,-Math.PI/2],salon:[0,-3.65,EG_Y,0],stair:stairEntry,gallery:[0,4.5,OG_Y,0],attic:[ATTIC.entry.x,ATTIC.entry.z,ATTIC.floor,ATTIC.entry.yaw],cellar:[CELLAR.entry.x,CELLAR.entry.z,CELLAR.floor,CELLAR.entry.yaw]};
+    const starts={hall:[VESTIBULE_ENTRY.x,VESTIBULE_ENTRY.z,EG_Y,0],antichambre:[-12.32,-8.90,EG_Y,-Math.PI/2],salon:[0,-3.65,EG_Y,0],stair:[-15.82,10.30,EG_Y,-.51],gallery:[0,4.5,OG_Y,0],attic:[ATTIC.entry.x,ATTIC.entry.z,ATTIC.floor,ATTIC.entry.yaw],cellar:[CELLAR.entry.x,CELLAR.entry.z,CELLAR.floor,CELLAR.entry.yaw]};
     const [x,z,foot,yaw]=starts[entry]||starts.hall;
     Object.assign(player,{x,z,footY:foot});
     entryYaw=yaw;
@@ -247,7 +246,7 @@ function setWalk(entry=null){
   setUnderground(player.footY===CELLAR.floor);
   if(underground)historicalChateau.cellar.updateLights(player.x,player.z);
   player.y=player.footY+EYE_Y;
-  player.yaw=entryYaw;player.pitch=entry==='stair' ? .16 : entry==='hall' ? VESTIBULE_ENTRY.pitch : .025;
+  player.yaw=entryYaw;player.pitch=entry==='stair' ? .25 : entry==='hall' ? VESTIBULE_ENTRY.pitch : .025;
   markShadowDirty();
   forward=strafe=0;
   document.getElementById('walk').textContent='Rundgang neu';
